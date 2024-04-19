@@ -7,7 +7,10 @@ import users from "./routes/users.mjs";
 const PORT = process.env.PORT || 5050;
 const app = express();
 
+// set up CORS for client server on different domain, protocol, port
 app.use(cors());
+
+// middleware to parse incoming requests with JSON payloads
 app.use(express.json());
 
 // Load the /users routes

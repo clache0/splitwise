@@ -4,67 +4,94 @@ import { ObjectId } from "mongodb";
 
 const router = express.Router();
 
-// Get a list of 50 users
+// Get a list of users, limit 50
 router.get("/", async (req, res) => {
-  let collection = await db.collection("users");
-  let results = await collection.find({})
-    .limit(50)
-    .toArray();
+  try {
+    let collection = await db.collection("users");
+    let results = await collection.find({})
+      .limit(50)
+      .toArray();
 
-  res.send(results).status(200);
+    res.send(results).status(200);
+  } catch (error) {
+    console.error("Error getting user: ", error);
+    next(error); // pass error to global error handling middleware    
+  }
 });
-
-// // Fetches the latest users
-// router.get("/latest", async (req, res) => {
-//   let collection = await db.collection("users");
-//   let results = await collection.aggregate([
-//     {"$project": {"author": 1, "title": 1, "tags": 1, "date": 1}},
-//     {"$sort": {"date": -1}},
-//     {"$limit": 3}
-//   ]).toArray();
-//   res.send(results).status(200);
-// });
 
 // Get a single user
 router.get("/:id", async (req, res) => {
-  let collection = await db.collection("users");
-  let query = {_id: ObjectId(req.params.id)};
-  let result = await collection.findOne(query);
-
-  if (!result) res.send("Not found").status(404);
-  else res.send(result).status(200);
+  try {
+    let collection = await db.collection("users");
+    let query = {_id: ObjectId(req.params.id)};
+    let result = await collection.findOne(query);
+  
+    if (result === null) {
+      res.send("User not found").status(404);
+    }
+    else {
+      res.send(result).status(200);
+    }
+  } catch (error) {
+    console.error("Error getting user: ", error);
+    next(error); // pass error to global error handling middleware    
+  }
 });
 
-// Add a new document to the collection
+// POST Add a new document to the collection
 router.post("/", async (req, res) => {
   let collection = await db.collection("users");
   let newDocument = req.body;
-  // newDocument.date = new Date();
   let result = await collection.insertOne(newDocument);
-  res.send(result).status(204);
+  res.send(result).status(200);
 });
 
-// // Update the users with a new comment
-// router.patch("/comment/:id", async (req, res) => {
-//   const query = { _id: ObjectId(req.params.id) };
-//   const updates = {
-//     $push: { comments: req.body }
-//   };
+// PATCH Update the user
+router.patch("/:id", async (req, res) => {
+  const query = { _id: ObjectId(req.params.id) };
+  const updates = {
+    $set: { 
+      firstName: req.body.firstName,
+      lastName: req.body.lastName
+    }
+  };
 
-//   let collection = await db.collection("users");
-//   let result = await collection.updateOne(query, updates);
+  // attempt to update user
+  try {
+    let collection = await db.collection("users");
+    let result = await collection.updateOne(query, updates);
 
-//   res.send(result).status(200);
-// });
+    // check if user is found
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ error: "User not found" }); // user not found
+    }
 
-// Delete an entry
+    res.send(result).status(200); // OK status
+  } catch (error) {
+    console.error("Error updating user: ", error);
+    next(error); // pass error to global error handling middleware
+  }
+});
+
+// DELETE user
 router.delete("/:id", async (req, res) => {
   const query = { _id: ObjectId(req.params.id) };
 
-  const collection = db.collection("users");
-  let result = await collection.deleteOne(query);
+  try {
+    const collection = db.collection("users");
+    let result = await collection.deleteOne(query);
+    
+    // check if user is found
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ error: "User not found" }); // user not found
+    }
 
-  res.send(result).status(200);
+    res.send(result).status(200);
+  } catch (error) {
+    console.error("Error deleting user: ", error);
+    next(error); // pass error to global error handling middleware
+  }
+
 });
 
 export default router;
