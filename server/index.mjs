@@ -3,6 +3,7 @@ import cors from "cors";
 import "./loadEnvironment.mjs";
 import "express-async-errors";
 import users from "./routes/users.mjs";
+import groups from "./routes/groups.mjs";
 
 const PORT = process.env.PORT || 5050;
 const app = express();
@@ -16,6 +17,10 @@ app.use(express.json());
 // Load the /users routes
 app.use("/users", users);
 console.log("using /users route");
+
+// Load the /groups routes
+app.use("/groups", groups);
+console.log("using /groups route");
 
 // Global error handling
 app.use((err, _req, res, next) => {
