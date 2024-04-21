@@ -4,36 +4,36 @@ import { ObjectId } from "mongodb";
 
 const router = express.Router();
 
-// Get a list of groups, limit 50
+// Get a list of expenses, limit 50
 router.get("/", async (req, res) => {
   try {
-    let collection = await db.collection("groups");
+    let collection = await db.collection("expenses");
     let results = await collection.find({})
       .limit(50)
       .toArray();
 
     res.send(results).status(200);
   } catch (error) {
-    console.error("Error getting group: ", error);
+    console.error("Error getting expense: ", error);
     next(error);     
   }
 });
 
-// Get a single group
+// Get a single expense
 router.get("/:id", async (req, res) => {
   try {
-    let collection = await db.collection("groups");
+    let collection = await db.collection("expenses");
     let query = {_id: ObjectId(req.params.id)};
     let result = await collection.findOne(query);
   
     if (result === null) {
-      res.send("Group not found").status(404);
+      res.send("expense not found").status(404);
     }
     else {
       res.send(result).status(200);
     }
   } catch (error) {
-    console.error("Error getting group: ", error);
+    console.error("Error getting expense: ", error);
     next(error);
   }
 });
@@ -41,65 +41,78 @@ router.get("/:id", async (req, res) => {
 // POST Add a new document to the collection
 router.post("/", async (req, res) => {
   try {
-    let collection = await db.collection("groups");
+    let collection = await db.collection("expenses");
     let newDocument = req.body;
     let result = await collection.insertOne(newDocument);
     res.send(result).status(200);
   } catch (error) {
-    console.error("Error adding group: ", error);
+    console.error("Error adding expense: ", error);
     next(error);
   }
 });
 
-// PATCH Update the group
+// PATCH Update the expense
 router.patch("/:id", async (req, res) => {
   const query = { _id: ObjectId(req.params.id) };
-  const { name, members } = req.body;
+  console.log("query: ", query);
+  const { title, amount, date, payerId, participants } = req.body;
   const updates = { $set: {} };
 
-  if (name) {
-    updates["$set"]["name"] = name;
+  if (title) {
+    updates["$set"]["title"] = title;
   }
-  if (members) {
-    updates["$set"]["members"] = members.map(member => ({ "_id": member }));
+  if (amount) {
+    updates["$set"]["amount"] = amount;
+  }
+  if (date) {
+    updates["$set"]["date"] = date;
+  }
+  if (payerId) {
+    updates["$set"]["payerId"] = payerId;
+  }
+  if (participants) {
+    updates["$set"]["participants"] = participants.map(participant => (
+      { "memberId": participant.memberId,
+        "share": participant.share
+    }));
   }
 
-  // attempt to update group
+  // attempt to update expense
   try {
-    let collection = await db.collection("groups");
+    let collection = await db.collection("expenses");
     let result = await collection.updateOne(query, updates);
 
-    // check if group is found
+    // check if expense is found
     if (result.matchedCount === 0) {
-      return res.status(404).json({ error: "Group not found" });
+      return res.status(404).json({ error: "expense not found" });
     }
-    // check if group is found
+    // check if expense is modified
     if (result.modifiedCount === 0) {
-      return res.status(200).json({ error: "Group not modified" });
+      return res.status(200).json({ error: "expense not modified" });
     }
     res.send(result).status(200);
   } catch (error) {
-    console.error("Error updating group: ", error);
-    next(error); 
+    console.error("Error updating expense: ", error);
+    next(error);
   }
 });
 
-// DELETE group
+// DELETE expense
 router.delete("/:id", async (req, res) => {
   const query = { _id: ObjectId(req.params.id) };
 
   try {
-    const collection = db.collection("groups");
+    const collection = db.collection("expenses");
     let result = await collection.deleteOne(query);
     
-    // check if group is found
+    // check if expense is found
     if (result.deletedCount === 0) {
-      return res.status(404).json({ error: "Group not found" });
+      return res.status(404).json({ error: "expense not found" });
     }
 
     res.send(result).status(200);
   } catch (error) {
-    console.error("Error deleting group: ", error);
+    console.error("Error deleting expense: ", error);
     next(error); 
   }
 });
