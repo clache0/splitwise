@@ -15,7 +15,7 @@ router.get("/", async (req, res) => {
     res.send(results).status(200);
   } catch (error) {
     console.error("Error getting group: ", error);
-    next(error); // pass error to global error handling middleware    
+    next(error);     
   }
 });
 
@@ -34,55 +34,49 @@ router.get("/:id", async (req, res) => {
     }
   } catch (error) {
     console.error("Error getting group: ", error);
-    next(error); // pass error to global error handling middleware    
+    next(error);
   }
 });
 
 // POST Add a new document to the collection
 router.post("/", async (req, res) => {
-  let collection = await db.collection("groups");
-  let newDocument = req.body;
-  let result = await collection.insertOne(newDocument);
-  res.send(result).status(200);
+  try {
+    let collection = await db.collection("groups");
+    let newDocument = req.body;
+    let result = await collection.insertOne(newDocument);
+    res.send(result).status(200);
+  } catch (error) {
+    console.error("Error adding group: ", error);
+    next(error);
+  }
 });
 
 // PATCH Update the group
 router.patch("/:id", async (req, res) => {
-  console.log("calling patch");
-  
   const query = { _id: ObjectId(req.params.id) };
   const { name, members } = req.body;
   const updates = { $set: {} };
 
-  console.log("name: ", name);
-  console.log("members: ", members);
-
   if (name) {
     updates["$set"]["name"] = name;
   }
-  console.log("updates set name complete");
-
   if (members) {
     updates["$set"]["members"] = members.map(member => ({ "_id": member }));
   }
-  console.log("updates set members complete");
 
   // attempt to update group
   try {
-
     let collection = await db.collection("groups");
     let result = await collection.updateOne(query, updates);
-    console.log("called collection.updateOne");
 
     // check if group is found
     if (result.modifiedCount === 0) {
       return res.status(404).json({ error: "Group not found" }); // group not found
     }
-
     res.send(result).status(200); // OK status
   } catch (error) {
     console.error("Error updating group: ", error);
-    next(error); // pass error to global error handling middleware
+    next(error); 
   }
 });
 
@@ -102,9 +96,8 @@ router.delete("/:id", async (req, res) => {
     res.send(result).status(200);
   } catch (error) {
     console.error("Error deleting group: ", error);
-    next(error); // pass error to global error handling middleware
+    next(error); 
   }
-
 });
 
 export default router;

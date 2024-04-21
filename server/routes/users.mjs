@@ -15,7 +15,7 @@ router.get("/", async (req, res) => {
     res.send(results).status(200);
   } catch (error) {
     console.error("Error getting user: ", error);
-    next(error); // pass error to global error handling middleware    
+    next(error);     
   }
 });
 
@@ -34,16 +34,21 @@ router.get("/:id", async (req, res) => {
     }
   } catch (error) {
     console.error("Error getting user: ", error);
-    next(error); // pass error to global error handling middleware    
+    next(error);     
   }
 });
 
 // POST Add a new document to the collection
 router.post("/", async (req, res) => {
-  let collection = await db.collection("users");
-  let newDocument = req.body;
-  let result = await collection.insertOne(newDocument);
-  res.send(result).status(200);
+  try {
+    let collection = await db.collection("users");
+    let newDocument = req.body;
+    let result = await collection.insertOne(newDocument);
+    res.send(result).status(200);
+  } catch (error) {
+    console.error("Error adding user: ", error);
+    next(error); 
+  }
 });
 
 // PATCH Update the user
@@ -69,7 +74,7 @@ router.patch("/:id", async (req, res) => {
     res.send(result).status(200); // OK status
   } catch (error) {
     console.error("Error updating user: ", error);
-    next(error); // pass error to global error handling middleware
+    next(error); 
   }
 });
 
@@ -89,7 +94,7 @@ router.delete("/:id", async (req, res) => {
     res.send(result).status(200);
   } catch (error) {
     console.error("Error deleting user: ", error);
-    next(error); // pass error to global error handling middleware
+    next(error); 
   }
 
 });
