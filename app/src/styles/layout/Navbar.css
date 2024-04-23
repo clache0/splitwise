@@ -1,25 +1,25 @@
 .navbar {
-    border: 1px solid red;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: clamp(320px, 800px, 1200px);
+  border: 1px solid red;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: clamp(320px, 800px, 1200px);
 }
 
 .nav-title {
-    font-size: 2rem;
+  font-size: 2rem;
 }
 
 .nav-ul {
-    list-style: none;
-    display: flex;
+  list-style: none;
+  display: flex;
 }
 
 .nav-li {
-    margin-right: 10px;
+  margin-right: 10px;
 }
 
 .nav-link {
-    text-decoration: none;
-    color: #484848;
+  text-decoration: none;
+  color: #484848;
 }
