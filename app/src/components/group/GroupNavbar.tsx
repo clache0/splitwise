@@ -1,39 +1,12 @@
-import { useEffect, useState } from 'react';
-import config from '../../../config.json'
+import { Group } from './Group'
 
-type Group = {
-  name: string;
-  members: Member[];
-};
-
-type Member = {
-  _id: string;
+type GroupNavbarProps = {
+  group: Group | null;
+  loading: boolean;
+  error: Error | null;
 }
 
-type Error = {
-  message: string;
-};
-
-const GroupNavbar = () => {
-  const serverUrl = config.serverUrl + '/groups' + '/662306fcc4de419f942fc418';
-
-  const [group, setGroup] = useState<Group | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
-
-  useEffect(() => {
-    fetch(serverUrl)
-      .then(response => response.json())
-      .then((data: Group) => {
-        setGroup(data);
-        setLoading(false);
-      })
-      .catch((error: Error) => {
-        console.error('Error fetching data:', error);
-        setError(error);
-        setLoading(false);
-      });
-  }, []);
+const GroupNavbar: React.FC<GroupNavbarProps> = ({ group, loading, error }) => {
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
