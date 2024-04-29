@@ -1,4 +1,5 @@
 import { Group } from './Group'
+import Button from '../general/Button'
 
 type GroupNavbarProps = {
   group: Group | null;
@@ -12,10 +13,17 @@ const GroupNavbar: React.FC<GroupNavbarProps> = ({ group, loading, error }) => {
   if (error) return <p>Error: {error.message}</p>;
 
   return (
-    <>
-      <h1>Group Navbar</h1>
+    <nav>
       <h1>Group Name: {group?.name}</h1>
-    </>
+      <Button
+        label='Add Expense'
+        onClick={() => console.log('Add expense clicked')}
+      />
+      <Button
+        label='Settle Up'
+        onClick={() => console.log('Settle up clicked')}
+      />
+    </nav>
   )
 }
 

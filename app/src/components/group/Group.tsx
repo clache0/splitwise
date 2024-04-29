@@ -1,6 +1,7 @@
 import GroupNavbar from "./GroupNavbar"
 import { useEffect, useState } from 'react';
 import config from '../../../config.json'
+import ExpenseList from "../expense/ExpenseList";
 
 export type Member = {
   _id: string;
@@ -10,8 +11,6 @@ export type Group = {
   name: string;
   members: Member[];
 };
-
-
 
 const Group = () => {
   const serverUrl = config.serverUrl + '/groups' + '/662306fcc4de419f942fc418';
@@ -36,10 +35,10 @@ const Group = () => {
 
   return (
     <>
-      <h1>Group</h1>
       <GroupNavbar group={group} loading={loading} error={error}/>
+      <ExpenseList/>
     </>
   )
-}
+};
 
 export default Group;
