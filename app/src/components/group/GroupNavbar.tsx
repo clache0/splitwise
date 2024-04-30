@@ -3,14 +3,14 @@ import Button from '../general/Button'
 
 type GroupNavbarProps = {
   group: Group | null;
-  loading: boolean;
-  error: Error | null;
+  isLoading: boolean;
+  error: unknown | null;
 }
 
-const GroupNavbar: React.FC<GroupNavbarProps> = ({ group, loading, error }) => {
+const GroupNavbar: React.FC<GroupNavbarProps> = ({ group, isLoading, error }) => {
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error.message}</p>;
+  if (isLoading) return <p>Loading...</p>;
+  if (error) return <p>Error: {(error as Error).message}</p>;
 
   return (
     <nav>
