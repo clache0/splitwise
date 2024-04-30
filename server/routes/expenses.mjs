@@ -4,7 +4,7 @@ import { ObjectId } from "mongodb";
 
 const router = express.Router();
 
-// Get a list of expenses, limit 50
+// GET a list of expenses, limit 50
 router.get("/", async (req, res) => {
   try {
     let collection = await db.collection("expenses");
@@ -12,25 +12,44 @@ router.get("/", async (req, res) => {
       .limit(50)
       .toArray();
 
-    res.send(results).status(200);
+    res.status(200).send(results);
   } catch (error) {
     console.error("Error getting expense: ", error);
     next(error);     
   }
 });
 
-// Get a single expense
-router.get("/:id", async (req, res) => {
+// GET a single expense
+router.get("/:id", async (req, res, next) => {
   try {
     let collection = await db.collection("expenses");
     let query = {_id: ObjectId(req.params.id)};
     let result = await collection.findOne(query);
   
     if (result === null) {
-      res.send("expense not found").status(404);
+      res.status(404).send("expense not found");
     }
     else {
-      res.send(result).status(200);
+      res.status(200).send(result);
+    }
+  } catch (error) {
+    console.error("Error getting expense: ", error);
+    next(error);
+  }
+});
+
+// GET expenses by group id
+router.get("/group/:id", async (req, res, next) => {
+  try {
+    let collection = await db.collection("expenses");
+    let query = { groupId: req.params.id };
+    const result = await collection.find(query).toArray();
+  
+    if (result.length === 0) {
+      res.status(404).send("No expenses found");
+    }
+    else {
+      res.status(200).send(result);
     }
   } catch (error) {
     console.error("Error getting expense: ", error);
@@ -44,7 +63,7 @@ router.post("/", async (req, res) => {
     let collection = await db.collection("expenses");
     let newDocument = req.body;
     let result = await collection.insertOne(newDocument);
-    res.send(result).status(200);
+    res.status(200).send(result);
   } catch (error) {
     console.error("Error adding expense: ", error);
     next(error);
@@ -90,7 +109,7 @@ router.patch("/:id", async (req, res) => {
     if (result.modifiedCount === 0) {
       return res.status(200).json({ error: "expense not modified" });
     }
-    res.send(result).status(200);
+    res.status(200).send(result);
   } catch (error) {
     console.error("Error updating expense: ", error);
     next(error);
@@ -110,7 +129,7 @@ router.delete("/:id", async (req, res) => {
       return res.status(404).json({ error: "expense not found" });
     }
 
-    res.send(result).status(200);
+    res.status(200).send(result);
   } catch (error) {
     console.error("Error deleting expense: ", error);
     next(error); 
