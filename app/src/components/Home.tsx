@@ -1,4 +1,4 @@
-import Group from "./group/Group"
+import Group from "./group/GroupComponent"
 
 const Home = () => {
   return (

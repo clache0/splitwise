@@ -1,7 +1,7 @@
-import { Group } from './Group'
+import { Group } from './GroupComponent'
 import Button from '../general/Button'
 
-type GroupNavbarProps = {
+interface GroupNavbarProps {
   group: Group | null;
   isLoading: boolean;
   error: unknown | null;
