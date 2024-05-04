@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Group, Expense, Participant } from '../group/GroupComponent';
+import { Group, Expense, User } from '../group/GroupComponent';
 import { z } from 'zod';
 
 const expenseSchema = z.object({
@@ -20,17 +20,16 @@ const expenseSchema = z.object({
 interface ExpenseFormProps {
   onAddExpense: (expense: Expense) => void;
   group: Group | null;
+  users: User[] | null;
 };
 
-const AddExpenseForm: React.FC<ExpenseFormProps> = ({ onAddExpense, group }) => {
+const AddExpenseForm: React.FC<ExpenseFormProps> = ({ onAddExpense, group, users }) => {
   const [groupId, setGroupId] = useState<string>('');
   const [title, setTitle] = useState<string>('');
   const [amount, setAmount] = useState<string>('0');
   const [date, setDate] = useState<string>('');
   const [payerId, setPayerId] = useState<string>('');
   const [participants, setParticipants] = useState<string[]>([]);
-
-  // console.log('group.members: ', group ? group.members : null);
 
   // initialize participants with group.members
   useEffect(() => {
@@ -48,7 +47,7 @@ const AddExpenseForm: React.FC<ExpenseFormProps> = ({ onAddExpense, group }) => 
         amount: +amount,
         date: date,
         payerId: payerId,
-        participants: participants.map(memberId => ({ memberId, share: +'0' })),
+        participants: participants.map((memberId) => ({ memberId, share: +'0' })),
       });
 
       // Call the callback function to add the new expense
@@ -100,14 +99,29 @@ const AddExpenseForm: React.FC<ExpenseFormProps> = ({ onAddExpense, group }) => 
         </div>
         <div>
           <label htmlFor="participant">Selected participants</label>
-          <select id="participant" 
-            multiple value={participants} 
-            onChange={(event) => setParticipants(Array.from(event.target.selectedOptions, option => option.value))}
-          >
-            {group && group.members.map((member) => (
-              <option key={member._id} value={member._id}>{member._id}</option>
-            ))}
-          </select>
+          {users && 
+            users.map((user, index) => (
+              <div key={user._id || index}>
+                <label htmlFor={user._id}>
+                  <input
+                    type='checkbox' 
+                    id={user._id || ''}
+                    value={user._id || ''}
+                    checked={participants.includes(user._id || '')}
+                    onChange={(event) => {
+                      const isChecked = event.target.checked;
+                      setParticipants((prevParticipants) => 
+                        isChecked
+                        ? [...prevParticipants, user._id || '']
+                        : prevParticipants.filter((id) => id !== user._id)  
+                      );
+                    }}
+                  />
+                  {user.firstName} {user.lastName}
+                </label>
+              </div>
+            ))
+          }
         </div>
         <button type="submit">Add Expense</button>
       </form>
