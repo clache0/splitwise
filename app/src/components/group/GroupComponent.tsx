@@ -3,27 +3,36 @@ import { useEffect, useState } from 'react';
 import config from '../../../config.json'
 import ExpenseList from "../expense/ExpenseList";
 import { fetchGroup, fetchExpensesByGroupId } from "../../api/api";
+import AddExpenseForm from "../expense/AddExpenseForm";
 
 export interface Member {
   _id: string;
 };
 
 export interface Group {
+  _id?: string;
   name: string;
   members: Member[];
 };
 
+export interface Participant {
+  memberId: string;
+  share: number;
+}
+
 export interface Expense {
-  _id: string;
+  _id?: string;
   groupId: string;
   title: string;
   amount: number;
-  date: Date;
+  date: string;
   payerId: string;
-  participants: {
-    memberId: string;
-    share: number;
-  }
+  participants: Participant[];
+}
+
+const handleAddExpense = (expense: Expense) => {
+  console.log("Adding expense: ", expense);
+  return(null);
 }
 
 const GroupComponent = () => {
@@ -53,8 +62,9 @@ const GroupComponent = () => {
 
   return (
     <>
-      <GroupNavbar group={group} isLoading={isLoading} error={error}/>
-      <ExpenseList groupExpenses={groupExpenses}/>
+      <GroupNavbar group={group} isLoading={isLoading} error={error} />
+      <AddExpenseForm onAddExpense={handleAddExpense} group={group} />
+      <ExpenseList groupExpenses={groupExpenses} />
     </>
   )
 };
