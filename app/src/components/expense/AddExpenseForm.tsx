@@ -26,17 +26,39 @@ interface ExpenseFormProps {
 const AddExpenseForm: React.FC<ExpenseFormProps> = ({ onAddExpense, group, users }) => {
   const [groupId, setGroupId] = useState<string>('');
   const [title, setTitle] = useState<string>('');
-  const [amount, setAmount] = useState<string>('0');
+  const [amount, setAmount] = useState<string>('');
   const [date, setDate] = useState<string>('');
   const [payerId, setPayerId] = useState<string>('');
-  const [participants, setParticipants] = useState<string[]>([]);
+  const [participants, setParticipants] = useState<User[] | null>([]);
+  const [share, setShare] = useState<number>(0);
+
+  // initialize groupId with group._id
+  useEffect(() => {
+    if (group) {
+      setGroupId(group._id || '');
+    }
+  }, [group]);
+
+  // initialize payerId with first user
+  useEffect(() => {
+    if (users && users.length > 0) {
+      setPayerId(users[0]._id || '');
+    }
+  }, [users]);
 
   // initialize participants with group.members
   useEffect(() => {
-    if (group && group.members.length >= 2) {
-      setParticipants([group.members[0]._id, group.members[1]._id]);
+    if (users && users.length >= 2) {
+      setParticipants([users[0], users[1]]);
     }
-  }, [group]);
+  }, [users]);
+
+  // calculate total share when participants change
+  useEffect(() => {
+    const numParticipants = participants ? participants.length : 0;
+    const sharePerParticipant = numParticipants > 0 ? 100 / numParticipants : 0;
+    setShare(sharePerParticipant);
+  }, [participants]);
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -47,7 +69,12 @@ const AddExpenseForm: React.FC<ExpenseFormProps> = ({ onAddExpense, group, users
         amount: +amount,
         date: date,
         payerId: payerId,
-        participants: participants.map((memberId) => ({ memberId, share: +'0' })),
+        participants: participants ? participants.map((participant) => (
+          { 
+            memberId: participant._id,
+            share: share,
+          }
+        )) : [],
       });
 
       // Call the callback function to add the new expense
@@ -56,10 +83,10 @@ const AddExpenseForm: React.FC<ExpenseFormProps> = ({ onAddExpense, group, users
       // Clear form inputs
       setGroupId('');
       setTitle('');
-      setAmount('0');
+      setAmount('');
       setDate('');
       setPayerId('');
-      setParticipants([]);
+      setParticipants(null);
     } catch (error) {
       console.error('Form validation error:', error);
     }
@@ -98,27 +125,40 @@ const AddExpenseForm: React.FC<ExpenseFormProps> = ({ onAddExpense, group, users
           />
         </div>
         <div>
+          <label htmlFor="payer">Payer</label>
+          <select 
+            id="payer" 
+            value={payerId} 
+            onChange={(event) => setPayerId(event.target.value)}
+          >
+            <option value="">Select payer</option>
+            {users && 
+              users.map((user) => (
+                <option key={user._id} value={user._id}>{user.firstName} {user.lastName}</option>
+              ))
+            }
+          </select>
+        </div>
+        <div>
           <label htmlFor="participant">Selected participants</label>
-          {users && 
-            users.map((user, index) => (
-              <div key={user._id || index}>
-                <label htmlFor={user._id}>
-                  <input
-                    type='checkbox' 
-                    id={user._id || ''}
-                    value={user._id || ''}
-                    checked={participants.includes(user._id || '')}
-                    onChange={(event) => {
-                      const isChecked = event.target.checked;
-                      setParticipants((prevParticipants) => 
-                        isChecked
-                        ? [...prevParticipants, user._id || '']
-                        : prevParticipants.filter((id) => id !== user._id)  
-                      );
-                    }}
-                  />
-                  {user.firstName} {user.lastName}
-                </label>
+          {participants && 
+            participants.map((participant, index) => (
+              <div key={participant._id || index}>
+                <label htmlFor={participant._id}>{participant.firstName} {participant.lastName}</label>
+                <input
+                  type='checkbox' 
+                  id={participant._id || ''}
+                  value={participant._id || ''}
+                  checked={participants.includes(participant)}
+                  onChange={(event) => {
+                    const isChecked = event.target.checked;
+                    setParticipants((prevParticipants) => 
+                      isChecked
+                      ? [...(prevParticipants ?? []), participant]
+                      : (prevParticipants ?? []).filter((p) => p._id !== participant._id)  
+                    );
+                  }}
+                />
               </div>
             ))
           }

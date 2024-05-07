@@ -2,7 +2,7 @@ import GroupNavbar from "./GroupNavbar"
 import { useEffect, useState } from 'react';
 import config from '../../../config.json'
 import ExpenseList from "../expense/ExpenseList";
-import { fetchGroupById, fetchExpensesByGroupId, fetchUserById } from "../../api/api";
+import { fetchGroupById, fetchExpensesByGroupId, fetchUserById, postExpense } from "../../api/api";
 import AddExpenseForm from "../expense/AddExpenseForm";
 
 export interface User {
@@ -36,10 +36,7 @@ export interface Expense {
   participants: Participant[];
 }
 
-const handleAddExpense = (expense: Expense) => {
-  console.log("Adding expense: ", expense);
-  return(null);
-}
+
 
 const GroupComponent = () => {
 
@@ -68,6 +65,17 @@ const GroupComponent = () => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  const handleAddExpense = async (expense: Expense) => {
+    console.log("Adding expense: ", expense);
+  
+    try {
+      await postExpense(expense); // post expense to server
+      setGroupExpenses((prevExpenses) => prevExpenses ? [...prevExpenses, expense] : [expense]);
+    } catch (error) {
+      console.error("Error posting expense: ", error);
+    }
+  };
 
   return (
     <>

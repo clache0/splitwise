@@ -1,4 +1,5 @@
 import config from '../../config.json'
+import { Expense } from '../components/group/GroupComponent';
 
 export const fetchExpensesByGroupId = async (groupId: string) => {
   const url = config.serverUrl + `/expenses/group/${groupId}`;
@@ -44,3 +45,24 @@ export const fetchUserById = async (userId: string) => {
     throw error;
   };
 };
+
+export const postExpense = async (expense: Expense) => {
+  const url = config.serverUrl + '/expenses/';
+  
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(expense),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to post expense');
+    } 
+  } catch (error) {
+    console.error('Error posting expense:', error);
+    throw error;
+  }
+}
