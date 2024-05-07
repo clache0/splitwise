@@ -1,6 +1,5 @@
 import GroupNavbar from "./GroupNavbar"
 import { useEffect, useState } from 'react';
-import config from '../../../config.json'
 import ExpenseList from "../expense/ExpenseList";
 import { fetchGroupById, fetchExpensesByGroupId, fetchUserById, postExpense } from "../../api/api";
 import AddExpenseForm from "../expense/AddExpenseForm";
@@ -36,10 +35,11 @@ export interface Expense {
   participants: Participant[];
 }
 
+interface GroupProps {
+  groupId: string;
+}
 
-
-const GroupComponent = () => {
-
+const GroupComponent: React.FC<GroupProps> = ({ groupId }) => {
   const [group, setGroup] = useState<Group | null>(null);
   const [groupExpenses, setGroupExpenses] = useState<Expense[] | null>([]);
   const [users, setUsers] = useState<User[] | null>([]);
@@ -48,8 +48,8 @@ const GroupComponent = () => {
 
   const fetchData = async () => {
     try {
-      const groupData = await fetchGroupById(config.groupId);
-      const groupExpensesData = await fetchExpensesByGroupId(config.groupId);
+      const groupData = await fetchGroupById(groupId);
+      const groupExpensesData = await fetchExpensesByGroupId(groupId);
       const users = await Promise.all(groupData.members.map((member: Member) => fetchUserById(member._id)));
       setGroup(groupData);
       setGroupExpenses(groupExpensesData);

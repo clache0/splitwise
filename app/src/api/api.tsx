@@ -1,19 +1,6 @@
 import config from '../../config.json'
 import { Expense } from '../components/group/GroupComponent';
 
-export const fetchExpensesByGroupId = async (groupId: string) => {
-  const url = config.serverUrl + `/expenses/group/${groupId}`;
-  
-  try {
-    const response = await fetch(url);
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.log("Error fetching expenses: ", error);
-    throw error;
-  };
-};
-
 export const fetchGroupById = async (groupId: string) => {
   const url = config.serverUrl + `/groups/${groupId}`;
 
@@ -30,6 +17,22 @@ export const fetchGroupById = async (groupId: string) => {
   };
 };
 
+export const fetchGroups = async () => {
+  const url = config.serverUrl + '/groups/';
+
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error('Failed to fetch group data');
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.log("Error fetching groups: ", error);
+    throw error;
+  };
+}
+
 export const fetchUserById = async (userId: string) => {
   const url = config.serverUrl + `/users/${userId}`;
 
@@ -42,6 +45,19 @@ export const fetchUserById = async (userId: string) => {
     return data;
   } catch (error) {
     console.log("Error fetching user: ", error);
+    throw error;
+  };
+};
+
+export const fetchExpensesByGroupId = async (groupId: string) => {
+  const url = config.serverUrl + `/expenses/group/${groupId}`;
+  
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.log("Error fetching expenses: ", error);
     throw error;
   };
 };
