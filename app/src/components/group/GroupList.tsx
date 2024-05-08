@@ -1,4 +1,4 @@
-import GroupComponent from "./GroupComponent";
+import { Link } from "react-router-dom";
 import { Group } from "./GroupComponent";
 
 interface GroupListProps {
@@ -6,16 +6,22 @@ interface GroupListProps {
 }
 const GroupList: React.FC<GroupListProps> = ({ groups }) => {
   
-  const groupComponents = groups ?
-    groups?.map((group, index) => {
-      const groupId = group._id || index.toString();
-      return <GroupComponent key={groupId} groupId={groupId} />
-    }) : null;
+  if (!groups) {
+    return <div>Loading Group List...</div>
+  }
+
+  const groupList = groups.map((group) => (
+    <li key={group._id}>
+      <Link to={`/group/${group._id}`}>{group.name}</Link>
+    </li>
+  ));
 
   return (
     <>
       <h2>Group List</h2>
-      {groupComponents}
+      <ul>
+        {groupList}
+      </ul>
     </>
   );
 };

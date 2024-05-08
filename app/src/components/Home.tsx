@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import GroupComponent from "./group/GroupComponent"
 import { Group } from "./group/GroupComponent"
 import GroupList from "./group/GroupList";
 import { fetchGroups } from "../api/api";
@@ -29,7 +28,6 @@ const Home = () => {
   return (
     <>
       <GroupList groups={groupsData} />
-      {/* <GroupComponent groupId='662306fcc4de419f942fc418'/> */}
     </>
   )
 }

@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import ExpenseList from "../expense/ExpenseList";
 import { fetchGroupById, fetchExpensesByGroupId, fetchUserById, postExpense } from "../../api/api";
 import AddExpenseForm from "../expense/AddExpenseForm";
+import { useParams } from "react-router-dom";
 
 export interface User {
   _id?: string;
@@ -35,11 +36,8 @@ export interface Expense {
   participants: Participant[];
 }
 
-interface GroupProps {
-  groupId: string;
-}
-
-const GroupComponent: React.FC<GroupProps> = ({ groupId }) => {
+const GroupComponent = () => {
+  const { groupId } = useParams() as { groupId: string};
   const [group, setGroup] = useState<Group | null>(null);
   const [groupExpenses, setGroupExpenses] = useState<Expense[] | null>([]);
   const [users, setUsers] = useState<User[] | null>([]);
@@ -64,7 +62,7 @@ const GroupComponent: React.FC<GroupProps> = ({ groupId }) => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [groupId]);
 
   const handleAddExpense = async (expense: Expense) => {
     console.log("Adding expense: ", expense);
