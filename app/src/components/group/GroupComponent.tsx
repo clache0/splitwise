@@ -66,7 +66,6 @@ const GroupComponent = () => {
 
   const handleAddExpense = async (expense: Expense) => {
     console.log("Adding expense: ", expense);
-  
     try {
       await postExpense(expense); // post expense to server
       setGroupExpenses((prevExpenses) => prevExpenses ? [...prevExpenses, expense] : [expense]);
