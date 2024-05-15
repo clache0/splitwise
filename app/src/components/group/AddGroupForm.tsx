@@ -10,17 +10,20 @@ const AddGroupForm: React.FC<AddGroupFormProps> = ({ onAddGroup, users }) => {
   const [name, setName] = useState<string>('');
   const [selectedUsers, setSelectedUsers] = useState<User[] | null>([]);
 
-  console.log("users: ", users);
-
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
+
+    // map users to members
     const selectedMembers: Member[] = (selectedUsers || [])
       .map((user) => ({ _id: user._id as string}));
+
     const newGroup: Group = {
       name: name,
       members: selectedMembers,
     };
+
     onAddGroup(newGroup);
+    
     // Clear form inputs
     setName('');
     setSelectedUsers([]);

@@ -17,7 +17,7 @@ export const fetchGroupById = async (groupId: string) => {
   };
 };
 
-export const fetchGroups = async () => {
+export const fetchAllGroups = async () => {
   const url = config.serverUrl + '/groups/';
 
   try {

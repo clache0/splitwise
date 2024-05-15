@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Group, User } from "./group/GroupComponent"
 import GroupList from "./group/GroupList";
-import { fetchAllUsers, fetchGroups, fetchUserById, postGroup } from "../api/api";
+import { fetchAllUsers, fetchAllGroups, fetchUserById, postGroup } from "../api/api";
 import Button from "./general/Button";
 import AddGroupForm from "./group/AddGroupForm";
 
@@ -10,6 +10,7 @@ const Home = () => {
   const [users, setUsers] = useState<User[] | null>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<unknown | null>(null);
+  const [showAddGroupForm, setShowAddGroupForm] = useState<boolean>(false);
 
   const handleAddGroup = async (group: Group) => {
     console.log("Adding group: ", group);
@@ -25,7 +26,7 @@ const Home = () => {
   // fetch groupsData and use memberIds to fetch users
   const fetchData = async () => {
     try {
-      const groupsData = await fetchGroups();
+      const groupsData = await fetchAllGroups();
       setGroupsData(groupsData);
 
       const users = await fetchAllUsers();
@@ -47,10 +48,10 @@ const Home = () => {
     <>
       <GroupList groups={groupsData} />
       <Button
-        label='Add Group'
-        onClick={() => console.log('Add group clicked')}
+        label={showAddGroupForm ? 'Cancel' : 'Add Group'}
+        onClick={() => setShowAddGroupForm(!showAddGroupForm)}
       />
-      <AddGroupForm  onAddGroup={handleAddGroup} users={users || []}/>
+      {showAddGroupForm && <AddGroupForm  onAddGroup={handleAddGroup} users={users || []}/> }
     </>
   )
 }
