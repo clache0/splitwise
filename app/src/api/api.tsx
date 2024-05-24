@@ -33,6 +33,29 @@ export const fetchAllGroups = async () => {
   };
 }
 
+export const deleteGroupById = async (groupId: string) => {
+  const url = config.serverUrl + `/groups/${groupId}`;
+
+  try {
+    const response = await fetch(url, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to delete group data');
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.log("Error deleting group: ", error);
+    throw error;
+  };
+};
+
 export const fetchAllUsers = async () => {
   const url = config.serverUrl + '/users/';
 
