@@ -43,6 +43,7 @@ const GroupComponent = () => {
   const [users, setUsers] = useState<User[] | null>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<unknown | null>(null);
+  const [showAddExpenseForm, setShowAddExpenseForm] = useState<boolean>(false);
 
   const fetchData = async () => {
     try {
@@ -76,8 +77,14 @@ const GroupComponent = () => {
 
   return (
     <>
-      <GroupNavbar group={group} isLoading={isLoading} error={error} />
-      <AddExpenseForm onAddExpense={handleAddExpense} group={group} users={users}/>
+      <GroupNavbar 
+        group={group} 
+        isLoading={isLoading} 
+        error={error} 
+        setShowAddExpenseForm={setShowAddExpenseForm} 
+        showAddExpenseForm={showAddExpenseForm} 
+      />
+      { showAddExpenseForm && <AddExpenseForm onAddExpense={handleAddExpense} group={group} users={users}/> }
       <ExpenseList groupExpenses={groupExpenses} />
     </>
   )
