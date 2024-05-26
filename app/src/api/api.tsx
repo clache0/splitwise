@@ -138,6 +138,12 @@ export const fetchExpensesByGroupId = async (groupId: string) => {
   
   try {
     const response = await fetch(url);
+    if (!response.ok) {
+      if (response.status === 404) {
+        console.log("response.status is 404");
+        return [];
+      }
+    }
     const data = await response.json();
     return data;
   } catch (error) {

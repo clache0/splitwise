@@ -48,15 +48,15 @@ const GroupComponent = () => {
   const fetchData = async () => {
     try {
       const groupData = await fetchGroupById(groupId);
-      const groupExpensesData = await fetchExpensesByGroupId(groupId);
       const users = await Promise.all(groupData.members.map((member: Member) => fetchUserById(member._id)));
+      const groupExpensesData = await fetchExpensesByGroupId(groupId);
       setGroup(groupData);
       setGroupExpenses(groupExpensesData);
       setUsers(users);
-      setIsLoading(false);
     } catch (error) {
       console.error('Error fetching group data: ', error);
       setError(error);
+    } finally {
       setIsLoading(false);
     }
   };

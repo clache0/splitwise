@@ -6,11 +6,13 @@ interface ExpenseListProps {
 }
 const ExpenseList: React.FC<ExpenseListProps> = ({ groupExpenses }) => {
   
-  const expenseComponents = groupExpenses ?
+  if (!groupExpenses) return <p>Group expenses null</p>
+
+  const expenseComponents = groupExpenses.length !== 0 ?
     groupExpenses?.map((expense, index) => {
       const key = expense._id || index.toString();
       return <ExpenseComponent key={key} expense={expense} />
-    }) : null;
+    }) : <p>No expenses in list</p>;
 
   return (
     <>
