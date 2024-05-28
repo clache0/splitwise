@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Group, User } from "./group/GroupComponent"
 import GroupList from "./group/GroupList";
-import { fetchAllUsers, fetchAllGroups, fetchUserById, postGroup, deleteGroupById } from "../api/api";
+import { fetchAllUsers, fetchAllGroups, postGroup, deleteGroupById } from "../api/api";
 import Button from "./general/Button";
 import AddGroupForm from "./group/AddGroupForm";
 
@@ -49,18 +49,21 @@ const Home = () => {
 
       const users = await fetchAllUsers();
       setUsers(users);
-
-      setIsLoading(false);
     } catch (error) {
       console.error('Error fetching groups data: ', error);
       setError(error);
+    } finally {
       setIsLoading(false);
-    } 
+    }
   };
 
   useEffect(() => {
     fetchData();
   }, []);
+
+  if (isLoading) return <div>Content is loading</div>
+  
+  if (error) return <div>Error loading content</div>
 
   return (
     <>
