@@ -23,11 +23,19 @@ interface ExpenseFormProps {
   users: User[] | null;
 };
 
+const getCurrentDate = () => {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 const AddExpenseForm: React.FC<ExpenseFormProps> = ({ onAddExpense, group, users }) => {
   const [groupId, setGroupId] = useState<string>('');
   const [title, setTitle] = useState<string>('');
   const [amount, setAmount] = useState<string>('');
-  const [date, setDate] = useState<string>('');
+  const [date, setDate] = useState<string>(getCurrentDate());
   const [payerId, setPayerId] = useState<string>('');
   const [participants, setParticipants] = useState<User[] | null>([]);
   const [share, setShare] = useState<number>(0);
@@ -84,9 +92,6 @@ const AddExpenseForm: React.FC<ExpenseFormProps> = ({ onAddExpense, group, users
       setGroupId('');
       setTitle('');
       setAmount('');
-      setDate('');
-      setPayerId('');
-      setParticipants(null);
     } catch (error) {
       console.error('Form validation error:', error);
     }
