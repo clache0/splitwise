@@ -1,9 +1,10 @@
 import GroupNavbar from "./GroupNavbar"
 import { useEffect, useState } from 'react';
 import ExpenseList from "../expense/ExpenseList";
-import { fetchGroupById, fetchExpensesByGroupId, fetchUserById, postExpense } from "../../api/api";
+import { fetchGroupById, fetchExpensesByGroupId, fetchUserById, postExpense, deleteExpenseById } from "../../api/api";
 import AddExpenseForm from "../expense/AddExpenseForm";
 import { useParams } from "react-router-dom";
+import Modal from "../general/Modal";
 
 export interface User {
   _id?: string;
@@ -44,6 +45,8 @@ const GroupComponent = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<unknown | null>(null);
   const [showAddExpenseForm, setShowAddExpenseForm] = useState<boolean>(false);
+  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
+  const [expenseToDelete, setExpenseToDelete] = useState<Expense | null>(null);
 
   const fetchData = async () => {
     try {
@@ -75,6 +78,32 @@ const GroupComponent = () => {
     }
   };
 
+  const handleDeleteExpense = async () => {
+    if (expenseToDelete && expenseToDelete._id) {
+      console.log("Deleting expense: ", expenseToDelete);
+      try {
+        await deleteExpenseById(expenseToDelete._id);
+        setGroupExpenses((prevGroupExpenses) => {
+          if(!prevGroupExpenses) return null;
+          return prevGroupExpenses?.filter((prevExpense) => expenseToDelete._id !== prevExpense._id);
+        });
+        setShowDeleteModal(false);
+      } catch (error) {
+        console.error("Error deleting expense: ", error);
+      }
+    }
+};
+
+  const openDeleteModal = (expense: Expense) => {
+    setExpenseToDelete(expense);
+    setShowDeleteModal(true);
+  };
+
+  const closeDeleteModal = () => {
+    setShowDeleteModal(false);
+    setExpenseToDelete(null);
+  };
+
   return (
     <>
       <GroupNavbar 
@@ -84,8 +113,19 @@ const GroupComponent = () => {
         setShowAddExpenseForm={setShowAddExpenseForm} 
         showAddExpenseForm={showAddExpenseForm} 
       />
+
       { showAddExpenseForm && <AddExpenseForm onAddExpense={handleAddExpense} group={group} users={users}/> }
-      <ExpenseList groupExpenses={groupExpenses} />
+
+      <Modal
+        isOpen={showDeleteModal}
+        onClose={closeDeleteModal}
+        onConfirm={handleDeleteExpense}
+        title="Confirm Delete"
+      >
+        Are you sure you want to delete this expense?
+      </Modal>
+
+      <ExpenseList groupExpenses={groupExpenses} onDeleteExpense={openDeleteModal} />
     </>
   )
 };

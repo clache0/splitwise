@@ -172,3 +172,26 @@ export const postExpense = async (expense: Expense) => {
     throw error;
   }
 };
+
+export const deleteExpenseById = async (expenseId: string) => {
+  const url = config.serverUrl + `/expenses/${expenseId}`;
+
+  try {
+    const response = await fetch(url, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to delete expense data');
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.log("Error deleting expense: ", error);
+    throw error;
+  };
+};

@@ -41,17 +41,17 @@ const Home = () => {
         console.error("Error deleting group: ", error);
       }
     }
-};
+  };
 
   const openDeleteModal = (group: Group) => {
     setGroupToDelete(group);
     setShowDeleteModal(true);
-  }
+  };
 
   const closeDeleteModal = () => {
     setShowDeleteModal(false);
     setGroupToDelete(null);
-  }
+  };
 
   // fetch groupsData and use memberIds to fetch users
   const fetchData = async () => {
