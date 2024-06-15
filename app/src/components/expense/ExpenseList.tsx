@@ -10,8 +10,12 @@ const ExpenseList: React.FC<ExpenseListProps> = ({ groupExpenses, onDeleteExpens
   
   if (!groupExpenses) return <p>Group expenses null</p>
 
-  const expenseComponents = groupExpenses.length !== 0 ?
-    groupExpenses?.map((expense, index) => {
+  const sortedExpenses = [...groupExpenses].sort((a, b) => (
+    new Date(b.date).getTime() - new Date(a.date).getTime()
+  ));
+
+  const expenseComponents = sortedExpenses.length !== 0 ?
+  sortedExpenses?.map((expense, index) => {
       return (
         <li key={expense._id || index}>
           <ExpenseComponent expense={expense} />
