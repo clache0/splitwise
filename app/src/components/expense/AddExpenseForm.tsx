@@ -84,14 +84,18 @@ const AddExpenseForm: React.FC<ExpenseFormProps> = ({ onAddExpense, group, users
           }
         )) : [],
       });
+      
+      if (parsedData.groupId) {
+        // Call the callback function to add the new expense
+        onAddExpense(parsedData);
 
-      // Call the callback function to add the new expense
-      onAddExpense(parsedData);
-
-      // Clear form inputs
-      setGroupId('');
-      setTitle('');
-      setAmount('');
+        // Clear form inputs
+        setTitle('');
+        setAmount('');
+      }
+      else {
+        console.error("Group Id is missing from expense");
+      }
     } catch (error) {
       console.error('Form validation error:', error);
     }
