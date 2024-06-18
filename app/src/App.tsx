@@ -1,7 +1,7 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import './App.css'
 import Layout from './components/layout/Layout'
-import PageUnderConstruction from './components/PageUnderConstruction'
+import PageUnderConstruction from './components/general/PageUnderConstruction'
 import Home from './components/Home'
 import GroupComponent from './components/group/GroupComponent'
 

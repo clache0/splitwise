@@ -5,6 +5,7 @@ import { fetchAllUsers, fetchAllGroups, postGroup, deleteGroupById } from "../ap
 import Button from "./general/Button";
 import AddGroupForm from "./group/AddGroupForm";
 import Modal from "./general/Modal";
+import "../styles/components/Home.css"
 
 const Home = () => {
   const [groupsData, setGroupsData] = useState<Group[] | null>([]);
@@ -79,11 +80,13 @@ const Home = () => {
 
   return (
     <>
-      <GroupList groups={groupsData} onDeleteGroup={openDeleteModal} />
       <Button
         label={showAddGroupForm ? 'Cancel' : 'Add Group'}
         onClick={() => setShowAddGroupForm(!showAddGroupForm)}
       />
+
+      <GroupList groups={groupsData} onDeleteGroup={openDeleteModal} />
+
       {showAddGroupForm && <AddGroupForm  onAddGroup={handleAddGroup} users={users || []}/> }
 
       <Modal

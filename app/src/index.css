@@ -3,16 +3,44 @@
   line-height: 1.5;
   font-weight: 400;
 
-  /* color-scheme: light dark; */
-  /* color: rgba(255, 255, 255, 0.87); */
-  /* background-color: #242424; */
-
+  /* variables */
+  --primary-color: #0073e6; /* Inspired by blue tones used in tech companies like Microsoft */
+  --secondary-color: #34a853; /* Inspired by green tones used in Google */
+  --background-color: #f5f5f5; /* A light, neutral background color for minimalistic design */
+  --text-color: #333333; /* A dark gray for easy readability */
+  --font-size: 16px;
+  --padding: 8px;
+  --margin: 8px;
 }
 
+/* Base styles */
 body {
+  /* font-family: Arial, sans-serif; */
+  font-size: var(--font-size);
+  color: var(--text-color);
+  background-color: var(--background-color);
+  margin: 0;
+  padding: 0;
+
   margin: 0;
   display: flex;
   /* place-items: center; */
   min-width: 320px;
   min-height: 100vh;
+}
+
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--secondary-color);
+}
+
+.column-center {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }

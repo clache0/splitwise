@@ -1,0 +1,30 @@
+.group-link {
+  color: var(--primary-color);
+  padding: var(--padding);
+}
+
+.group-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.group-list li {
+  padding: 0.5rem 1rem;
+  margin-bottom: var(--margin);
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 1rem;
+  width: 200px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.group-list li a {
+  color: var(--text-color);
+}
+
+.group-list li a:hover {
+  color: var(--primary-color);
+}

@@ -1,5 +1,5 @@
-import "../styles/PageUnderConstruction.css"
-import BackButton from "./layout/BackButton"
+import "../../styles/components/general/PageUnderConstruction.css"
+import BackButton from "../layout/BackButton"
 
 const PageUnderConstruction = () => {
   return (

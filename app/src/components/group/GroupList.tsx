@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Group } from "./GroupComponent";
 import Button from "../general/Button";
+import "../../styles/components/group/GroupList.css"
 
 interface GroupListProps {
   groups: Group[] | null;
@@ -14,10 +15,11 @@ const GroupList: React.FC<GroupListProps> = ({ groups, onDeleteGroup }) => {
 
   const groupList = groups ? groups.map((group, index) => (
     <li key={group._id || index}>
-      <Link to={`/group/${group._id}`}>{group.name}</Link>
+      <Link className="group-link" to={`/group/${group._id}`}>{group.name}</Link>
       <Button
         label='Delete'
         onClick={() => { onDeleteGroup(group) }}
+        hoverColor='#ff0000'
       />
     </li>
   )) : null;
@@ -25,7 +27,7 @@ const GroupList: React.FC<GroupListProps> = ({ groups, onDeleteGroup }) => {
   return (
     <>
       <h2>Group List</h2>
-      <ul>
+      <ul className="group-list column-center">
         {groupList}
       </ul>
     </>
