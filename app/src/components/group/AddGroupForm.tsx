@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { Group, User, Member } from './GroupComponent';
+import '../../styles/components/group/AddGroupForm.css'
 
 interface AddGroupFormProps {
   onAddGroup: (group: Group) => void;
+  onShowForm: (showAddGroupForm: boolean) => void;
   users: User[];
 }
 
-const AddGroupForm: React.FC<AddGroupFormProps> = ({ onAddGroup, users }) => {
+const AddGroupForm: React.FC<AddGroupFormProps> = ({ onAddGroup, onShowForm, users }) => {
   const [name, setName] = useState<string>('');
   const [selectedUsers, setSelectedUsers] = useState<User[] | null>([]);
 
@@ -45,40 +47,43 @@ const AddGroupForm: React.FC<AddGroupFormProps> = ({ onAddGroup, users }) => {
   };
 
   return (
-    <>
-      <h2>Add Group Form</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="name">Group Name</label>
-          <input
-            type="text"
-            id="name"
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-          />
-        </div>
-        <div>
-          <label htmlFor="users">Select Users</label>
+    <div className='add-group-form-backdrop'>
+      <div className='add-group-form-content'>
+        <h2>Add Group Form</h2>
+        <form onSubmit={handleSubmit}>
           <div>
-            {users.map((user) => (
-              <label key={user._id}>
-                <input
-                  type="checkbox"
-                  value={user._id}
-                  checked={selectedUsers?.some((selectedUser) => (
-                    selectedUser._id === user._id
-                  ))} // check if any user id matches selected user
-                  onChange={(event) => handleCheckboxChange(event, user)}
-                />
-                {user.firstName} {user.lastName}
-              </label>
-            ))}
+            <label htmlFor="name">Group Name</label>
+            <input
+              type="text"
+              id="name"
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+            />
           </div>
-        </div>
+          <div>
+            <label htmlFor="users">Select Users</label>
+            <div>
+              {users.map((user) => (
+                <label key={user._id}>
+                  <input
+                    type="checkbox"
+                    value={user._id}
+                    checked={selectedUsers?.some((selectedUser) => (
+                      selectedUser._id === user._id
+                    ))} // check if any user id matches selected user
+                    onChange={(event) => handleCheckboxChange(event, user)}
+                  />
+                  {user.firstName} {user.lastName}
+                </label>
+              ))}
+            </div>
+          </div>
 
-        <button type="submit">Add Group</button>
-      </form>
-    </>
+          <button type="submit">Add Group</button>
+          <button onClick={() => onShowForm(false)}>Cancel</button>
+        </form>
+      </div>
+    </div>
   );
 };
 

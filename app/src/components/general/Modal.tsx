@@ -1,4 +1,5 @@
 import React from 'react';
+import '../../styles/components/general/Modal.css'
 
 interface ModalProps {
   isOpen: boolean;
@@ -14,12 +15,14 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onConfirm, title, childr
   }
 
   return (
-    <div>
-      <h2>{title}</h2>
-      <div>{children}</div>
-      <div>
-        <button onClick={onClose}>Cancel</button>
-        <button onClick={onConfirm}>Confirm</button>
+    <div className='modal-backdrop'>
+      <div className='modal-content'>
+        <h2>{title}</h2>
+        <div>{children}</div>
+        <div>
+          <button onClick={onClose}>Cancel</button>
+          <button onClick={onConfirm}>Confirm</button>
+        </div>
       </div>
     </div>
   );
