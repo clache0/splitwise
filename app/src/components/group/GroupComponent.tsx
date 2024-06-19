@@ -125,7 +125,7 @@ const GroupComponent = () => {
         Are you sure you want to delete this expense?
       </Modal>
 
-      <ExpenseList groupExpenses={groupExpenses} onDeleteExpense={openDeleteModal} />
+      <ExpenseList groupExpenses={groupExpenses} onDeleteExpense={openDeleteModal} users={users} />
     </>
   )
 };
