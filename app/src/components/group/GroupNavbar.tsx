@@ -1,5 +1,6 @@
 import { Group } from './GroupComponent'
 import Button from '../general/Button'
+import "../../styles/components/group/GroupNavbar.css"
 
 interface GroupNavbarProps {
   group: Group | null;
@@ -15,19 +16,21 @@ const GroupNavbar: React.FC<GroupNavbarProps> = ({ group, isLoading, error, setS
   if (error) return <p>Error: {(error as Error).message}</p>;
 
   return (
-    <nav>
-      <h1>Group Name: {group?.name}</h1>
-      <Button
-        label='Add Expense'
-        onClick={() => {
-          console.log('Add expense clicked');
-          setShowAddExpenseForm(!showAddExpenseForm);
-        }}
-      />
-      <Button
-        label='Settle Up'
-        onClick={() => console.log('Settle up clicked')}
-      />
+    <nav className='group-navbar'>
+      <h1>{group?.name}</h1>
+      <div>
+        <Button
+          label='Add Expense'
+          onClick={() => {
+            console.log('Add expense clicked');
+            setShowAddExpenseForm(!showAddExpenseForm);
+          }}
+        />
+        <Button
+          label='Settle Up'
+          onClick={() => console.log('Settle up clicked')}
+        />
+      </div>
     </nav>
   )
 }
