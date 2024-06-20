@@ -87,7 +87,7 @@ const Home = () => {
 
       <GroupList groups={groupsData} onDeleteGroup={openDeleteModal} />
 
-      {showAddGroupForm && 
+      { showAddGroupForm && 
         <AddGroupForm  
           onAddGroup={handleAddGroup}
           onShowForm={setShowAddGroupForm}

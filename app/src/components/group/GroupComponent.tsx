@@ -114,7 +114,14 @@ const GroupComponent = () => {
         showAddExpenseForm={showAddExpenseForm} 
       />
 
-      { showAddExpenseForm && <AddExpenseForm onAddExpense={handleAddExpense} group={group} users={users}/> }
+      { showAddExpenseForm && 
+        <AddExpenseForm 
+          onAddExpense={handleAddExpense} 
+          onShowForm={setShowAddExpenseForm}
+          group={group} 
+          users={users}
+        /> 
+      }
 
       <Modal
         isOpen={showDeleteModal}

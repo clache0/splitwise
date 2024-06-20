@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Group, Expense, User } from '../group/GroupComponent';
 import { z } from 'zod';
+import "../../styles/components/expense/AddExpenseForm.css"
 
 const expenseSchema = z.object({
   _id: z.string().optional(),
@@ -19,6 +20,7 @@ const expenseSchema = z.object({
 
 interface ExpenseFormProps {
   onAddExpense: (expense: Expense) => void;
+  onShowForm: (showAddExpenseForm: boolean) => void;
   group: Group | null;
   users: User[] | null;
 };
@@ -31,7 +33,7 @@ const getCurrentDate = () => {
   return `${year}-${month}-${day}`;
 }
 
-const AddExpenseForm: React.FC<ExpenseFormProps> = ({ onAddExpense, group, users }) => {
+const AddExpenseForm: React.FC<ExpenseFormProps> = ({ onAddExpense, onShowForm, group, users }) => {
   const [groupId, setGroupId] = useState<string>('');
   const [title, setTitle] = useState<string>('');
   const [amount, setAmount] = useState<string>('');
@@ -103,78 +105,83 @@ const AddExpenseForm: React.FC<ExpenseFormProps> = ({ onAddExpense, group, users
   
 
   return (
-    <>
-      <h2>Add Expense Form</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="title">Title</label>
-          <input
-            type="text"
-            id="title"
-            value={title}
-            onChange={(event) => setTitle(event.target.value)}
-          />
-        </div>
-        <div>
-          <label htmlFor="amount">Amount</label>
-          <input
-            type="number"
-            id="amount"
-            value={amount}
-            onChange={(event) => setAmount(event.target.value)}
-          />
-        </div>
-        <div>
-          <label htmlFor="date">Date</label>
-          <input
-            type="date"
-            id="date"
-            value={date}
-            onChange={(event) => setDate(event.target.value)}
-          />
-        </div>
-        <div>
-          <label htmlFor="payer">Payer</label>
-          <select 
-            id="payer" 
-            value={payerId} 
-            onChange={(event) => setPayerId(event.target.value)}
-          >
-            <option value="">Select payer</option>
-            {users && 
-              users.map((user) => (
-                <option key={user._id} value={user._id}>{user.firstName} {user.lastName}</option>
-              ))
-            }
-          </select>
-        </div>
-        <div>
-          <label htmlFor="participant">Selected participants</label>
-          {participants && 
-            participants.map((participant, index) => (
-              <div key={participant._id || index}>
-                <label htmlFor={participant._id}>{participant.firstName} {participant.lastName}</label>
-                <input
-                  type='checkbox' 
-                  id={participant._id || ''}
-                  value={participant._id || ''}
-                  checked={participants.includes(participant)}
-                  onChange={(event) => {
-                    const isChecked = event.target.checked;
-                    setParticipants((prevParticipants) => 
-                      isChecked
-                      ? [...(prevParticipants ?? []), participant]
-                      : (prevParticipants ?? []).filter((p) => p._id !== participant._id)  
-                    );
-                  }}
-                />
-              </div>
-            ))
-          }
-        </div>
-        <button type="submit">Add Expense</button>
-      </form>
-    </>
+    <div className='add-expense-form-backdrop'>
+      <div className='add-expense-form-content'>
+        <h2>Add Expense Form</h2>
+        <form onSubmit={handleSubmit}>
+          <div>
+            <label htmlFor="title">Title</label>
+            <input
+              type="text"
+              id="title"
+              value={title}
+              onChange={(event) => setTitle(event.target.value)}
+            />
+          </div>
+          <div>
+            <label htmlFor="amount">Amount</label>
+            <input
+              type="number"
+              id="amount"
+              value={amount}
+              onChange={(event) => setAmount(event.target.value)}
+            />
+          </div>
+          <div>
+            <label htmlFor="date">Date</label>
+            <input
+              type="date"
+              id="date"
+              value={date}
+              onChange={(event) => setDate(event.target.value)}
+            />
+          </div>
+          <div>
+            <label htmlFor="payer">Payer</label>
+            <select 
+              id="payer" 
+              value={payerId} 
+              onChange={(event) => setPayerId(event.target.value)}
+            >
+              <option value="">Select payer</option>
+              {users && 
+                users.map((user) => (
+                  <option key={user._id} value={user._id}>{user.firstName} {user.lastName}</option>
+                ))
+              }
+            </select>
+          </div>
+          <div>
+            <label htmlFor="participant">Selected participants</label>
+            <div className='participant-list'>
+              {participants && 
+                participants.map((participant, index) => (
+                  <div key={participant._id || index}>
+                    <label htmlFor={participant._id}>{participant.firstName} {participant.lastName}</label>
+                    <input
+                      type='checkbox' 
+                      id={participant._id || ''}
+                      value={participant._id || ''}
+                      checked={participants.includes(participant)}
+                      onChange={(event) => {
+                        const isChecked = event.target.checked;
+                        setParticipants((prevParticipants) => 
+                          isChecked
+                          ? [...(prevParticipants ?? []), participant]
+                          : (prevParticipants ?? []).filter((p) => p._id !== participant._id)  
+                        );
+                      }}
+                    />
+                  </div>
+                ))
+              }
+            </div>
+          </div>
+          <button type="submit">Add Expense</button>
+          <button type="button" onClick={() => onShowForm(false)}>Cancel</button>
+        </form>
+      </div>
+    </div>
   );
 };
 

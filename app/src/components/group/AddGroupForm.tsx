@@ -80,7 +80,7 @@ const AddGroupForm: React.FC<AddGroupFormProps> = ({ onAddGroup, onShowForm, use
           </div>
 
           <button type="submit">Add Group</button>
-          <button onClick={() => onShowForm(false)}>Cancel</button>
+          <button type="button" onClick={() => onShowForm(false)}>Cancel</button>
         </form>
       </div>
     </div>
