@@ -5,6 +5,7 @@ import { fetchGroupById, fetchExpensesByGroupId, fetchUserById, postExpense, del
 import AddExpenseForm from "../expense/AddExpenseForm";
 import { useParams } from "react-router-dom";
 import Modal from "../general/Modal";
+import GroupBalances from "./GroupBalances";
 
 export interface User {
   _id?: string;
@@ -41,7 +42,7 @@ const GroupComponent = () => {
   const { groupId } = useParams() as { groupId: string};
   const [group, setGroup] = useState<Group | null>(null);
   const [groupExpenses, setGroupExpenses] = useState<Expense[] | null>([]);
-  const [users, setUsers] = useState<User[] | null>([]);
+  const [users, setUsers] = useState<User[] | null>([]); // group members including first and last name
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<unknown | null>(null);
   const [showAddExpenseForm, setShowAddExpenseForm] = useState<boolean>(false);
@@ -133,6 +134,13 @@ const GroupComponent = () => {
       </Modal>
 
       <ExpenseList groupExpenses={groupExpenses} onDeleteExpense={openDeleteModal} users={users} />
+
+      {groupExpenses && users &&
+        <GroupBalances
+          groupExpenses={groupExpenses}
+          users={users}
+        />
+      }
     </>
   )
 };

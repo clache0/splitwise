@@ -1,0 +1,51 @@
+.group-balances-container {
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+}
+
+.group-balances-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.group-balances-container h3 {
+  margin-bottom: 10px;
+  color: #444;
+}
+
+.balance-item {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 15px;
+  margin-bottom: 10px;
+}
+
+.balance-item h4 {
+  margin-top: 10px;
+  color: #555;
+}
+
+.balance-item ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.balance-item ul li {
+  padding: 5px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.balance-item ul li:last-child {
+  border-bottom: none;
+}
+
+.balance-item p {
+  font-weight: bold;
+  color: #666;
+}
