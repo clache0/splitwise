@@ -35,7 +35,6 @@ const calculateBalances = (groupExpenses: Expense[], users: User[]): Balance => 
       const participantShare = (participant.share / 100) * totalAmount; // calc percentage of total
 
       if (payerId !== participantId) {
-        // Payer gives money to the participant
         balances[payerId].isOwed[participantId] = (balances[payerId].isOwed[participantId] || 0) + participantShare;
         balances[participantId].owes[payerId] = (balances[participantId].owes[payerId] || 0) + participantShare;
         balances[payerId].netBalance += participantShare;
@@ -59,7 +58,6 @@ const GroupBalances: React.FC<GroupBalancesProps> = ({ groupExpenses, users }) =
           <p>Net Balance: {balances[user._id!].netBalance.toFixed(2)}</p>
           {balances[user._id!].owes && Object.keys(balances[user._id!].owes).length > 0 && (
             <div>
-                {/* <h4>Owes:</h4> */}
                 <ul>
                   {Object.entries(balances[user._id!].owes).map(([owedTo, amount]) => (
                     <li key={owedTo}>
@@ -71,7 +69,6 @@ const GroupBalances: React.FC<GroupBalancesProps> = ({ groupExpenses, users }) =
           )}
           {balances[user._id!].isOwed && Object.keys(balances[user._id!].isOwed).length > 0 && (
             <div>
-              {/* <h4>Is Owed By:</h4> */}
               <ul>
                 {Object.entries(balances[user._id!].isOwed).map(([owedBy, amount]) => (
                   <li key={owedBy}>

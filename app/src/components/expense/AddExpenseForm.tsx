@@ -56,10 +56,10 @@ const AddExpenseForm: React.FC<ExpenseFormProps> = ({ onAddExpense, onShowForm, 
     }
   }, [users]);
 
-  // initialize participants with group.members
+  // initialize participants with all group members
   useEffect(() => {
-    if (users && users.length >= 2) {
-      setParticipants([users[0], users[1]]);
+    if (users) {
+      setParticipants(users);
     }
   }, [users]);
 
@@ -101,6 +101,14 @@ const AddExpenseForm: React.FC<ExpenseFormProps> = ({ onAddExpense, onShowForm, 
     } catch (error) {
       console.error('Form validation error:', error);
     }
+  };
+
+  const handleParticipantChange = (user: User, isChecked: boolean) => {
+    setParticipants((prevParticipants) => (
+      isChecked
+      ? [...(prevParticipants ?? []), user]
+      : (prevParticipants ?? []).filter((p) => p._id !== user._id)
+    ));
   };
   
 
@@ -154,23 +162,16 @@ const AddExpenseForm: React.FC<ExpenseFormProps> = ({ onAddExpense, onShowForm, 
           <div>
             <label htmlFor="participant">Selected participants</label>
             <div className='participant-list'>
-              {participants && 
-                participants.map((participant, index) => (
-                  <div key={participant._id || index}>
-                    <label htmlFor={participant._id}>{participant.firstName} {participant.lastName}</label>
+              {users && 
+                users.map((user, index) => (
+                  <div key={user._id || index} className='participant-item'>
+                    <label htmlFor={user._id}>{user.firstName} {user.lastName}</label>
                     <input
                       type='checkbox' 
-                      id={participant._id || ''}
-                      value={participant._id || ''}
-                      checked={participants.includes(participant)}
-                      onChange={(event) => {
-                        const isChecked = event.target.checked;
-                        setParticipants((prevParticipants) => 
-                          isChecked
-                          ? [...(prevParticipants ?? []), participant]
-                          : (prevParticipants ?? []).filter((p) => p._id !== participant._id)  
-                        );
-                      }}
+                      id={user._id || ''}
+                      value={user._id || ''}
+                      checked={participants?.includes(user)}
+                      onChange={(event) => handleParticipantChange(user, event.target.checked)}
                     />
                   </div>
                 ))
