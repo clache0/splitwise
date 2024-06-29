@@ -12,8 +12,8 @@ const UserList: React.FC<UserListProps> = ({ users }) => {
       <h2>User List</h2>
       {users.length > 0 ? (
         <ul>
-          {users.map((user) => (
-            <li key={user._id}>
+          {users.map((user, index) => (
+            <li key={user._id || index}>
               {user.firstName} {user.lastName}
             </li>
           ))}

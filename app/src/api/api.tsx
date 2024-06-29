@@ -33,6 +33,27 @@ export const fetchAllGroups = async () => {
   };
 }
 
+export const postGroup = async (group: Group) => {
+  const url = config.serverUrl + '/groups/';
+  
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(group),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to post group');
+    } 
+  } catch (error) {
+    console.error('Error posting group:', error);
+    throw error;
+  }
+};
+
 export const deleteGroupById = async (groupId: string) => {
   const url = config.serverUrl + `/groups/${groupId}`;
 
@@ -71,27 +92,6 @@ export const fetchAllUsers = async () => {
     throw error;
   };
 }
-
-export const postGroup = async (group: Group) => {
-  const url = config.serverUrl + '/groups/';
-  
-  try {
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(group),
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to post group');
-    } 
-  } catch (error) {
-    console.error('Error posting group:', error);
-    throw error;
-  }
-};
 
 export const fetchUserById = async (userId: string) => {
   const url = config.serverUrl + `/users/${userId}`;
