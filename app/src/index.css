@@ -8,6 +8,8 @@
   --secondary-color: #34a853; /* Inspired by green tones used in Google */
   --background-color: #f5f5f5; /* A light, neutral background color for minimalistic design */
   --text-color: #333333; /* A dark gray for easy readability */
+  --red: #ff4d4d;
+  --dark-red: #ff0000;
   --font-size: 16px;
   --padding: 8px;
   --margin: 8px;

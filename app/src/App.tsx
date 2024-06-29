@@ -3,7 +3,7 @@ import './App.css'
 import Layout from './components/layout/Layout'
 import PageUnderConstruction from './components/general/PageUnderConstruction'
 import Home from './components/Home'
-import GroupComponent, { User } from './components/group/GroupComponent'
+import GroupComponent from './components/group/GroupComponent'
 import UserComponent from './components/user/UserComponent'
 
 const App = () => {

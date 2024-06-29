@@ -14,7 +14,6 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onAddUser, onShowForm }) => {
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     const newUser: User = {
-      // _id: Math.random().toString(36).substring(7), // Generate a random ID for the new user
       firstName,
       lastName,
     };

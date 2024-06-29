@@ -4,14 +4,18 @@ interface ButtonProps {
   label: string;
   onClick: () => void;
   hoverColor?: string;
+  backgroundColor?: string;
 }
 
-const Button: React.FC<ButtonProps> = ({ label, onClick, hoverColor }) => {
+const Button: React.FC<ButtonProps> = ({ label, onClick, hoverColor, backgroundColor }) => {
   return (
     <button
       className="button"
       onClick={onClick}
-      style={{ '--hover-color': hoverColor } as React.CSSProperties}
+      style={{ 
+        '--hover-color': hoverColor,
+        'backgroundColor': backgroundColor,
+      } as React.CSSProperties}
     >
       {label}
     </button>

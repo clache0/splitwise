@@ -19,7 +19,7 @@ const GroupList: React.FC<GroupListProps> = ({ groups, onDeleteGroup }) => {
       <Button
         label='Delete'
         onClick={() => { onDeleteGroup(group) }}
-        hoverColor='#ff0000'
+        backgroundColor='var(--red)'
       />
     </li>
   )) : null;
