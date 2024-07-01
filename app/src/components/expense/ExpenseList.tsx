@@ -1,6 +1,5 @@
 import ExpenseComponent from "./ExpenseComponent";
 import { Expense, Group, User } from "../group/GroupComponent";
-import Button from "../general/Button";
 import "../../styles/components/expense/ExpenseList.css"
 
 interface ExpenseListProps {
@@ -22,10 +21,12 @@ const ExpenseList: React.FC<ExpenseListProps> = ({ group, groupExpenses, onUpdat
   sortedExpenses?.map((expense, index) => {
       return (
         <li key={expense._id || index}>
-          <ExpenseComponent group={group} expense={expense} users={users} onUpdateExpense={onUpdateExpense} />
-          <Button
-            label='Delete'
-            onClick={() => { onDeleteExpense(expense) }}
+          <ExpenseComponent 
+            group={group}
+            expense={expense}
+            users={users}
+            onUpdateExpense={onUpdateExpense}
+            onDeleteExpense={onDeleteExpense}
           />
         </li>
       );

@@ -9,9 +9,10 @@ interface ExpenseComponentProps {
   expense: Expense;
   users: User[] | null;
   onUpdateExpense: (expense: Expense) => void;
+  onDeleteExpense: (expense: Expense) => void;
 }
 
-const ExpenseComponent: React.FC<ExpenseComponentProps> = ({ group, expense, users, onUpdateExpense }) => {
+const ExpenseComponent: React.FC<ExpenseComponentProps> = ({ group, expense, users, onUpdateExpense, onDeleteExpense }) => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
   const formatDate = (date: Date) => {
@@ -37,6 +38,11 @@ const ExpenseComponent: React.FC<ExpenseComponentProps> = ({ group, expense, use
               label='Edit'
               onClick={() => setIsEditing(true)}
               backgroundColor='var(--primary-color)'
+            />
+            <Button
+              label='Delete'
+              onClick={() => { onDeleteExpense(expense) }}
+              backgroundColor='var(--red)'
             />
           </div>
         </div>
