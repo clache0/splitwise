@@ -21,7 +21,7 @@ const Home = () => {
   
     try {
       await postGroup(group); // post group to server
-      setGroupsData((prevGroupsData) => prevGroupsData ? [...prevGroupsData, group] : [group]);
+      setGroupsData(await fetchAllGroups());
     } catch (error) {
       console.error("Error posting group: ", error);
     }

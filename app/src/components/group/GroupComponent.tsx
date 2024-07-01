@@ -73,7 +73,7 @@ const GroupComponent = () => {
     console.log("Adding expense: ", expense);
     try {
       await postExpense(expense); // post expense to server
-      setGroupExpenses((prevExpenses) => prevExpenses ? [...prevExpenses, expense] : [expense]);
+      setGroupExpenses(await fetchExpensesByGroupId(expense.groupId));
     } catch (error) {
       console.error("Error posting expense: ", error);
     }

@@ -31,7 +31,7 @@ const UserComponent: React.FC<UserComponentProps> = () => {
     console.log("Adding user: ", user);
     try {
       await postUser(user); // post user to server
-      setUsers((prevUserList) => prevUserList ? [...prevUserList, user] : [user]);
+      setUsers(await fetchAllUsers());
     } catch (error) {
       console.error("Error posting user: ", error);
     }
