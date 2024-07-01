@@ -1,0 +1,5 @@
+.group-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}

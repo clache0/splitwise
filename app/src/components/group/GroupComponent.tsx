@@ -6,6 +6,7 @@ import AddExpenseForm from "../expense/AddExpenseForm";
 import { useParams } from "react-router-dom";
 import Modal from "../general/Modal";
 import GroupBalances from "./GroupBalances";
+import "../../styles/components/group/GroupComponent.css"
 
 export interface User {
   _id?: string;
@@ -147,20 +148,24 @@ const GroupComponent = () => {
         Are you sure you want to delete this expense?
       </Modal>
 
-      {groupExpenses && users &&
-        <GroupBalances
-          groupExpenses={groupExpenses}
-          users={users}
-        />
-      }
+      <div className="group-container">
+        {groupExpenses && users &&
+          <GroupBalances
+            groupExpenses={groupExpenses}
+            users={users}
+          />
+        }
 
-      <ExpenseList
-        group={group}
-        groupExpenses={groupExpenses}
-        onUpdateExpense={handleUpdateExpense}
-        onDeleteExpense={openDeleteModal}
-        users={users} 
-      />
+        <ExpenseList
+          group={group}
+          groupExpenses={groupExpenses}
+          onUpdateExpense={handleUpdateExpense}
+          onDeleteExpense={openDeleteModal}
+          users={users} 
+        />
+      </div>
+
+
 
     </>
   )

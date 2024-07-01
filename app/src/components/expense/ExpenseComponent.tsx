@@ -29,8 +29,8 @@ const ExpenseComponent: React.FC<ExpenseComponentProps> = ({ group, expense, use
       {expense ?
         <div className="expense-container">
           <div className="expense-left">
-            <p className="expense-date">{formatDate(new Date(expense.date))}</p>
             <h3 className="expense-title">{expense.title}</h3>
+            <p className="expense-date">{formatDate(new Date(expense.date))}</p>
           </div>
           <div className="expense-right">
             <p className="expense-amount">{getPayerName(expense.payerId)} paid: {expense.amount}</p>

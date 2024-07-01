@@ -33,12 +33,12 @@ const ExpenseList: React.FC<ExpenseListProps> = ({ group, groupExpenses, onUpdat
     }) : <p>No expenses in list</p>;
 
   return (
-    <>
+    <div className="expense-list-container">
       <h2>Expense List</h2>
       <ul className='expense-list'>
         {expenseComponents}
       </ul>
-    </>
+    </div>
   );
 };
 
