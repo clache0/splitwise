@@ -1,12 +1,19 @@
-import { Expense, User } from "../group/GroupComponent";
+import { Expense, Group, User } from "../group/GroupComponent";
 import "../../styles/components/expense/ExpenseComponent.css"
+import Button from "../general/Button";
+import { useState } from "react";
+import AddExpenseForm from "./AddExpenseForm";
 
 interface ExpenseComponentProps {
-  expense: Expense | null;
+  group: Group | null;
+  expense: Expense;
   users: User[] | null;
+  onUpdateExpense: (expense: Expense) => void;
 }
 
-const ExpenseComponent: React.FC<ExpenseComponentProps> = ({ expense, users }) => {
+const ExpenseComponent: React.FC<ExpenseComponentProps> = ({ group, expense, users, onUpdateExpense }) => {
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+
   const formatDate = (date: Date) => {
     return date.toLocaleDateString('en-US', {month: 'long', day: 'numeric'});
   };
@@ -26,10 +33,28 @@ const ExpenseComponent: React.FC<ExpenseComponentProps> = ({ expense, users }) =
           </div>
           <div className="expense-right">
             <p className="expense-amount">{getPayerName(expense.payerId)} paid: {expense.amount}</p>
+            <Button
+              label='Edit'
+              onClick={() => setIsEditing(true)}
+              backgroundColor='var(--primary-color)'
+            />
           </div>
         </div>
         : <p>expense not loaded</p>
       }
+
+      {isEditing && (
+        <AddExpenseForm 
+          onSubmit={(updatedExpense: Expense) => {
+            onUpdateExpense(updatedExpense);
+            setIsEditing(false);
+          }}
+          onShowForm={setIsEditing}
+          group={group}
+          users={users}
+          expense={expense}
+        />
+      )}
     </>
   );
 };

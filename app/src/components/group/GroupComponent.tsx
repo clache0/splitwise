@@ -1,7 +1,7 @@
 import GroupNavbar from "./GroupNavbar"
 import { useEffect, useState } from 'react';
 import ExpenseList from "../expense/ExpenseList";
-import { fetchGroupById, fetchExpensesByGroupId, fetchUserById, postExpense, deleteExpenseById } from "../../api/api";
+import { fetchGroupById, fetchExpensesByGroupId, fetchUserById, postExpense, deleteExpenseById, patchExpense } from "../../api/api";
 import AddExpenseForm from "../expense/AddExpenseForm";
 import { useParams } from "react-router-dom";
 import Modal from "../general/Modal";
@@ -79,6 +79,20 @@ const GroupComponent = () => {
     }
   };
 
+  const handleUpdateExpense = async (updatedExpense: Expense) => {
+    console.log("update expense: ", updatedExpense);
+    try {
+      await patchExpense(updatedExpense); // post expense to server
+      setGroupExpenses((prevExpenses) => 
+        prevExpenses!.map((expense) =>
+          expense._id === updatedExpense._id ? updatedExpense : expense
+        )
+      );
+    } catch (error) {
+      console.error("Error updating expense: ", error);
+    }
+  };
+
   const handleDeleteExpense = async () => {
     if (expenseToDelete && expenseToDelete._id) {
       console.log("Deleting expense: ", expenseToDelete);
@@ -117,7 +131,7 @@ const GroupComponent = () => {
 
       { showAddExpenseForm && 
         <AddExpenseForm 
-          onAddExpense={handleAddExpense} 
+          onSubmit={handleAddExpense} 
           onShowForm={setShowAddExpenseForm}
           group={group} 
           users={users}
@@ -133,14 +147,21 @@ const GroupComponent = () => {
         Are you sure you want to delete this expense?
       </Modal>
 
-      <ExpenseList groupExpenses={groupExpenses} onDeleteExpense={openDeleteModal} users={users} />
-
       {groupExpenses && users &&
         <GroupBalances
           groupExpenses={groupExpenses}
           users={users}
         />
       }
+
+      <ExpenseList
+        group={group}
+        groupExpenses={groupExpenses}
+        onUpdateExpense={handleUpdateExpense}
+        onDeleteExpense={openDeleteModal}
+        users={users} 
+      />
+
     </>
   )
 };

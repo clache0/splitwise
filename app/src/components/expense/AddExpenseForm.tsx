@@ -19,10 +19,11 @@ const expenseSchema = z.object({
 });
 
 interface ExpenseFormProps {
-  onAddExpense: (expense: Expense) => void;
+  onSubmit: (expense: Expense) => void;
   onShowForm: (showAddExpenseForm: boolean) => void;
   group: Group | null;
   users: User[] | null;
+  expense?: Expense; // optional expense for update
 };
 
 const getCurrentDate = () => {
@@ -33,13 +34,20 @@ const getCurrentDate = () => {
   return `${year}-${month}-${day}`;
 }
 
-const AddExpenseForm: React.FC<ExpenseFormProps> = ({ onAddExpense, onShowForm, group, users }) => {
-  const [groupId, setGroupId] = useState<string>('');
-  const [title, setTitle] = useState<string>('');
-  const [amount, setAmount] = useState<string>('');
-  const [date, setDate] = useState<string>(getCurrentDate());
-  const [payerId, setPayerId] = useState<string>('');
-  const [participants, setParticipants] = useState<User[] | null>([]);
+const AddExpenseForm: React.FC<ExpenseFormProps> = ({ onSubmit, onShowForm, group, users, expense }) => {
+  const [groupId, setGroupId] = useState<string>(expense?.groupId || '');
+  const [title, setTitle] = useState<string>(expense?.title || '');
+  const [amount, setAmount] = useState<string>(expense?.amount.toString() || '');
+  const [date, setDate] = useState<string>(expense?.date || getCurrentDate());
+  const [payerId, setPayerId] = useState<string>(expense?.payerId || '');
+  const [participants, setParticipants] = useState<User[]>(
+    expense?.participants.map(
+      p => users?.find(
+        u => u._id === p.memberId // match ids to users
+      )).filter(
+        (u): u is User => !!u // filter out undefined users
+      ) || []
+  );
   const [share, setShare] = useState<number>(0);
 
   // initialize groupId with group._id
@@ -74,6 +82,7 @@ const AddExpenseForm: React.FC<ExpenseFormProps> = ({ onAddExpense, onShowForm, 
     event.preventDefault();
     try {
       const parsedData = expenseSchema.parse({
+        _id: expense?._id, // include id if update
         groupId: groupId,
         title: title,
         amount: +amount,
@@ -89,11 +98,13 @@ const AddExpenseForm: React.FC<ExpenseFormProps> = ({ onAddExpense, onShowForm, 
       
       if (parsedData.groupId) {
         // Call the callback function to add the new expense
-        onAddExpense(parsedData);
+        onSubmit(parsedData);
 
-        // Clear form inputs
-        setTitle('');
-        setAmount('');
+        if (!expense) {
+          // Clear form inputs
+          setTitle('');
+          setAmount('');
+        }
       }
       else {
         console.error("Group Id is missing from expense");
@@ -115,7 +126,7 @@ const AddExpenseForm: React.FC<ExpenseFormProps> = ({ onAddExpense, onShowForm, 
   return (
     <div className='add-expense-form-backdrop'>
       <div className='add-expense-form-content'>
-        <h2>Add Expense Form</h2>
+        <h2>{expense ? 'Update Expense Form' : 'Add Expense Form'}</h2>
         <form onSubmit={handleSubmit}>
           <div>
             <label htmlFor="title">Title</label>
@@ -178,7 +189,7 @@ const AddExpenseForm: React.FC<ExpenseFormProps> = ({ onAddExpense, onShowForm, 
               }
             </div>
           </div>
-          <button type="submit">Add Expense</button>
+          <button type="submit">{expense ? 'Update Expense' : 'Add Expense'}</button>
           <button type="button" onClick={() => onShowForm(false)}>Cancel</button>
         </form>
       </div>

@@ -173,6 +173,28 @@ export const postExpense = async (expense: Expense) => {
   }
 };
 
+export const patchExpense = async (expense: Expense) => {
+  console.log('expense._id: ', expense._id);
+  const url = config.serverUrl + `/expenses/${expense._id}`;
+  
+  try {
+    const response = await fetch(url, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(expense),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to patch expense');
+    } 
+  } catch (error) {
+    console.error('Error patching expense:', error);
+    throw error;
+  }
+};
+
 export const deleteExpenseById = async (expenseId: string) => {
   const url = config.serverUrl + `/expenses/${expenseId}`;
 
