@@ -15,8 +15,14 @@ interface ExpenseComponentProps {
 
 const ExpenseComponent: React.FC<ExpenseComponentProps> = ({ group, expense, users, onUpdateExpense, onDeleteExpense }) => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
+  const participants = expense.participants;
+  const participantNames = participants.map((participant) => {
+    if (participant.memberId != expense.payerId) {
+      return <p className="expense-participants">{getNameFromId(participant.memberId, users!)}</p>;
+    }
+  });
 
-
+  const payerName = getNameFromId(expense.payerId, users!);
 
   return (
     <>
@@ -27,7 +33,8 @@ const ExpenseComponent: React.FC<ExpenseComponentProps> = ({ group, expense, use
             <p className="expense-date">{formatDate(new Date(expense.date))}</p>
           </div>
           <div className="expense-right">
-            <p className="expense-amount">{getNameFromId(expense.payerId, users!)} paid: {expense.amount}</p>
+            <p className="expense-amount">{payerName} paid ${expense.amount} </p>
+            <p className="expense-amount">Participant{participants.length > 2 && 's'} {participantNames}</p>
             <Button
               label='Edit'
               onClick={() => setIsEditing(true)}
