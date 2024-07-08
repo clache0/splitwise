@@ -3,6 +3,7 @@ import "../../styles/components/expense/ExpenseComponent.css"
 import Button from "../general/Button";
 import { useState } from "react";
 import AddExpenseForm from "./AddExpenseForm";
+import { getNameFromId, formatDate } from "../../api/utils";
 
 interface ExpenseComponentProps {
   group: Group | null;
@@ -15,14 +16,7 @@ interface ExpenseComponentProps {
 const ExpenseComponent: React.FC<ExpenseComponentProps> = ({ group, expense, users, onUpdateExpense, onDeleteExpense }) => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString('en-US', {month: 'long', day: 'numeric'});
-  };
 
-  const getPayerName = (payerId: string) => {
-    const payer = users?.find(user => user._id === payerId);
-    return payer ? `${payer.firstName} ${payer.lastName}` : 'Unknown'
-  }
 
   return (
     <>
@@ -33,7 +27,7 @@ const ExpenseComponent: React.FC<ExpenseComponentProps> = ({ group, expense, use
             <p className="expense-date">{formatDate(new Date(expense.date))}</p>
           </div>
           <div className="expense-right">
-            <p className="expense-amount">{getPayerName(expense.payerId)} paid: {expense.amount}</p>
+            <p className="expense-amount">{getNameFromId(expense.payerId, users!)} paid: {expense.amount}</p>
             <Button
               label='Edit'
               onClick={() => setIsEditing(true)}

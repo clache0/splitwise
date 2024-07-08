@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Expense, User } from '../group/GroupComponent';
 import "../../styles/components/group/GroupBalances.css"
 
@@ -30,6 +30,24 @@ const calculateBalances = (groupExpenses: Expense[], users: User[]): Balance => 
     const totalAmount = expense.amount;
     const payerId = expense.payerId;
 
+    // check if settle up expense
+    if (expense.participants.length === 2) {
+      const participant1 = expense.participants[0];
+      const participant2 = expense.participants[1];
+      
+      if ((participant1.share === 100 && participant2.share === 0)) {
+        const payeeId = participant2.memberId;
+        const payeeShare = totalAmount;
+
+        balances[payerId].isOwed[payeeId] = (balances[payerId].isOwed[payeeId] || 0) + payeeShare;
+        balances[payeeId].owes[payerId] = (balances[payeeId].owes[payerId] || 0) + payeeShare;
+        balances[payerId].netBalance += payeeShare;
+        balances[payeeId].netBalance -= payeeShare;
+
+        return;
+      }
+    }
+
     expense.participants.forEach(participant => {
       const participantId = participant.memberId;
       const participantShare = (participant.share / 100) * totalAmount; // calc percentage of total
@@ -47,39 +65,61 @@ const calculateBalances = (groupExpenses: Expense[], users: User[]): Balance => 
 };
 
 const GroupBalances: React.FC<GroupBalancesProps> = ({ groupExpenses, users }) => {
-  const balances = calculateBalances(groupExpenses, users);
+  const initialBalances: Balance = {};
+  users.forEach(user => {
+    initialBalances[user._id!] = {
+      owes: {},
+      isOwed: {},
+      netBalance: 0,
+    };
+  });
+
+  const [balances, setBalances] = useState<Balance>(initialBalances);
+
+  useEffect(() => {
+    const newBalances = calculateBalances(groupExpenses, users);
+    setBalances(newBalances);
+  }, [groupExpenses, users]);
 
   return (
     <div className='group-balances-container'>
       <h2>Group Balances</h2>
-      {users.map(user => (
-        <div className='balance-item' key={user._id}>
-          <h3>{user.firstName} {user.lastName}</h3>
-          <p>Net Balance: {balances[user._id!].netBalance.toFixed(2)}</p>
-          {balances[user._id!].owes && Object.keys(balances[user._id!].owes).length > 0 && (
-            <div>
+
+      {users.map(user => {
+        const userBalance = balances[user._id!];
+        if (!userBalance) {
+          return null;
+        }
+
+        return (
+          <div className='balance-item' key={user._id}>
+            <h3>{user.firstName} {user.lastName}</h3>
+            <p>Net Balance: {userBalance.netBalance.toFixed(2)}</p>
+            { userBalance.owes && Object.keys(userBalance.owes).length > 0 && (
+              <div>
+                  <ul>
+                    {Object.entries(userBalance.owes).map(([owedTo, amount]) => (
+                      <li key={owedTo}>
+                        Owes {users.find(u => u._id === owedTo)?.firstName} {users.find(u => u._id === owedTo)?.lastName} ${amount.toFixed(2)}
+                      </li>
+                    ))}
+                  </ul>
+              </div>
+            )}
+            {userBalance.isOwed && Object.keys(userBalance.isOwed).length > 0 && (
+              <div>
                 <ul>
-                  {Object.entries(balances[user._id!].owes).map(([owedTo, amount]) => (
-                    <li key={owedTo}>
-                      Owes {users.find(u => u._id === owedTo)?.firstName} {users.find(u => u._id === owedTo)?.lastName} ${amount.toFixed(2)}
+                  {Object.entries(userBalance.isOwed).map(([owedBy, amount]) => (
+                    <li key={owedBy}>
+                      Is owed ${amount.toFixed(2)} by {users.find(u => u._id === owedBy)?.firstName} {users.find(u => u._id === owedBy)?.lastName}
                     </li>
                   ))}
                 </ul>
-            </div>
-          )}
-          {balances[user._id!].isOwed && Object.keys(balances[user._id!].isOwed).length > 0 && (
-            <div>
-              <ul>
-                {Object.entries(balances[user._id!].isOwed).map(([owedBy, amount]) => (
-                  <li key={owedBy}>
-                    Is owed ${amount.toFixed(2)} by {users.find(u => u._id === owedBy)?.firstName} {users.find(u => u._id === owedBy)?.lastName}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
-      ))}
+              </div>
+            )}
+          </div>
+        );
+    })}
     </div>
   );
 };

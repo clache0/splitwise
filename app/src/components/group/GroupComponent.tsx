@@ -7,6 +7,7 @@ import { useParams } from "react-router-dom";
 import Modal from "../general/Modal";
 import GroupBalances from "./GroupBalances";
 import "../../styles/components/group/GroupComponent.css"
+import SettleUpForm from "../expense/SettleUpForm";
 
 export interface User {
   _id?: string;
@@ -47,6 +48,7 @@ const GroupComponent = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<unknown | null>(null);
   const [showAddExpenseForm, setShowAddExpenseForm] = useState<boolean>(false);
+  const [showSettleUpForm, setShowSettleUpForm] = useState<boolean>(false);
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const [expenseToDelete, setExpenseToDelete] = useState<Expense | null>(null);
 
@@ -108,7 +110,17 @@ const GroupComponent = () => {
         console.error("Error deleting expense: ", error);
       }
     }
-};
+  };
+
+  const handleSettleUp = async(expense: Expense) => {
+    console.log("Settling up expense: ", expense);
+    try {
+      await postExpense(expense); // post settle up expense to server
+      setGroupExpenses(await fetchExpensesByGroupId(expense.groupId));
+    } catch (error) {
+      console.error("Error settling up expense: ", error);
+    }
+  }
 
   const openDeleteModal = (expense: Expense) => {
     setExpenseToDelete(expense);
@@ -121,34 +133,17 @@ const GroupComponent = () => {
   };
 
   return (
-    <>
+    <div className="group-component">
       <GroupNavbar 
         group={group} 
         isLoading={isLoading} 
         error={error} 
         setShowAddExpenseForm={setShowAddExpenseForm} 
         showAddExpenseForm={showAddExpenseForm} 
+        setShowSettleUpForm={setShowSettleUpForm} 
       />
 
-      { showAddExpenseForm && 
-        <AddExpenseForm 
-          onSubmit={handleAddExpense} 
-          onShowForm={setShowAddExpenseForm}
-          group={group} 
-          users={users}
-        /> 
-      }
-
-      <Modal
-        isOpen={showDeleteModal}
-        onClose={closeDeleteModal}
-        onConfirm={handleDeleteExpense}
-        title="Confirm Delete"
-      >
-        Are you sure you want to delete this expense?
-      </Modal>
-
-      <div className="group-container">
+      <div className="group-content">
         {groupExpenses && users &&
           <GroupBalances
             groupExpenses={groupExpenses}
@@ -165,9 +160,35 @@ const GroupComponent = () => {
         />
       </div>
 
+      { showAddExpenseForm && 
+        <AddExpenseForm 
+          onSubmit={handleAddExpense} 
+          onShowForm={setShowAddExpenseForm}
+          group={group} 
+          users={users}
+        /> 
+      }
+
+      { showSettleUpForm && 
+        <SettleUpForm 
+          onSubmit={handleSettleUp} 
+          onShowForm={setShowSettleUpForm}
+          users={users!}
+          groupId={groupId} 
+        /> 
+      }
+
+      <Modal
+        isOpen={showDeleteModal}
+        onClose={closeDeleteModal}
+        onConfirm={handleDeleteExpense}
+        title="Confirm Delete"
+      >
+        Are you sure you want to delete this expense?
+      </Modal>
 
 
-    </>
+    </div>
   )
 };
 

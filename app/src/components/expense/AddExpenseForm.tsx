@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Group, Expense, User } from '../group/GroupComponent';
 import { z } from 'zod';
 import "../../styles/components/expense/AddExpenseForm.css"
+import { getCurrentDate } from '../../api/utils';
 
 const expenseSchema = z.object({
   _id: z.string().optional(),
@@ -25,14 +26,6 @@ interface ExpenseFormProps {
   users: User[] | null;
   expense?: Expense; // optional expense for update
 };
-
-const getCurrentDate = () => {
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, '0');
-  const day = String(today.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
 
 const AddExpenseForm: React.FC<ExpenseFormProps> = ({ onSubmit, onShowForm, group, users, expense }) => {
   const [groupId, setGroupId] = useState<string>(expense?.groupId || '');
