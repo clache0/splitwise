@@ -48,6 +48,7 @@ const calculateBalances = (groupExpenses: Expense[], users: User[]): Balance => 
       }
     }
 
+    // normal expense calculations
     expense.participants.forEach(participant => {
       const participantId = participant.memberId;
       const participantShare = (participant.share / 100) * totalAmount; // calc percentage of total
@@ -57,6 +58,29 @@ const calculateBalances = (groupExpenses: Expense[], users: User[]): Balance => 
         balances[participantId].owes[payerId] = (balances[participantId].owes[payerId] || 0) + participantShare;
         balances[payerId].netBalance += participantShare;
         balances[participantId].netBalance -= participantShare;
+      }
+    });
+  });
+
+  // net balances between pairs of participants
+  users.forEach(user => {
+    Object.keys(balances[user._id!].owes).forEach(owedTo => {
+      const owesAmount = balances[user._id!].owes[owedTo] || 0;
+      const isOwedAmount = balances[user._id!].isOwed[owedTo] || 0;
+
+      if (isOwedAmount > 0) {
+        const netAmount = owesAmount - isOwedAmount;
+
+        if (netAmount > 0) {
+          balances[user._id!].owes[owedTo] = netAmount;
+          delete balances[user._id!].isOwed[owedTo];
+        } else if (netAmount < 0) {
+          balances[user._id!].isOwed[owedTo] = -netAmount;
+          delete balances[user._id!].owes[owedTo];
+        } else {
+          delete balances[user._id!].owes[owedTo];
+          delete balances[user._id!].isOwed[owedTo];
+        }
       }
     });
   });
