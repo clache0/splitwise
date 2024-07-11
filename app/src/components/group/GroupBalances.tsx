@@ -124,7 +124,7 @@ const GroupBalances: React.FC<GroupBalancesProps> = ({ groupExpenses, users }) =
                   <ul>
                     {Object.entries(userBalance.owes).map(([owedTo, amount]) => (
                       <li key={owedTo}>
-                        Owes {users.find(u => u._id === owedTo)?.firstName} {users.find(u => u._id === owedTo)?.lastName} ${amount.toFixed(2)}
+                        <p>Owes {users.find(u => u._id === owedTo)?.firstName} {users.find(u => u._id === owedTo)?.lastName} ${amount.toFixed(2)}</p>
                       </li>
                     ))}
                   </ul>
@@ -135,7 +135,8 @@ const GroupBalances: React.FC<GroupBalancesProps> = ({ groupExpenses, users }) =
                 <ul>
                   {Object.entries(userBalance.isOwed).map(([owedBy, amount]) => (
                     <li key={owedBy}>
-                      Is owed ${amount.toFixed(2)} by {users.find(u => u._id === owedBy)?.firstName} {users.find(u => u._id === owedBy)?.lastName}
+                      <p>Is owed ${amount.toFixed(2)} by</p>
+                      <p>{users.find(u => u._id === owedBy)?.firstName} {users.find(u => u._id === owedBy)?.lastName}</p>
                     </li>
                   ))}
                 </ul>

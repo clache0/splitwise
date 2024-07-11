@@ -25,9 +25,10 @@
   margin-bottom: 10px;
 }
 
-.balance-item h4 {
+.balance-item h3 {
   margin-top: 10px;
   color: #555;
+  font-size: 1rem;
 }
 
 .balance-item ul {
@@ -37,7 +38,7 @@
 }
 
 .balance-item ul li {
-  padding: 5px 0;
+  /* padding: 5px 0; */
   border-bottom: 1px solid #eee;
 }
 
@@ -48,4 +49,5 @@
 .balance-item p {
   font-weight: bold;
   color: #666;
+  font-size: 0.8rem;
 }

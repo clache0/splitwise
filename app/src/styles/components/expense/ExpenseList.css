@@ -4,25 +4,27 @@
   padding: 15px;
 }
 
+.expense-list-container h2 {
+  text-align: center;
+  margin: 0;
+}
+
 .expense-list {
-  margin: 20px;
-  padding: 0;
+  margin: 0px;
+  padding: 20px 40px;
   list-style: none;
   display: flex;
   flex-direction: column;
   align-items: center;
-}
-
-.expense-list h2 {
-  text-align: center;
-  margin-bottom: 20px;
+  max-height: 80vh;
+  overflow-y: scroll;
 }
 
 .expense-list li {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 5px 20px;
+  padding: 0px 20px;
   margin-bottom: 15px;
   background-color: #f9f9f9;
   border-radius: 5px;
@@ -38,10 +40,10 @@
   border: none;
   border-radius: 5px;
   color: white;
-  padding: 10px 20px;
+  padding: 5px 10px;
   margin: 0px 3px;
   width: 80px;
-  height: 50px;
+  /* height: 50px; */
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
