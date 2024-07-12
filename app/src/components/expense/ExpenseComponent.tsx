@@ -15,6 +15,7 @@ interface ExpenseComponentProps {
 
 const ExpenseComponent: React.FC<ExpenseComponentProps> = ({ group, expense, users, onUpdateExpense, onDeleteExpense }) => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
+
   const participants = expense.participants;
   const participantNames = participants.map((participant) => {
     if (participant.memberId != expense.payerId) {
@@ -35,16 +36,18 @@ const ExpenseComponent: React.FC<ExpenseComponentProps> = ({ group, expense, use
           <div className="expense-right">
             <p className="expense-amount">{payerName} paid ${expense.amount} </p>
             <p className="expense-amount">Participant{participants.length > 2 && 's'} {participantNames}</p>
-            <Button
-              label='Edit'
-              onClick={() => setIsEditing(true)}
-              backgroundColor='var(--primary-color)'
-            />
-            <Button
-              label='Delete'
-              onClick={() => { onDeleteExpense(expense) }}
-              backgroundColor='var(--red)'
-            />
+            <div className="expense-actions">
+              <Button
+                label='Edit'
+                onClick={() => setIsEditing(true)}
+                backgroundColor='var(--primary-color)'
+              />
+              <Button
+                label='Delete'
+                onClick={() => { onDeleteExpense(expense) }}
+                backgroundColor='var(--red)'
+              />
+            </div>
           </div>
         </div>
         : <p>expense not loaded</p>
