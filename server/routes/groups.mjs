@@ -89,8 +89,14 @@ router.delete("/:id", async (req, res) => {
   const query = { _id: ObjectId(req.params.id) };
 
   try {
-    const collection = db.collection("groups");
-    let result = await collection.deleteOne(query);
+    const groupsCollection = db.collection("groups");
+    const expensesCollection = db.collection("expenses");
+
+    // delete associated expenses
+    await expensesCollection.deleteMany({ groupId: req.params.id });
+
+    // delete group
+    let result = await groupsCollection.deleteOne(query);
     
     // check if group is found
     if (result.deletedCount === 0) {
@@ -99,7 +105,7 @@ router.delete("/:id", async (req, res) => {
 
     res.send(result).status(200);
   } catch (error) {
-    console.error("Error deleting group: ", error);
+    console.error("Error deleting group and associated expenses: ", error);
     next(error); 
   }
 });

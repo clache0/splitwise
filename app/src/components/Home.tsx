@@ -101,7 +101,8 @@ const Home = () => {
         onConfirm={handleDeleteGroup}
         title="Confirm Delete"
       >
-        Are you sure you want to delete this group?
+        <p>Are you sure you want to delete this group?</p>
+        <p>Group expenses will be deleted.</p>
       </Modal>
     </>
   )
