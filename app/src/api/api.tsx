@@ -77,6 +77,22 @@ export const deleteGroupById = async (groupId: string) => {
   };
 };
 
+export const fetchUserGroups = async (userId: string) => {
+  const url = config.serverUrl + `/groups/users/${userId}`;
+
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error('Failed to fetch user groups data');
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.log("Error fetching users: ", error);
+    throw error;
+  };
+};
+
 export const fetchAllUsers = async () => {
   const url = config.serverUrl + '/users/';
 
@@ -91,7 +107,7 @@ export const fetchAllUsers = async () => {
     console.log("Error fetching users: ", error);
     throw error;
   };
-}
+};
 
 export const fetchUserById = async (userId: string) => {
   const url = config.serverUrl + `/users/${userId}`;
@@ -131,6 +147,29 @@ export const postUser = async (user: User) => {
     console.error('Error posting user:', error);
     throw error;
   }
+};
+
+export const deleteUserById = async (userId: string) => {
+  const url = config.serverUrl + `/users/${userId}`;
+
+  try {
+    const response = await fetch(url, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to delete user data');
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.log("Error deleting user: ", error);
+    throw error;
+  };
 };
 
 export const fetchExpensesByGroupId = async (groupId: string) => {

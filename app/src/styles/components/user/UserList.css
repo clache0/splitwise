@@ -21,7 +21,6 @@
 
 .user-list li {
   padding: 10px;
-  border-bottom: 1px solid #ddd;
 }
 
 .user-list li:last-child {
@@ -39,4 +38,36 @@
 .user-list p {
   text-align: center;
   color: #999;
+}
+
+.user-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #ddd;
+  padding: 5px 10px;
+}
+
+.user-list button {
+  border: none;
+  border-radius: 5px;
+  color: white;
+  padding: 5px 10px;
+  margin: 0px 3px;
+  width: 80px;
+  /* height: 50px; */
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.user-actions {
+  gap: 5px;
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s, opacity 0.2s linear;
+}
+
+.user-container:hover .user-actions {
+  visibility: visible;
+  opacity: 1;
 }

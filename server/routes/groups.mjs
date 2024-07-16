@@ -110,4 +110,17 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
+// get all groups for a user
+router.get("/users/:userId", async (req, res) => {
+  const userId = req.params.userId;
+  try {
+    const collection = db.collection("groups");
+    const groups = await collection.find({ "members._id": userId }).toArray();
+    res.status(200).json(groups);
+  } catch (error) {
+    console.error("Error fetching groups for user: ", error);
+    res.status(500).json({ error: "Error fetching groups for user" });
+  }
+});
+
 export default router;
