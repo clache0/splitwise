@@ -6,7 +6,7 @@ export const getNameFromId = (id: string, users: User[]) => {
 };
 
 export const formatDate = (date: Date) => {
-  return date.toLocaleDateString('en-US', {month: 'long', day: 'numeric'});
+  return date.toLocaleDateString('en-US', {month: 'long', day: 'numeric', timeZone: 'UTC'});
 };
 
 export const getCurrentDate = () => {
