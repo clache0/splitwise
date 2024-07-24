@@ -14,14 +14,19 @@ const GroupList: React.FC<GroupListProps> = ({ groups, onDeleteGroup }) => {
   }
 
   const groupList = groups ? groups.map((group, index) => (
-    <li key={group._id || index}>
+    <li 
+      key={group._id || index} 
+      className="group-link-container"
+    >
       <Link className="group-link" to={`/group/${group._id}`}>{group.name}</Link>
-      <Button
-        label='Delete'
-        onClick={() => { onDeleteGroup(group) }}
-        backgroundColor='var(--red)'
-      />
-    </li>
+      <div className="group-link-actions">
+        <Button
+          label='Delete'
+          onClick={() => { onDeleteGroup(group) }}
+          backgroundColor='var(--red)'
+        />
+      </div>
+      </li>
   )) : null;
 
   return (

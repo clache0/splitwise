@@ -3,6 +3,20 @@
   padding: var(--padding);
 }
 
+.group-link-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s, opacity 0.2s linear;
+}
+
+.group-link-container:hover .group-link-actions {
+  visibility: visible;
+  opacity: 1;
+}
+
 .group-list {
   list-style-type: none;
   padding: 0;
