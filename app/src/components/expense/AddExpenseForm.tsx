@@ -30,7 +30,7 @@ interface ExpenseFormProps {
 const AddExpenseForm: React.FC<ExpenseFormProps> = ({ onSubmit, onShowForm, group, users, expense }) => {
   const [groupId, setGroupId] = useState<string>(expense?.groupId || '');
   const [title, setTitle] = useState<string>(expense?.title || '');
-  const [amount, setAmount] = useState<string>(expense?.amount.toString() || '');
+  const [amount, setAmount] = useState<string>(expense?.amount.toFixed(2) || '');
   const [date, setDate] = useState<string>(expense?.date || getCurrentDate());
   const [payerId, setPayerId] = useState<string>(expense?.payerId || '');
   const [participants, setParticipants] = useState<User[]>(

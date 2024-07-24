@@ -34,7 +34,7 @@ const ExpenseComponent: React.FC<ExpenseComponentProps> = ({ group, expense, use
             <p className="expense-date">{formatDate(new Date(expense.date))}</p>
           </div>
           <div className="expense-right">
-            <p className="expense-amount">{payerName} paid ${expense.amount} </p>
+            <p className="expense-amount">{payerName} paid ${expense.amount.toFixed(2)} </p>
             <div className="expense-participants">Participant{participants.length > 2 && 's'} {participantNames}</div>
             <div className="expense-actions">
               <Button
