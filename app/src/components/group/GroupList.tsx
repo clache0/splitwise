@@ -1,13 +1,14 @@
-import { Link } from "react-router-dom";
-import { Group } from "./GroupComponent";
-import Button from "../general/Button";
+import { Group, User } from "./GroupComponent";
 import "../../styles/components/group/GroupList.css"
+import GroupCard from "./GroupCard";
 
 interface GroupListProps {
   groups: Group[] | null;
+  users: User[] | null;
+  onUpdateGroup: (group: Group) => void;
   onDeleteGroup: (group: Group) => void;
 }
-const GroupList: React.FC<GroupListProps> = ({ groups, onDeleteGroup }) => {
+const GroupList: React.FC<GroupListProps> = ({ groups, users, onUpdateGroup, onDeleteGroup }) => {
   
   if (!groups) {
     return <div>Loading Group List...</div>
@@ -18,15 +19,13 @@ const GroupList: React.FC<GroupListProps> = ({ groups, onDeleteGroup }) => {
       key={group._id || index} 
       className="group-link-container"
     >
-      <Link className="group-link" to={`/group/${group._id}`}>{group.name}</Link>
-      <div className="group-link-actions">
-        <Button
-          label='Delete'
-          onClick={() => { onDeleteGroup(group) }}
-          backgroundColor='var(--red)'
-        />
-      </div>
-      </li>
+      <GroupCard
+        group={group}
+        users={users}
+        onUpdateGroup={onUpdateGroup}
+        onDeleteGroup={onDeleteGroup}
+      />
+    </li>
   )) : null;
 
   return (
@@ -35,6 +34,8 @@ const GroupList: React.FC<GroupListProps> = ({ groups, onDeleteGroup }) => {
       <ul className="group-list column-center">
         {groupList}
       </ul>
+
+
     </>
   );
 };

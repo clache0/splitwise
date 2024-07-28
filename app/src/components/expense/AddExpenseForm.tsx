@@ -89,6 +89,7 @@ const AddExpenseForm: React.FC<ExpenseFormProps> = ({ onSubmit, onShowForm, grou
         )) : [],
       });
       
+      // check groupId exist before adding expense
       if (parsedData.groupId) {
         // Call the callback function to add the new expense
         onSubmit(parsedData);

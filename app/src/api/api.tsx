@@ -54,6 +54,27 @@ export const postGroup = async (group: Group) => {
   }
 };
 
+export const patchGroup = async (group: Group) => {
+  const url = config.serverUrl + `/groups/${group._id}`;
+  
+  try {
+    const response = await fetch(url, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(group),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to patch group');
+    } 
+  } catch (error) {
+    console.error('Error patching group:', error);
+    throw error;
+  }
+};
+
 export const deleteGroupById = async (groupId: string) => {
   const url = config.serverUrl + `/groups/${groupId}`;
 

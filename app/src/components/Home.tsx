@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Group, User } from "./group/GroupComponent"
 import GroupList from "./group/GroupList";
-import { fetchAllUsers, fetchAllGroups, postGroup, deleteGroupById } from "../api/api";
+import { fetchAllUsers, fetchAllGroups, postGroup, deleteGroupById, patchGroup } from "../api/api";
 import Button from "./general/Button";
 import AddGroupForm from "./group/AddGroupForm";
 import Modal from "./general/Modal";
@@ -24,6 +24,15 @@ const Home = () => {
       setGroupsData(await fetchAllGroups());
     } catch (error) {
       console.error("Error posting group: ", error);
+    }
+  };
+
+  const handleUpdateGroup = async (updatedGroup: Group) => {
+    try {
+      await patchGroup(updatedGroup); // post group to server
+      setGroupsData(await fetchAllGroups());
+    } catch (error) {
+      console.error("Error updating expense: ", error);
     }
   };
 
@@ -85,11 +94,16 @@ const Home = () => {
         onClick={() => setShowAddGroupForm(!showAddGroupForm)}
       />
 
-      <GroupList groups={groupsData} onDeleteGroup={openDeleteModal} />
+      <GroupList 
+        groups={groupsData}
+        onUpdateGroup={handleUpdateGroup}
+        onDeleteGroup={openDeleteModal}
+        users={users}
+      />
 
       { showAddGroupForm && 
         <AddGroupForm  
-          onAddGroup={handleAddGroup}
+          onSubmit={handleAddGroup}
           onShowForm={setShowAddGroupForm}
           users={users || []}
         /> 

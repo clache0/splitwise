@@ -22,7 +22,7 @@ export interface Member {
 export interface Group {
   _id?: string;
   name: string;
-  members: Member[];
+  members: Member[]; // TODO CONVERT MEMBER[] TO STRING[] AND REMOVE MEMBER INTERFACE
 };
 
 export interface Participant {

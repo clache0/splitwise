@@ -1,34 +1,49 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Group, User, Member } from './GroupComponent';
 import '../../styles/components/group/AddGroupForm.css'
 
 interface AddGroupFormProps {
-  onAddGroup: (group: Group) => void;
+  onSubmit: (group: Group) => void;
   onShowForm: (showAddGroupForm: boolean) => void;
   users: User[];
+  group?: Group; // optional group for update
 }
 
-const AddGroupForm: React.FC<AddGroupFormProps> = ({ onAddGroup, onShowForm, users }) => {
-  const [name, setName] = useState<string>('');
+const AddGroupForm: React.FC<AddGroupFormProps> = ({ onSubmit, onShowForm, users, group }) => {
+  const [name, setName] = useState<string>(group?.name || '');
   const [selectedUsers, setSelectedUsers] = useState<User[] | null>([]);
+
+  // update selectedUsers if group exist
+  useEffect(() => {
+    if (group && group.members) {
+      const members = group.members.map((member) => 
+        users.find((user) => user._id === member._id)
+      ).filter((user): user is User => !!user);
+      setSelectedUsers(members);
+    }
+  }, [group, users]);
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
     // map users to members
-    const selectedMembers: Member[] = (selectedUsers || [])
-      .map((user) => ({ _id: user._id as string}));
+    const selectedMembers: string[] = (selectedUsers || [])
+      // .map((user) => ({ _id: user._id as string}));
+      .map((user) => String(user._id));
 
     const newGroup: Group = {
+      _id: group?._id, // include id if update
       name: name,
       members: selectedMembers,
     };
 
-    onAddGroup(newGroup);
+    onSubmit(newGroup);
     
-    // Clear form inputs
-    setName('');
-    setSelectedUsers([]);
+    if (!group) {
+      // Clear form inputs if not update
+      setName('');
+      setSelectedUsers([]);
+    }
   };
 
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>, user: User) => {
@@ -49,7 +64,7 @@ const AddGroupForm: React.FC<AddGroupFormProps> = ({ onAddGroup, onShowForm, use
   return (
     <div className='add-group-form-backdrop'>
       <div className='add-group-form-content'>
-        <h2>Add Group Form</h2>
+        <h2>{group ? 'Update Group Form' : 'Add Group Form'}</h2>
         <form onSubmit={handleSubmit}>
           <div>
             <label htmlFor="name">Group Name</label>
@@ -79,7 +94,7 @@ const AddGroupForm: React.FC<AddGroupFormProps> = ({ onAddGroup, onShowForm, use
             </div>
           </div>
 
-          <button type="submit">Add Group</button>
+          <button type="submit">{group ? 'Update Group' : 'Add Group'}</button>
           <button type="button" onClick={() => onShowForm(false)}>Cancel</button>
         </form>
       </div>
