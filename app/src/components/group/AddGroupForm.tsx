@@ -27,9 +27,8 @@ const AddGroupForm: React.FC<AddGroupFormProps> = ({ onSubmit, onShowForm, users
     event.preventDefault();
 
     // map users to members
-    const selectedMembers: string[] = (selectedUsers || [])
-      // .map((user) => ({ _id: user._id as string}));
-      .map((user) => String(user._id));
+    const selectedMembers: Member[] = (selectedUsers || [])
+      .map((user) => ({ _id: user._id as string}));
 
     const newGroup: Group = {
       _id: group?._id, // include id if update

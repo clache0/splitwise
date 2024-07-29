@@ -56,6 +56,12 @@ export const postGroup = async (group: Group) => {
 
 export const patchGroup = async (group: Group) => {
   const url = config.serverUrl + `/groups/${group._id}`;
+
+  // convert group members from Member to string
+  const groupMemberStrs = {
+    ...group,
+    members: group.members.map((member: {_id: string}) => member._id)
+  };
   
   try {
     const response = await fetch(url, {
@@ -63,7 +69,7 @@ export const patchGroup = async (group: Group) => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(group),
+      body: JSON.stringify(groupMemberStrs),
     });
 
     if (!response.ok) {
