@@ -8,6 +8,8 @@ import Modal from "../general/Modal";
 import GroupBalances from "./GroupBalances";
 import "../../styles/components/group/GroupComponent.css"
 import SettleUpForm from "../expense/SettleUpForm";
+import * as XLSX from 'xlsx';
+import { getNameFromId } from "../../api/utils";
 
 export interface User {
   _id?: string;
@@ -22,7 +24,7 @@ export interface Member {
 export interface Group {
   _id?: string;
   name: string;
-  members: Member[]; // TODO CONVERT MEMBER[] TO STRING[] AND REMOVE MEMBER INTERFACE
+  members: Member[];
 };
 
 export interface Participant {
@@ -132,6 +134,24 @@ const GroupComponent = () => {
     setExpenseToDelete(null);
   };
 
+  const exportExpensesToExcel = () => {
+    if (!groupExpenses || !users) return;
+
+    const processedExpenses = groupExpenses.map((expense) => {
+      const { _id, groupId, payerId, participants, ...rest } = expense;
+      return {
+        ...rest,
+        payerName: getNameFromId(payerId, users),
+        participants: participants.map((participant) => getNameFromId(participant.memberId, users)).join(", "),
+      };
+    });
+
+    const worksheet = XLSX.utils.json_to_sheet(processedExpenses);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Expenses");
+    XLSX.writeFile(workbook, `Group_${group?.name}_Expenses.xlsx`);
+  }
+
   return (
     <div className="group-component">
       <GroupNavbar 
@@ -141,6 +161,7 @@ const GroupComponent = () => {
         setShowAddExpenseForm={setShowAddExpenseForm} 
         showAddExpenseForm={showAddExpenseForm} 
         setShowSettleUpForm={setShowSettleUpForm} 
+        exportExpensesToExcel={exportExpensesToExcel}
       />
 
       <div className="group-content">

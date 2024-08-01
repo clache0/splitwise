@@ -9,6 +9,7 @@ interface GroupNavbarProps {
   setShowAddExpenseForm: React.Dispatch<React.SetStateAction<boolean>>;
   showAddExpenseForm: boolean;
   setShowSettleUpForm: React.Dispatch<React.SetStateAction<boolean>>;
+  exportExpensesToExcel: () => void;
 }
 
 const GroupNavbar: React.FC<GroupNavbarProps> = ({
@@ -18,6 +19,7 @@ const GroupNavbar: React.FC<GroupNavbarProps> = ({
   setShowAddExpenseForm,
   showAddExpenseForm,
   setShowSettleUpForm,
+  exportExpensesToExcel,
 }) => {
 
   if (isLoading) return <p>Loading...</p>;
@@ -30,17 +32,22 @@ const GroupNavbar: React.FC<GroupNavbarProps> = ({
         <Button
           label='Add Expense'
           onClick={() => {
-            console.log('Add expense clicked');
             setShowAddExpenseForm(!showAddExpenseForm);
           }}
         />
         <Button
           label='Settle Up'
           onClick={() => {
-            console.log('Settle up clicked')
             setShowSettleUpForm(true);
           }}
           backgroundColor='var(--secondary-color)'
+        />
+        <Button
+          label='Export'
+          onClick={() => {
+            exportExpensesToExcel();
+          }}
+          backgroundColor='var(--light-gray)'
         />
       </div>
     </nav>

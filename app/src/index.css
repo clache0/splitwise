@@ -4,12 +4,13 @@
   font-weight: 400;
 
   /* variables */
-  --primary-color: #0073e6; /* Inspired by blue tones used in tech companies like Microsoft */
-  --secondary-color: #34a853; /* Inspired by green tones used in Google */
-  --background-color: #f5f5f5; /* A light, neutral background color for minimalistic design */
-  --text-color: #333333; /* A dark gray for easy readability */
+  --primary-color: #0073e6;
+  --secondary-color: #34a853;
+  --background-color: #f5f5f5;
+  --text-color: #333333;
   --red: #ff4d4d;
   --dark-red: #ff0000;
+  --light-gray: #D3D3D3;
   --font-size: 16px;
   --padding: 8px;
   --margin: 8px;
