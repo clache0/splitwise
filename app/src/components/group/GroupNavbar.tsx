@@ -1,6 +1,8 @@
 import { Group } from './GroupComponent'
 import Button from '../general/Button'
 import "../../styles/components/group/GroupNavbar.css"
+import { useState } from 'react';
+import ExportModal from '../expense/ExportModal';
 
 interface GroupNavbarProps {
   group: Group | null;
@@ -21,6 +23,15 @@ const GroupNavbar: React.FC<GroupNavbarProps> = ({
   setShowSettleUpForm,
   exportExpensesToExcel,
 }) => {
+  const [showExportModal, setShowExportModal] = useState<boolean>(false);
+
+  const openExportModal = () => setShowExportModal(true);
+  const closeExportModal = () => setShowExportModal(false);
+
+  const handleExportExpenses = () => {
+    exportExpensesToExcel();
+    closeExportModal();
+  };
 
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>Error: {(error as Error).message}</p>;
@@ -45,11 +56,20 @@ const GroupNavbar: React.FC<GroupNavbarProps> = ({
         <Button
           label='Export'
           onClick={() => {
-            exportExpensesToExcel();
+            openExportModal();
           }}
           backgroundColor='var(--light-gray)'
         />
       </div>
+
+      <ExportModal
+        isOpen={showExportModal}
+        onClose={closeExportModal}
+        onConfirm={handleExportExpenses}
+        title="Export Expenses"
+      >
+        <p>Select month and/or year filter if you want to filter exports</p>
+      </ExportModal>
     </nav>
   )
 }

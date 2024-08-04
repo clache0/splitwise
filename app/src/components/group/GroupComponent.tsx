@@ -46,6 +46,7 @@ const GroupComponent = () => {
   const { groupId } = useParams() as { groupId: string};
   const [group, setGroup] = useState<Group | null>(null);
   const [groupExpenses, setGroupExpenses] = useState<Expense[] | null>([]);
+  const [filteredExpenses, setFilteredExpenses] = useState<Expense[] | null>([]);
   const [users, setUsers] = useState<User[] | null>([]); // group members including first and last name
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<unknown | null>(null);
@@ -75,7 +76,6 @@ const GroupComponent = () => {
   }, [groupId]);
 
   const handleAddExpense = async (expense: Expense) => {
-    console.log("Adding expense: ", expense);
     try {
       await postExpense(expense); // post expense to server
       setGroupExpenses(await fetchExpensesByGroupId(expense.groupId));
@@ -85,7 +85,6 @@ const GroupComponent = () => {
   };
 
   const handleUpdateExpense = async (updatedExpense: Expense) => {
-    console.log("update expense: ", updatedExpense);
     try {
       await patchExpense(updatedExpense); // post expense to server
       setGroupExpenses((prevExpenses) => 
@@ -100,7 +99,6 @@ const GroupComponent = () => {
 
   const handleDeleteExpense = async () => {
     if (expenseToDelete && expenseToDelete._id) {
-      console.log("Deleting expense: ", expenseToDelete);
       try {
         await deleteExpenseById(expenseToDelete._id);
         setGroupExpenses((prevGroupExpenses) => {
@@ -115,13 +113,16 @@ const GroupComponent = () => {
   };
 
   const handleSettleUp = async(expense: Expense) => {
-    console.log("Settling up expense: ", expense);
     try {
       await postExpense(expense); // post settle up expense to server
       setGroupExpenses(await fetchExpensesByGroupId(expense.groupId));
     } catch (error) {
       console.error("Error settling up expense: ", error);
     }
+  };
+
+  const handleFilteredExpensesChange = (newData: Expense[] | null) => {
+    setFilteredExpenses(newData);
   }
 
   const openDeleteModal = (expense: Expense) => {
@@ -135,9 +136,9 @@ const GroupComponent = () => {
   };
 
   const exportExpensesToExcel = () => {
-    if (!groupExpenses || !users) return;
+    if (!filteredExpenses || !users) return;
 
-    const processedExpenses = groupExpenses.map((expense) => {
+    const processedExpenses = filteredExpenses.map((expense) => {
       const { _id, groupId, payerId, participants, ...rest } = expense;
       return {
         ...rest,
@@ -177,7 +178,8 @@ const GroupComponent = () => {
           groupExpenses={groupExpenses}
           onUpdateExpense={handleUpdateExpense}
           onDeleteExpense={openDeleteModal}
-          users={users} 
+          users={users}
+          onFilteredExpensesChange={handleFilteredExpensesChange}
         />
       </div>
 
