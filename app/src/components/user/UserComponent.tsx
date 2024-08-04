@@ -32,7 +32,6 @@ const UserComponent: React.FC<UserComponentProps> = () => {
   }, []);
 
   const handleAddUser = async (user: User) => {
-    console.log("Adding user: ", user);
     try {
       await postUser(user); // post user to server
       setUsers(await fetchAllUsers());

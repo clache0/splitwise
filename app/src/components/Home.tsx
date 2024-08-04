@@ -17,8 +17,6 @@ const Home = () => {
   const [groupToDelete, setGroupToDelete] = useState<Group | null>(null);
 
   const handleAddGroup = async (group: Group) => {
-    console.log("Adding group: ", group);
-  
     try {
       await postGroup(group); // post group to server
       setGroupsData(await fetchAllGroups());
@@ -39,7 +37,6 @@ const Home = () => {
   const handleDeleteGroup = async () => {
 
     if (groupToDelete && groupToDelete._id) {
-      console.log("Deleting group: ", groupToDelete.name);
       try {
         await deleteGroupById(groupToDelete._id); // delete group from server
         setGroupsData((prevGroupsData) => {

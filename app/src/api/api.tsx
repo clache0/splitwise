@@ -12,7 +12,7 @@ export const fetchGroupById = async (groupId: string) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.log("Error fetching group: ", error);
+    console.error("Error fetching group: ", error);
     throw error;
   };
 };
@@ -28,7 +28,7 @@ export const fetchAllGroups = async () => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.log("Error fetching groups: ", error);
+    console.error("Error fetching groups: ", error);
     throw error;
   };
 }
@@ -99,7 +99,7 @@ export const deleteGroupById = async (groupId: string) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.log("Error deleting group: ", error);
+    console.error("Error deleting group: ", error);
     throw error;
   };
 };
@@ -115,7 +115,7 @@ export const fetchUserGroups = async (userId: string) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.log("Error fetching users: ", error);
+    console.error("Error fetching users: ", error);
     throw error;
   };
 };
@@ -131,7 +131,7 @@ export const fetchAllUsers = async () => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.log("Error fetching users: ", error);
+    console.error("Error fetching users: ", error);
     throw error;
   };
 };
@@ -147,7 +147,7 @@ export const fetchUserById = async (userId: string) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.log("Error fetching user: ", error);
+    console.error("Error fetching user: ", error);
     throw error;
   };
 };
@@ -194,7 +194,7 @@ export const deleteUserById = async (userId: string) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.log("Error deleting user: ", error);
+    console.error("Error deleting user: ", error);
     throw error;
   };
 };
@@ -206,14 +206,14 @@ export const fetchExpensesByGroupId = async (groupId: string) => {
     const response = await fetch(url);
     if (!response.ok) {
       if (response.status === 404) {
-        console.log("response.status is 404");
+        console.error("response.status is 404");
         return [];
       }
     }
     const data = await response.json();
     return data;
   } catch (error) {
-    console.log("Error fetching expenses: ", error);
+    console.error("Error fetching expenses: ", error);
     throw error;
   };
 };
@@ -240,7 +240,6 @@ export const postExpense = async (expense: Expense) => {
 };
 
 export const patchExpense = async (expense: Expense) => {
-  console.log('expense._id: ', expense._id);
   const url = config.serverUrl + `/expenses/${expense._id}`;
   
   try {
@@ -279,7 +278,7 @@ export const deleteExpenseById = async (expenseId: string) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.log("Error deleting expense: ", error);
+    console.error("Error deleting expense: ", error);
     throw error;
   };
 };

@@ -73,7 +73,6 @@ router.post("/", async (req, res) => {
 // PATCH Update the expense
 router.patch("/:id", async (req, res) => {
   const query = { _id: ObjectId(req.params.id) };
-  console.log("query: ", query);
   const { title, amount, date, payerId, participants } = req.body;
   const updates = { $set: {} };
 

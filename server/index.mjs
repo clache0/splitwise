@@ -17,15 +17,12 @@ app.use(express.json());
 
 // Load the /users routes
 app.use("/users", users);
-console.log("using /users route");
 
 // Load the /groups routes
 app.use("/groups", groups);
-console.log("using /groups route");
 
 // Load the /expenses routes
 app.use("/expenses", expenses);
-console.log("using /expenses route");
 
 // Global error handling
 app.use((err, _req, res, next) => {
