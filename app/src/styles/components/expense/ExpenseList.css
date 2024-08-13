@@ -18,8 +18,6 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  max-height: 80vh;
-  overflow-y: scroll;
 }
 
 .expense-list li {
@@ -82,4 +80,17 @@
 
 .clear-filter-button:hover {
   background-color: var(--secondary-color);
+}
+
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  margin: 10px 0px;
+}
+
+.pagination-controls button.active {
+  font-weight: bold;
+  text-decoration: underline;
 }
