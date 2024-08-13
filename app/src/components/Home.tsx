@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { Group, User } from "./group/GroupComponent"
 import GroupList from "./group/GroupList";
-import { fetchAllUsers, fetchAllGroups, postGroup, deleteGroupById, patchGroup } from "../api/api";
+import { fetchAllUsers, fetchAllGroups, postGroup, deleteGroupById, patchGroup, fetchExpensesByGroupId } from "../api/api";
 import Button from "./general/Button";
 import AddGroupForm from "./group/AddGroupForm";
 import Modal from "./general/Modal";
 import "../styles/components/Home.css"
+import { checkUnsettledExpenses } from "../api/balanceUtils";
 
 const Home = () => {
   const [groupsData, setGroupsData] = useState<Group[] | null>([]);
@@ -26,6 +27,14 @@ const Home = () => {
   };
 
   const handleUpdateGroup = async (updatedGroup: Group) => {
+    const groupExpenses = await fetchExpensesByGroupId(updatedGroup._id!);
+    const check = checkUnsettledExpenses(updatedGroup, users!, groupExpenses);
+
+    if (!updatedGroup || !check) {
+      alert("Cannot update group. Some members have unsettled expenses or remaining balance.");
+      return;
+    }
+
     try {
       await patchGroup(updatedGroup); // post group to server
       setGroupsData(await fetchAllGroups());
@@ -35,14 +44,24 @@ const Home = () => {
   };
 
   const handleDeleteGroup = async () => {
+    if (!groupToDelete) {
+      alert("No group to delete");
+      return;
+    }
 
-    if (groupToDelete && groupToDelete._id) {
+    const groupExpenses = await fetchExpensesByGroupId(groupToDelete._id!);
+    const check = checkUnsettledExpenses(groupToDelete, users!, groupExpenses);
+
+    if (!check) {
+      alert("Cannot delete group. Some members have unsettled expenses or remaining balance.");
+      setShowDeleteModal(false);
+      return;
+    }
+
+    if (groupToDelete._id) {
       try {
         await deleteGroupById(groupToDelete._id); // delete group from server
-        setGroupsData((prevGroupsData) => {
-          if (!prevGroupsData) return null;
-          return prevGroupsData?.filter((prevGroup) => groupToDelete._id !== prevGroup._id); // filter out removed group
-        });
+        setGroupsData(await fetchAllGroups());
         setShowDeleteModal(false);
       } catch (error) {
         console.error("Error deleting group: ", error);
