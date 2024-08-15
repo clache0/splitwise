@@ -12,10 +12,11 @@
   },
   "dependencies": {
     "cors": "^2.8.5",
-    "dotenv": "^8.2.0",
-    "express": "^4.18.2",
+    "dotenv": "^8.6.0",
+    "express": "^4.19.2",
     "express-async-errors": "^3.1.1",
-    "mongodb": "^4.13.0"
+    "mongodb": "^4.17.2",
+    "serverless-http": "^3.2.0"
   },
   "devDependencies": {
     "eslint": "^8.0.0",
@@ -34,5 +35,9 @@
       "prettier --single-quote --write",
       "eslint --fix"
     ]
-  }
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
 }

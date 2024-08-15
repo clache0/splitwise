@@ -1,43 +1,31 @@
 import express from "express";
 import cors from "cors";
+import dotenv from "dotenv"
 import "./loadEnvironment.js";
 import "express-async-errors";
 import users from "./routes/users.js";
 import groups from "./routes/groups.js";
 import expenses from "./routes/expenses.js";
 
-export const handler = async (event, context) => {
-  const PORT = process.env.PORT || 5050;
-  const app = express();
+dotenv.config();
 
-  // set up CORS for client server on different domain, protocol, port
-  app.use(cors());
+const app = express();
 
-  // middleware to parse incoming requests with JSON payloads
-  app.use(express.json());
+// set up CORS for client server on different domain, protocol, port
+app.use(cors());
 
-  // Load the /users routes
-  app.use("/users", users);
+// middleware to parse incoming requests with JSON payloads
+app.use(express.json());
 
-  // Load the /groups routes
-  app.use("/groups", groups);
+// Load routes
+app.use("/users", users);
+app.use("/groups", groups);
+app.use("/expenses", expenses);
 
-  // Load the /expenses routes
-  app.use("/expenses", expenses);
+// Global error handling
+app.use((err, _req, res, next) => {
+  res.status(500).send("Uh oh! An unexpected error occured.")
+})
 
-  // Global error handling
-  app.use((err, _req, res, next) => {
-    res.status(500).send("Uh oh! An unexpected error occured.")
-  })
-
-  // start the Express server
-  app.listen(PORT, () => {
-    console.log(`Server is running on port: ${PORT}`);
-  });
-  
-  return {
-    statusCode: 200,
-    body: JSON.stringify({ message: "Hello from Netlify Functions" })
-  };
-}
+export const handler = serverless(app);
 
