@@ -1,5 +1,5 @@
 import express from "express";
-import db from "../db/conn.js";
+import connectToDatabase from "../db/conn.js";
 import { ObjectId } from "mongodb";
 
 const router = express.Router();
@@ -7,6 +7,7 @@ const router = express.Router();
 // GET a list of expenses, limit 50
 router.get("/", async (req, res) => {
   try {
+    const db = await connectToDatabase();
     let collection = await db.collection("expenses");
     let results = await collection.find({})
       .limit(50)
@@ -22,6 +23,7 @@ router.get("/", async (req, res) => {
 // GET a single expense
 router.get("/:id", async (req, res, next) => {
   try {
+    const db = await connectToDatabase();
     let collection = await db.collection("expenses");
     let query = {_id: ObjectId(req.params.id)};
     let result = await collection.findOne(query);
@@ -41,6 +43,7 @@ router.get("/:id", async (req, res, next) => {
 // GET expenses by group id
 router.get("/group/:id", async (req, res, next) => {
   try {
+    const db = await connectToDatabase();
     let collection = await db.collection("expenses");
     let query = { groupId: req.params.id };
     const result = await collection.find(query).toArray();
@@ -60,6 +63,7 @@ router.get("/group/:id", async (req, res, next) => {
 // POST Add a new document to the collection
 router.post("/", async (req, res) => {
   try {
+    const db = await connectToDatabase();
     let collection = await db.collection("expenses");
     let newDocument = req.body;
     let result = await collection.insertOne(newDocument);
@@ -97,6 +101,7 @@ router.patch("/:id", async (req, res) => {
 
   // attempt to update expense
   try {
+    const db = await connectToDatabase();
     let collection = await db.collection("expenses");
     let result = await collection.updateOne(query, updates);
 
@@ -120,6 +125,7 @@ router.delete("/:id", async (req, res) => {
   const query = { _id: ObjectId(req.params.id) };
 
   try {
+    const db = await connectToDatabase();
     const collection = db.collection("expenses");
     let result = await collection.deleteOne(query);
     

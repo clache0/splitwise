@@ -1,18 +1,20 @@
 import { MongoClient } from "mongodb";
 
 const connectionString = process.env.ATLAS_URI || "";
-
 const client = new MongoClient(connectionString);
 
-let conn;
-try {
-  conn = await client.connect();
-  console.log("connection established to MongoDB Atlas");
-} catch(e) {
-  console.error(e);
+let db;
+
+async function connectToDatabase() {
+  if (!db) {
+    try {
+      conn = await client.connect();
+      db = conn.db("splitwise");
+      console.log("Connected to MongoDB Atlas, using splitwise database.");
+    } catch(e) {
+      console.error("Error connection to MongoDB Atlas: ", e);
+    }
+  }
 }
 
-let db = conn.db("splitwise");
-console.log("using splitwise database");
-
-export default db;
+export default connectToDatabase;
