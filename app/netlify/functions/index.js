@@ -1,11 +1,11 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv"
-import "./loadEnvironment.mjs";
+import "./loadEnvironment.js";
 import "express-async-errors";
-import users from "./routes/users.mjs";
-import groups from "./routes/groups.mjs";
-import expenses from "./routes/expenses.mjs";
+import users from "./routes/users.js";
+import groups from "./routes/groups.js";
+import expenses from "./routes/expenses.js";
 
 dotenv.config();
 
