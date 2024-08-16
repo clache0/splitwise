@@ -37,6 +37,7 @@ const AddGroupForm: React.FC<AddGroupFormProps> = ({ onSubmit, onShowForm, users
     };
 
     onSubmit(newGroup);
+    onShowForm(false);
     
     if (!group) {
       // Clear form inputs if not update
