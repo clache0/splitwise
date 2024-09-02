@@ -6,6 +6,7 @@ import { Expense, Group, User } from "../components/group/GroupComponent";
 export const calculateBalances = (groupExpenses: Expense[], users: User[]): Balance => {
   const balances: Balance = {};
 
+  // initialize Balance object for each user
   users.forEach(user => {
     balances[user._id!] = {
       owes: {},
@@ -14,11 +15,12 @@ export const calculateBalances = (groupExpenses: Expense[], users: User[]): Bala
     };
   });
 
+  // iterate group expenses
   groupExpenses.forEach(expense => {
     const totalAmount = expense.amount;
     const payerId = expense.payerId;
 
-    // check if settle up expense
+    // special expense: settle up
     if (expense.participants.length === 2) {
       const participant1 = expense.participants[0];
       const participant2 = expense.participants[1];
@@ -30,8 +32,9 @@ export const calculateBalances = (groupExpenses: Expense[], users: User[]): Bala
         balances[payerId].isOwed[payeeId] = (balances[payerId].isOwed[payeeId] || 0) + payeeShare;
         balances[payeeId].owes[payerId] = (balances[payeeId].owes[payerId] || 0) + payeeShare;
         balances[payerId].netBalance += payeeShare;
+        balances[payerId].netBalance = parseFloat(balances[payerId].netBalance.toFixed(2)); // round netBalance 2 decimals
         balances[payeeId].netBalance -= payeeShare;
-
+        balances[payeeId].netBalance = parseFloat(balances[payeeId].netBalance.toFixed(2)); // round netBalance 2 decimals
         return;
       }
     }
@@ -45,7 +48,9 @@ export const calculateBalances = (groupExpenses: Expense[], users: User[]): Bala
         balances[payerId].isOwed[participantId] = (balances[payerId].isOwed[participantId] || 0) + participantShare;
         balances[participantId].owes[payerId] = (balances[participantId].owes[payerId] || 0) + participantShare;
         balances[payerId].netBalance += participantShare;
+        balances[payerId].netBalance = parseFloat(balances[payerId].netBalance.toFixed(2)); // round netBalance 2 decimals
         balances[participantId].netBalance -= participantShare;
+        balances[participantId].netBalance = parseFloat(balances[participantId].netBalance.toFixed(2)); // round netBalance 2 decimals
       }
     });
   });
@@ -56,14 +61,16 @@ export const calculateBalances = (groupExpenses: Expense[], users: User[]): Bala
       const owesAmount = balances[user._id!].owes[owedTo] || 0;
       const isOwedAmount = balances[user._id!].isOwed[owedTo] || 0;
 
+      // check not balanced between pairs
       if (isOwedAmount > 0) {
-        const netAmount = owesAmount - isOwedAmount;
+        const netAmount = owesAmount - isOwedAmount; // net owes vs isOwed
+        const roundedNetAmount = parseFloat(netAmount.toFixed(2)); // round to 2 decimals
 
-        if (netAmount > 0) {
-          balances[user._id!].owes[owedTo] = netAmount;
+        if (roundedNetAmount > 0) {
+          balances[user._id!].owes[owedTo] = roundedNetAmount;
           delete balances[user._id!].isOwed[owedTo];
-        } else if (netAmount < 0) {
-          balances[user._id!].isOwed[owedTo] = -netAmount;
+        } else if (roundedNetAmount < 0) {
+          balances[user._id!].isOwed[owedTo] = -roundedNetAmount;
           delete balances[user._id!].owes[owedTo];
         } else {
           delete balances[user._id!].owes[owedTo];
