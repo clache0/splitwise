@@ -22,10 +22,22 @@ export const fetchAllGroups = async () => {
 
   try {
     const response = await fetch(url);
+
+    if (response.status === 204) {
+      return [];
+    }
+
     if (!response.ok) {
       throw new Error('Failed to fetch group data');
     }
+
     const data = await response.json();
+
+    // Check if no groups are found
+    if (Array.isArray(data) && data.length === 0) {
+      return [];
+    }
+
     return data;
   } catch (error) {
     console.error("Error fetching groups: ", error);

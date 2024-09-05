@@ -103,19 +103,24 @@ const Home = () => {
   
   if (error) return <div>Error loading content</div>;
 
+  // TODO: if groupsData is empty return a message instead of GroupList
   return (
-    <>
+    <div className="home-container">
       <Button
         label={showAddGroupForm ? 'Cancel' : 'Add Group'}
         onClick={() => setShowAddGroupForm(!showAddGroupForm)}
       />
 
-      <GroupList 
-        groups={groupsData}
-        onUpdateGroup={handleUpdateGroup}
-        onDeleteGroup={openDeleteModal}
-        users={users}
-      />
+      <div className="home-group-list-container">
+        {groupsData && groupsData.length !== 0 ?
+          <GroupList
+            groups={groupsData}
+            onUpdateGroup={handleUpdateGroup}
+            onDeleteGroup={openDeleteModal}
+            users={users}
+          /> : <p>Create a group!</p>
+        }
+      </div>
 
       { showAddGroupForm && 
         <AddGroupForm  
@@ -134,7 +139,7 @@ const Home = () => {
         <p>Are you sure you want to delete this group?</p>
         <p>Group expenses will be deleted.</p>
       </Modal>
-    </>
+    </div>
   )
 }
 export default Home;
