@@ -9,6 +9,11 @@ export const fetchGroupById = async (groupId: string) => {
     if (!response.ok) {
       throw new Error('Failed to fetch group data');
     }
+
+    if (response.status === 404) {
+      return []; // group not found
+    }
+
     const data = await response.json();
     return data;
   } catch (error) {
@@ -22,22 +27,15 @@ export const fetchAllGroups = async () => {
 
   try {
     const response = await fetch(url);
-
-    if (response.status === 204) {
-      return [];
-    }
-
     if (!response.ok) {
       throw new Error('Failed to fetch group data');
     }
 
-    const data = await response.json();
-
-    // Check if no groups are found
-    if (Array.isArray(data) && data.length === 0) {
-      return [];
+    if (response.status === 204) {
+      return []; // no groups found
     }
 
+    const data = await response.json();
     return data;
   } catch (error) {
     console.error("Error fetching groups: ", error);
@@ -124,6 +122,11 @@ export const fetchUserGroups = async (userId: string) => {
     if (!response.ok) {
       throw new Error('Failed to fetch user groups data');
     }
+
+    if (response.status === 204) {
+      return []; // no groups found
+    }
+
     const data = await response.json();
     return data;
   } catch (error) {
@@ -140,6 +143,11 @@ export const fetchAllUsers = async () => {
     if (!response.ok) {
       throw new Error('Failed to fetch users data');
     }
+
+    if (response.status === 204) {
+      return []; // no users found
+    }
+
     const data = await response.json();
     return data;
   } catch (error) {
@@ -156,6 +164,11 @@ export const fetchUserById = async (userId: string) => {
     if (!response.ok) {
       throw new Error('Failed to fetch user data');
     }
+
+    if (response.status === 404) {
+      return []; // user not found
+    }
+
     const data = await response.json();
     return data;
   } catch (error) {
@@ -217,11 +230,13 @@ export const fetchExpensesByGroupId = async (groupId: string) => {
   try {
     const response = await fetch(url);
     if (!response.ok) {
-      if (response.status === 404) {
-        console.error("response.status is 404");
-        return [];
-      }
+      throw new Error('Failed to fetch group data');
     }
+
+    if (response.status === 204) {
+      return [];
+    }
+
     const data = await response.json();
     return data;
   } catch (error) {
