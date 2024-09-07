@@ -3,7 +3,6 @@ import cors from "cors";
 import dotenv from "dotenv"
 import "express-async-errors";
 import serverless from "serverless-http"
-import { itemRouter } from "./items.mjs"
 import groupRouter from "./routes/groups.mjs";
 import expenseRouter from "./routes/expenses.mjs";
 import userRouter from "./routes/users.mjs";
@@ -19,7 +18,6 @@ app.use(cors());
 app.use(express.json());
 
 // Load routes
-app.use('/.netlify/functions/api/items', itemRouter);
 app.use('/.netlify/functions/api/groups', groupRouter);
 app.use('/.netlify/functions/api/expenses', expenseRouter);
 app.use('/.netlify/functions/api/users', userRouter);
