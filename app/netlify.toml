@@ -1,0 +1,19 @@
+[build]
+  # Directory to serve files from
+  publish = "dist"
+  # Directory containing your serverless functions
+  functions = "netlify/functions"
+
+[dev]
+  # The port for the front-end framework dev server (Vite)
+  framework = "vite"
+  # The port the Netlify dev server will use
+  port = 8888
+  # The target port for proxying (e.g., Vite's dev server)
+  targetPort = 5173
+
+[[redirects]]
+  from = "/local/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+  force = true
