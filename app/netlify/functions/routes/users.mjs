@@ -13,7 +13,12 @@ userRouter.get("/", async (req, res) => {
       .limit(50)
       .toArray();
 
-    res.send(results).status(200);
+    if (results.length === 0) {
+      res.status(204).send(); // no users found, status 204
+    }
+    else {
+      res.status(200).send(results);
+    }
   } catch (error) {
     console.error("Error getting user: ", error);
     next(error);     

@@ -14,7 +14,7 @@ groupRouter.get("/", async (req, res) => {
       .toArray();
 
     if (results.length === 0) {
-      res.send(204).send(); // no groups found, status 204
+      res.status(204).send(); // no groups found, status 204
     }
     else {
       res.status(200).send(results);
@@ -131,7 +131,13 @@ groupRouter.get("/users/:userId", async (req, res) => {
     const db = await connectToDatabase();
     const collection = db.collection("groups");
     const groups = await collection.find({ "members._id": userId }).toArray();
-    res.status(200).json(groups);
+
+    if (groups.length === 0) {
+      res.status(204).send();
+    }
+    else {
+      res.status(200).json(groups);
+    }
   } catch (error) {
     console.error("Error fetching groups for user: ", error);
     res.status(500).json({ error: "Error fetching groups for user" });

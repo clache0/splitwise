@@ -13,8 +13,13 @@ expenseRouter.get("/", async (req, res) => {
       .limit(50)
       .toArray();
 
-    res.status(200).send(results);
-  } catch (error) {
+      if (results.length === 0) {
+        res.status(204).send(); // no expenses found, status 204
+      }
+      else {
+        res.status(200).send(results);
+      }
+    } catch (error) {
     console.error("Error getting expense: ", error);
     next(error);     
   }
@@ -49,7 +54,7 @@ expenseRouter.get("/group/:id", async (req, res, next) => {
     const result = await collection.find(query).toArray();
   
     if (result.length === 0) {
-      res.status(404).send("No expenses found");
+      res.status(204).send();
     }
     else {
       res.status(200).send(result);
