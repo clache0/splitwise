@@ -93,6 +93,7 @@ const AddExpenseForm: React.FC<ExpenseFormProps> = ({ onSubmit, onShowForm, grou
       if (parsedData.groupId) {
         // Call the callback function to add the new expense
         onSubmit(parsedData);
+        onShowForm(false); // close form
 
         if (!expense) {
           // Clear form inputs
@@ -121,7 +122,7 @@ const AddExpenseForm: React.FC<ExpenseFormProps> = ({ onSubmit, onShowForm, grou
     <div className='add-expense-form-backdrop'>
       <div className='add-expense-form-content'>
         <h2>{expense ? 'Update Expense Form' : 'Add Expense Form'}</h2>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} autoComplete='off'>
           <div>
             <label htmlFor="title">Title</label>
             <input

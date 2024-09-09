@@ -65,7 +65,7 @@ const AddGroupForm: React.FC<AddGroupFormProps> = ({ onSubmit, onShowForm, users
     <div className='add-group-form-backdrop'>
       <div className='add-group-form-content'>
         <h2>{group ? 'Update Group Form' : 'Add Group Form'}</h2>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} autoComplete='off'>
           <div>
             <label htmlFor="name">Group Name</label>
             <input

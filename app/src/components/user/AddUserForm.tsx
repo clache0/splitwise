@@ -18,6 +18,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onAddUser, onShowForm }) => {
       lastName,
     };
     onAddUser(newUser);
+    onShowForm(false); // close form
 
     // Clear form inputs
     setFirstName('');
@@ -28,7 +29,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onAddUser, onShowForm }) => {
     <div className='add-user-form-backdrop'>
       <div className='add-user-form-content'>
         <h2>Add User Form</h2>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} autoComplete='off'>
           <div>
             <label htmlFor="firstName">First Name</label>
             <input

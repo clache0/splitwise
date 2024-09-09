@@ -39,14 +39,14 @@ const SettleUpForm: React.FC<SettleUpFormProps> = ({ onSubmit, onShowForm, users
     };
 
     onSubmit(newExpense);
-    onShowForm(false);
+    onShowForm(false); // close form
   };
 
   return (
     <div className="settle-up-form-backdrop">
       <div className="settle-up-form-content">
         <h2>Settle Up</h2>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} autoComplete='off'>
           <div>
             <label htmlFor="payer">Payer</label>
             <select
