@@ -82,7 +82,7 @@ expenseRouter.post("/", async (req, res) => {
 // PATCH Update the expense
 expenseRouter.patch("/:id", async (req, res) => {
   const query = { _id: new ObjectId(req.params.id) };
-  const { title, amount, date, payerId, participants } = req.body;
+  const { title, amount, date, payerId, participants, settled } = req.body;
   const updates = { $set: {} };
 
   if (title) {
@@ -102,6 +102,9 @@ expenseRouter.patch("/:id", async (req, res) => {
       { "memberId": participant.memberId,
         "share": participant.share
     }));
+  }
+  if (settled) {
+    updates["$set"]["settled"] = settled;
   }
 
   // attempt to update expense
