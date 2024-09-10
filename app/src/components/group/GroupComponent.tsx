@@ -10,6 +10,7 @@ import "../../styles/components/group/GroupComponent.css"
 import SettleUpForm from "../expense/SettleUpForm";
 import * as XLSX from 'xlsx';
 import { getNameFromId } from "../../api/utils";
+import { checkUnsettledExpenses } from "../../api/balanceUtils";
 
 export interface User {
   _id?: string;
@@ -40,6 +41,7 @@ export interface Expense {
   date: string;
   payerId: string;
   participants: Participant[];
+  settled: boolean;
 }
 
 const GroupComponent = () => {
@@ -115,11 +117,26 @@ const GroupComponent = () => {
   const handleSettleUp = async(expense: Expense) => {
     try {
       await postExpense(expense); // post settle up expense to server
-      setGroupExpenses(await fetchExpensesByGroupId(expense.groupId));
+      const updatedExpenses = await fetchExpensesByGroupId(expense.groupId);
+      setGroupExpenses(updatedExpenses); // update group expenses locally
+      await settleExpenses(updatedExpenses); // check to mark expenses as settled locally and on server
     } catch (error) {
       console.error("Error settling up expense: ", error);
     }
   };
+
+  const settleExpenses = async (groupExpenses: Expense[]) => {
+    if (!checkUnsettledExpenses(group!, users!, groupExpenses)) {
+      return;
+    }
+
+    for (const expense of groupExpenses) {
+      if (!expense.settled) {
+        expense.settled = true; // update local expense
+        await patchExpense(expense);
+      }
+    }
+  }
 
   const handleFilteredExpensesChange = (newData: Expense[] | null) => {
     setFilteredExpenses(newData);

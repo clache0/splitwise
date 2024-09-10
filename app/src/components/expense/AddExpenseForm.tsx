@@ -17,6 +17,7 @@ const expenseSchema = z.object({
       share: z.number(),
     })
   ),
+  settled: z.boolean(),
 });
 
 interface ExpenseFormProps {
@@ -87,6 +88,7 @@ const AddExpenseForm: React.FC<ExpenseFormProps> = ({ onSubmit, onShowForm, grou
             share: share,
           }
         )) : [],
+        settled: false,
       });
       
       // check groupId exist before adding expense

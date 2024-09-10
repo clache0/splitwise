@@ -30,7 +30,10 @@ const ExpenseComponent: React.FC<ExpenseComponentProps> = ({ group, expense, use
       {expense ?
         <div className="expense-container">
           <div className="expense-left">
-            <h3 className="expense-title">{expense.title}</h3>
+            <div className="expense-1">
+              <h3 className="expense-title">{expense.title}</h3>
+              {expense.settled && <span>, settled</span>}
+            </div>
             <p className="expense-date">{formatDate(new Date(expense.date))}</p>
           </div>
           <div className="expense-right">

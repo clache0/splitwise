@@ -280,7 +280,11 @@ export const patchExpense = async (expense: Expense) => {
 
     if (!response.ok) {
       throw new Error('Failed to patch expense');
-    } 
+    }
+
+    if (response.status === 404) {
+      console.error("patchExpense: expense not found");
+    }
   } catch (error) {
     console.error('Error patching expense:', error);
     throw error;

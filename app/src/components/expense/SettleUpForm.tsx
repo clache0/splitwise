@@ -36,6 +36,7 @@ const SettleUpForm: React.FC<SettleUpFormProps> = ({ onSubmit, onShowForm, users
       date: date,
       payerId: payerId,
       participants: participants,
+      settled: false,
     };
 
     onSubmit(newExpense);
@@ -54,7 +55,7 @@ const SettleUpForm: React.FC<SettleUpFormProps> = ({ onSubmit, onShowForm, users
               value={payerId}
               onChange={(event) => setPayerId(event.target.value)}
             >
-              <option value="">Select Payer</option>
+              <option value="">Select payer</option>
               {users.map((user) => (
                 <option key={user._id} value={user._id}>
                   {user.firstName} {user.lastName}
@@ -63,13 +64,13 @@ const SettleUpForm: React.FC<SettleUpFormProps> = ({ onSubmit, onShowForm, users
             </select>
           </div>
           <div>
-            <label htmlFor="payee">Payee</label>
+            <label htmlFor="payee">Who gets paid</label>
             <select
               id="payee"
               value={payeeId}
               onChange={(event) => setPayeeId(event.target.value)}
             >
-              <option value="">Select Payee</option>
+              <option value="">Select person who gets paid</option>
               {users.map((user) => (
                 <option key={user._id} value={user._id}>
                   {user.firstName} {user.lastName}

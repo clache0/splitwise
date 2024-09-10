@@ -17,6 +17,10 @@ export const calculateBalances = (groupExpenses: Expense[], users: User[]): Bala
 
   // iterate group expenses
   groupExpenses.forEach(expense => {
+    if (expense.settled) {
+      return; // expense is already settled, no calculation needed
+    }
+    
     const totalAmount = expense.amount;
     const payerId = expense.payerId;
 
