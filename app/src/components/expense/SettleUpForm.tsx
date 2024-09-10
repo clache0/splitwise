@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { User, Expense, Participant } from '../group/GroupComponent';
 import '../../styles/components/expense/SettleUpForm.css';
-import { getNameFromId } from '../../api/utils';
+import { getCurrentDate, getNameFromId } from '../../api/utils';
 
 interface SettleUpFormProps {
   onSubmit: (expense: Expense) => void;
@@ -14,7 +14,7 @@ const SettleUpForm: React.FC<SettleUpFormProps> = ({ onSubmit, onShowForm, users
   const [payerId, setPayerId] = useState<string>('');
   const [payeeId, setPayeeId] = useState<string>('');
   const [amount, setAmount] = useState<number>(0);
-  const [date, setDate] = useState<string>(new Date().toISOString().substring(0, 10));
+  const [date, setDate] = useState<string>(getCurrentDate());
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -90,7 +90,7 @@ const SettleUpForm: React.FC<SettleUpFormProps> = ({ onSubmit, onShowForm, users
           <div>
             <label htmlFor="date">Date</label>
             <input
-              type="date"
+              type="datetime-local"
               id="date"
               value={date}
               onChange={(event) => setDate(event.target.value)}

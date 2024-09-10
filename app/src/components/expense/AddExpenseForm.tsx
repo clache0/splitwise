@@ -146,7 +146,7 @@ const AddExpenseForm: React.FC<ExpenseFormProps> = ({ onSubmit, onShowForm, grou
           <div>
             <label htmlFor="date">Date</label>
             <input
-              type="date"
+              type="datetime-local"
               id="date"
               value={date}
               onChange={(event) => setDate(event.target.value)}
