@@ -18,9 +18,7 @@ const ExpenseComponent: React.FC<ExpenseComponentProps> = ({ group, expense, use
 
   const participants = expense.participants;
   const participantNames = participants.map((participant, index) => {
-    if (participant.memberId != expense.payerId) {
-      return <p key={index} className="expense-participants" >{getNameFromId(participant.memberId, users!)}</p>;
-    }
+    return <p key={index} className="expense-participants" >{getNameFromId(participant.memberId, users!)}</p>;
   });
 
   const payerName = getNameFromId(expense.payerId, users!);
@@ -38,7 +36,7 @@ const ExpenseComponent: React.FC<ExpenseComponentProps> = ({ group, expense, use
           </div>
           <div className="expense-right">
             <p className="expense-amount">{payerName} paid ${expense.amount.toFixed(2)} </p>
-            <div className="expense-participants">Participant{participants.length > 2 && 's'} {participantNames}</div>
+            <div className="expense-participants">Participant{participantNames.length >= 2 && 's'} {participantNames}</div>
             <div className="expense-actions">
               <Button
                 label='Edit'
