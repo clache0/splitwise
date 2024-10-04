@@ -3,8 +3,8 @@ import { Group, User } from '../group/GroupComponent';
 import UserList from './UserList';
 import '../../styles/components/user/UserComponent.css'
 import AddUserForm from './AddUserForm';
-import { deleteUserById, fetchUserGroups, postUser } from '../../api/api';
-import { fetchAllUsers } from '../../api/api'
+import { deleteUserById, fetchAllUsers, postUser } from '../../api/apiUser';
+import { fetchUserGroups } from '../../api/apiGroup'
 import Modal from '../general/Modal';
 
 interface UserComponentProps {

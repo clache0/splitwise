@@ -1,7 +1,9 @@
 import GroupNavbar from "./GroupNavbar"
 import { useEffect, useState } from 'react';
 import ExpenseList from "../expense/ExpenseList";
-import { fetchGroupById, fetchExpensesByGroupId, fetchUserById, postExpense, deleteExpenseById, patchExpense } from "../../api/api";
+import { fetchExpensesByGroupId, postExpense, deleteExpenseById, patchExpense } from "../../api/apiExpense";
+import { fetchUserById } from "../../api/apiUser";
+import { fetchGroupById } from "../../api/apiGroup";
 import AddExpenseForm from "../expense/AddExpenseForm";
 import { useParams } from "react-router-dom";
 import Modal from "../general/Modal";

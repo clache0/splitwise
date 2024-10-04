@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { Group, User } from "./group/GroupComponent"
 import GroupList from "./group/GroupList";
-import { fetchAllUsers, fetchAllGroups, postGroup, deleteGroupById, patchGroup, fetchExpensesByGroupId } from "../api/api";
+import { fetchAllGroups, postGroup, deleteGroupById, patchGroup } from "../api/apiGroup";
+import { fetchAllUsers } from "../api/apiUser";
+import { fetchExpensesByGroupId } from "../api/apiExpense";
 import Button from "./general/Button";
 import AddGroupForm from "./group/AddGroupForm";
 import Modal from "./general/Modal";
