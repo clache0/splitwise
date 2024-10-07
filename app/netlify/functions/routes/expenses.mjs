@@ -20,7 +20,28 @@ expenseRouter.get("/", async (req, res) => {
         res.status(200).send(results);
       }
     } catch (error) {
-    console.error("Error getting expense: ", error);
+    console.error("Error getting expenses: ", error);
+    next(error);     
+  }
+});
+
+// GET a list of unsettled expenses, limit 50
+expenseRouter.get("/unsettled", async (req, res) => {
+  try {
+    const db = await connectToDatabase();
+    let collection = await db.collection("expenses");
+    let results = await collection.find({ settled: false })
+      .limit(50)
+      .toArray();
+
+      if (results.length === 0) {
+        res.status(204).send(); // no expenses found, status 204
+      }
+      else {
+        res.status(200).send(results);
+      }
+    } catch (error) {
+    console.error("Error getting unsettled expenses: ", error);
     next(error);     
   }
 });
@@ -51,6 +72,26 @@ expenseRouter.get("/group/:id", async (req, res, next) => {
     const db = await connectToDatabase();
     let collection = await db.collection("expenses");
     let query = { groupId: req.params.id };
+    const result = await collection.find(query).toArray();
+  
+    if (result.length === 0) {
+      res.status(204).send();
+    }
+    else {
+      res.status(200).send(result);
+    }
+  } catch (error) {
+    console.error("Error getting expense: ", error);
+    next(error);
+  }
+});
+
+// GET unsettled expenses by group id
+expenseRouter.get("/group/:id/unsettled", async (req, res, next) => {
+  try {
+    const db = await connectToDatabase();
+    let collection = await db.collection("expenses");
+    let query = { groupId: req.params.id, settled: false };
     const result = await collection.find(query).toArray();
   
     if (result.length === 0) {
