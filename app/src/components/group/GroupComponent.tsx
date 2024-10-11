@@ -59,6 +59,7 @@ const GroupComponent = () => {
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const [expenseToDelete, setExpenseToDelete] = useState<Expense | null>(null);
 
+  // fetch group, groupExpenses, users
   const fetchData = async () => {
     try {
       const groupData = await fetchGroupById(groupId);
@@ -75,6 +76,7 @@ const GroupComponent = () => {
     }
   };
 
+  // re-fetch group, groupExpenses, users when groupId changes
   useEffect(() => {
     fetchData();
   }, [groupId]);
@@ -116,16 +118,23 @@ const GroupComponent = () => {
     }
   };
 
+  // post settleUp expense and update groupExpenses
   const handleSettleUp = async(expense: Expense) => {
     try {
       await postExpense(expense); // post settle up expense to server
       const updatedExpenses = await fetchExpensesByGroupId(expense.groupId);
-      setGroupExpenses(updatedExpenses); // update group expenses locally
-      await settleExpenses(updatedExpenses); // check to mark expenses as settled locally and on server
+      await setGroupExpenses(updatedExpenses); // update group expenses locally
     } catch (error) {
       console.error("Error settling up expense: ", error);
     }
   };
+
+  // handleSettleUp updates groupExpenses asynchronously
+  useEffect(() => {
+    if (groupExpenses && groupExpenses.length > 0) {
+      settleExpenses(groupExpenses); // check to mark expenses as settled locally and on server
+    }
+  }, [groupExpenses]);
 
   const settleExpenses = async (groupExpenses: Expense[]) => {
     if (!checkUnsettledExpenses(group!, users!, groupExpenses)) {
