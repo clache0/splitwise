@@ -105,7 +105,6 @@ const Home = () => {
   
   if (error) return <div>Error loading content</div>;
 
-  // TODO: if groupsData is empty return a message instead of GroupList
   return (
     <div className="home-container">
       <Button
