@@ -52,12 +52,13 @@ const GroupComponent = () => {
   const [groupExpenses, setGroupExpenses] = useState<Expense[] | null>([]);
   const [filteredExpenses, setFilteredExpenses] = useState<Expense[] | null>([]);
   const [users, setUsers] = useState<User[] | null>([]); // group members including first and last name
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<unknown | null>(null);
   const [showAddExpenseForm, setShowAddExpenseForm] = useState<boolean>(false);
   const [showSettleUpForm, setShowSettleUpForm] = useState<boolean>(false);
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const [expenseToDelete, setExpenseToDelete] = useState<Expense | null>(null);
+  const [defaultUserId, setDefaultUserId] = useState<string>("");
 
   // fetch group, groupExpenses, users
   const fetchData = async () => {
@@ -79,6 +80,14 @@ const GroupComponent = () => {
   // re-fetch group, groupExpenses, users when groupId changes
   useEffect(() => {
     fetchData();
+  }, [groupId]);
+
+  // set defaultUserId
+  // TODO: save defaultUserId in localStorage
+  useEffect(() => {
+    if (group && group.members) {
+      setDefaultUserId(group?.members[0]._id);
+    }
   }, [groupId]);
 
   const handleAddExpense = async (expense: Expense) => {
@@ -184,13 +193,15 @@ const GroupComponent = () => {
   return (
     <div className="group-component">
       <GroupNavbar 
-        group={group} 
+        group={group}
+        users={users}
         isLoading={isLoading} 
         error={error} 
         setShowAddExpenseForm={setShowAddExpenseForm} 
         showAddExpenseForm={showAddExpenseForm} 
         setShowSettleUpForm={setShowSettleUpForm} 
         exportExpensesToExcel={exportExpensesToExcel}
+        setDefaultUserId={setDefaultUserId}
       />
 
       <div className="group-content">
@@ -217,6 +228,7 @@ const GroupComponent = () => {
           onShowForm={setShowAddExpenseForm}
           group={group} 
           users={users}
+          defaultUserId={defaultUserId}
         /> 
       }
 

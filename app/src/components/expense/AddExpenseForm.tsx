@@ -26,9 +26,10 @@ interface ExpenseFormProps {
   group: Group | null;
   users: User[] | null;
   expense?: Expense; // optional expense for update
+  defaultUserId: string;
 };
 
-const AddExpenseForm: React.FC<ExpenseFormProps> = ({ onSubmit, onShowForm, group, users, expense }) => {
+const AddExpenseForm: React.FC<ExpenseFormProps> = ({ onSubmit, onShowForm, group, users, expense, defaultUserId }) => {
   const [groupId, setGroupId] = useState<string>(expense?.groupId || '');
   const [title, setTitle] = useState<string>(expense?.title || '');
   const [amount, setAmount] = useState<string>(expense?.amount.toFixed(2) || '');
@@ -51,11 +52,9 @@ const AddExpenseForm: React.FC<ExpenseFormProps> = ({ onSubmit, onShowForm, grou
     }
   }, [group]);
 
-  // initialize payerId with first user
+  // initialize payerId with defaultUserId set in GroupNavbar and GroupComponent
   useEffect(() => {
-    if (users && users.length > 0) {
-      setPayerId(users[0]._id || '');
-    }
+    setPayerId(defaultUserId || '');
   }, [users]);
 
   // initialize participants with all group members
