@@ -11,8 +11,8 @@ import GroupBalances from "./GroupBalances";
 import "../../styles/components/group/GroupComponent.css"
 import SettleUpForm from "../expense/SettleUpForm";
 import * as XLSX from 'xlsx';
-import { getNameFromId } from "../../api/utils";
-import { checkUnsettledExpenses } from "../../api/balanceUtils";
+import { getNameFromId } from "../../utils/utils";
+import { checkUnsettledExpenses } from "../../utils/balanceUtils";
 
 export interface User {
   _id?: string;

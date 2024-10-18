@@ -3,7 +3,7 @@ import "../../styles/components/expense/ExpenseComponent.css"
 import Button from "../general/Button";
 import { useState } from "react";
 import AddExpenseForm from "./AddExpenseForm";
-import { getNameFromId, formatDate } from "../../api/utils";
+import { getNameFromId, formatDate } from "../../utils/utils";
 
 interface ExpenseComponentProps {
   group: Group | null;

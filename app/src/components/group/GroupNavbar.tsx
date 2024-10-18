@@ -3,7 +3,7 @@ import Button from '../general/Button'
 import "../../styles/components/group/GroupNavbar.css"
 import { useState } from 'react';
 import ExportModal from '../expense/ExportModal';
-import { getNameFromId } from '../../api/utils';
+import { getNameFromId } from '../../utils/utils';
 
 interface GroupNavbarProps {
   group: Group | null;

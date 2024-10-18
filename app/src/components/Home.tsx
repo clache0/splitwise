@@ -8,7 +8,7 @@ import Button from "./general/Button";
 import AddGroupForm from "./group/AddGroupForm";
 import Modal from "./general/Modal";
 import "../styles/components/Home.css"
-import { checkUnsettledExpenses } from "../api/balanceUtils";
+import { checkUnsettledExpenses } from "../utils/balanceUtils";
 
 const Home = () => {
   const [groupsData, setGroupsData] = useState<Group[] | null>([]);

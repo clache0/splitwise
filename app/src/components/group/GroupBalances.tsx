@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Expense, User } from '../group/GroupComponent';
 import "../../styles/components/group/GroupBalances.css"
-import { calculateBalances } from '../../api/balanceUtils';
+import { calculateBalances } from '../../utils/balanceUtils';
 
 interface GroupBalancesProps {
   groupExpenses: Expense[];
