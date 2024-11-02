@@ -88,7 +88,7 @@ const GroupComponent = () => {
     if (group && group.members) {
       setDefaultUserId(group?.members[0]._id);
     }
-  }, [groupId]);
+  }, [group]);
 
   const handleAddExpense = async (expense: Expense) => {
     try {
@@ -202,6 +202,7 @@ const GroupComponent = () => {
         setShowSettleUpForm={setShowSettleUpForm} 
         exportExpensesToExcel={exportExpensesToExcel}
         setDefaultUserId={setDefaultUserId}
+        setGroupExpenses={setGroupExpenses}
       />
 
       <div className="group-content">

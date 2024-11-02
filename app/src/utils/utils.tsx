@@ -5,6 +5,16 @@ export const getNameFromId = (id: string, users: User[]) => {
   return user ? `${user.firstName} ${user.lastName}` : 'Unknown'
 };
 
+export const getIdFromName = (name: string, users: User[]) => {
+  const [firstName, lastName] = name.split(" ");
+
+  const user = users?.find(user => 
+    user.firstName === firstName && user.lastName === lastName
+  );
+  
+  return user ? user._id : 'Unknown';
+}
+
 export const formatDate = (date: Date) => {
   return date.toLocaleDateString('en-US', {month: 'long', day: 'numeric', timeZone: 'UTC'});
 };

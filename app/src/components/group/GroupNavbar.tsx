@@ -1,9 +1,10 @@
-import { Group, User } from './GroupComponent'
+import { Expense, Group, User } from './GroupComponent'
 import Button from '../general/Button'
 import "../../styles/components/group/GroupNavbar.css"
 import { useState } from 'react';
 import ExportModal from '../expense/ExportModal';
 import { getNameFromId } from '../../utils/utils';
+import { importExpensesFromExcel } from '../../utils/importExcel';
 
 interface GroupNavbarProps {
   group: Group | null;
@@ -15,6 +16,7 @@ interface GroupNavbarProps {
   setShowSettleUpForm: React.Dispatch<React.SetStateAction<boolean>>;
   exportExpensesToExcel: () => void;
   setDefaultUserId: React.Dispatch<React.SetStateAction<string>>;
+  setGroupExpenses: React.Dispatch<React.SetStateAction<Expense[] | null>>;
 }
 
 const GroupNavbar: React.FC<GroupNavbarProps> = ({
@@ -27,16 +29,50 @@ const GroupNavbar: React.FC<GroupNavbarProps> = ({
   setShowSettleUpForm,
   exportExpensesToExcel,
   setDefaultUserId,
+  setGroupExpenses,
 }) => {
   const [showExportModal, setShowExportModal] = useState<boolean>(false);
-
   const openExportModal = () => setShowExportModal(true);
   const closeExportModal = () => setShowExportModal(false);
+
+  const [showImportModal, setShowImportModal] = useState<boolean>(false);
+  const openImportModal = () => setShowImportModal(true);
+  const closeImportModal = () => setShowImportModal(false);
+
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const handleExportExpenses = () => {
     exportExpensesToExcel();
     closeExportModal();
   };
+
+  const handleImportExpenses = async () => {
+    if (selectedFile && group && users) {
+      try {
+        const importedExpenses = await importExpensesFromExcel(selectedFile, group, users);
+        if (importExpensesFromExcel.length > 0) {
+          // update groupExpenses locally
+          setGroupExpenses(prevExpenses => [...(prevExpenses || []), ...importedExpenses]);
+        }
+        else {
+          console.log("No expenses were imported.");
+        }
+      } catch (error) {
+        console.error("Failed to import expenses: ", error);
+      }
+    }
+    else {
+      console.error("handleImportExpenses: missing selectedFile, group, users, and group id");
+    }
+    closeImportModal();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+    }
+  }
 
   const handleUserChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedUserId = event.target.value;
@@ -85,9 +121,15 @@ const GroupNavbar: React.FC<GroupNavbarProps> = ({
             }}
             backgroundColor='var(--light-gray)'
           />
+          <Button
+            label='Import'
+            onClick={() => {
+              openImportModal();
+            }}
+            backgroundColor='var(--light-gray)'
+          />
         </div>
       </div>
-
 
       <ExportModal
         isOpen={showExportModal}
@@ -97,6 +139,19 @@ const GroupNavbar: React.FC<GroupNavbarProps> = ({
       >
         <p>Select month and/or year filter if you want to filter exports</p>
       </ExportModal>
+
+      <ExportModal
+        isOpen={showImportModal}
+        onClose={closeImportModal}
+        onConfirm={handleImportExpenses}
+        title="Import Expenses"
+      >
+        <div>
+          <p>Please select .xlsx or .xls file</p>
+          <input type="file" accept=".xlsx, .xls" onChange={handleFileChange}/>
+        </div>
+      </ExportModal>
+
     </nav>
   )
 }
