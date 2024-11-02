@@ -13,7 +13,13 @@ interface ExpenseComponentProps {
   onDeleteExpense: (expense: Expense) => void;
 }
 
-const ExpenseComponent: React.FC<ExpenseComponentProps> = ({ group, expense, users, onUpdateExpense, onDeleteExpense }) => {
+const ExpenseComponent: React.FC<ExpenseComponentProps> = ({ 
+  group,
+  expense,
+  users,
+  onUpdateExpense,
+  onDeleteExpense,
+}) => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
   const participants = expense.participants;

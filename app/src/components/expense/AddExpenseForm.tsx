@@ -26,15 +26,22 @@ interface ExpenseFormProps {
   group: Group | null;
   users: User[] | null;
   expense?: Expense; // optional expense for update
-  defaultUserId: string;
+  defaultUserId?: string;
 };
 
-const AddExpenseForm: React.FC<ExpenseFormProps> = ({ onSubmit, onShowForm, group, users, expense, defaultUserId }) => {
+const AddExpenseForm: React.FC<ExpenseFormProps> = ({ 
+  onSubmit,
+  onShowForm,
+  group,
+  users,
+  expense,
+  defaultUserId
+}) => {
   const [groupId, setGroupId] = useState<string>(expense?.groupId || '');
   const [title, setTitle] = useState<string>(expense?.title || '');
   const [amount, setAmount] = useState<string>(expense?.amount.toFixed(2) || '');
   const [date, setDate] = useState<string>(expense?.date || getCurrentDate());
-  const [payerId, setPayerId] = useState<string>(expense?.payerId || '');
+  const [payerId, setPayerId] = useState<string>(expense?.payerId || defaultUserId || '');
   const [participants, setParticipants] = useState<User[]>(
     expense?.participants.map(
       p => users?.find(
@@ -51,11 +58,6 @@ const AddExpenseForm: React.FC<ExpenseFormProps> = ({ onSubmit, onShowForm, grou
       setGroupId(group._id || '');
     }
   }, [group]);
-
-  // initialize payerId with defaultUserId set in GroupNavbar and GroupComponent
-  useEffect(() => {
-    setPayerId(defaultUserId || '');
-  }, [users]);
 
   // initialize participants with all group members
   useEffect(() => {
