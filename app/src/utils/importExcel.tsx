@@ -30,6 +30,8 @@ export const importExpensesFromExcel = async (file: File, group: Group, users: U
 
 // process imported data from JSON to Expense[]
 export const processImportedExpenses = async (jsonData: any[], group: Group, users: User[]) => {
+  // const currentYear = new Date().getFullYear();
+
   // convert importedExpenses to Expense[] type and send expenses to backend
   const importedExpenses: Expense[] = jsonData.map((item) => {
     // validate group id
@@ -49,6 +51,14 @@ export const processImportedExpenses = async (jsonData: any[], group: Group, use
       share: 0, // placeholder
     }));
     const participantsCount = participantsArray.length;
+
+    // // TODO Convert item.date to a string in YYYY-MM-DD format if needed
+    // let dateString = item.date;
+    // if (typeof item.date === "string" && /^\d{2}\.\d{2}$/.test(item.date)) {
+    //   // If format is MM.DD, convert to YYYY-MM-DD format using the current year
+    //   const [month, day] = item.date.split('.').map(Number);
+    //   dateString = `${currentYear}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    // }
 
     return {
       groupId: group._id,
