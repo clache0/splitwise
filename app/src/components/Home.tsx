@@ -1,20 +1,17 @@
-import { useEffect, useState } from "react";
-import { Group, User } from "./group/GroupComponent"
+import { useState } from "react";
+import { Group } from "./group/GroupComponent"
 import GroupList from "./group/GroupList";
 import { fetchAllGroups, postGroup, deleteGroupById, patchGroup } from "../api/apiGroup";
-import { fetchAllUsers } from "../api/apiUser";
 import { fetchExpensesByGroupId } from "../api/apiExpense";
 import Button from "./general/Button";
 import AddGroupForm from "./group/AddGroupForm";
 import Modal from "./general/Modal";
 import "../styles/components/Home.css"
 import { checkUnsettledExpenses } from "../utils/balanceUtils";
+import { useAppData } from "../context/AppDataContext";
 
 const Home = () => {
-  const [groupsData, setGroupsData] = useState<Group[] | null>([]);
-  const [users, setUsers] = useState<User[] | null>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<unknown | null>(null);
+  const { groups, users, isLoading, isError, setGroups } = useAppData();
   const [showAddGroupForm, setShowAddGroupForm] = useState<boolean>(false);
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const [groupToDelete, setGroupToDelete] = useState<Group | null>(null);
@@ -22,7 +19,7 @@ const Home = () => {
   const handleAddGroup = async (group: Group) => {
     try {
       await postGroup(group); // post group to server
-      setGroupsData(await fetchAllGroups());
+      setGroups(await fetchAllGroups());
     } catch (error) {
       console.error("Error posting group: ", error);
     }
@@ -39,7 +36,7 @@ const Home = () => {
 
     try {
       await patchGroup(updatedGroup); // post group to server
-      setGroupsData(await fetchAllGroups());
+      setGroups(await fetchAllGroups());
     } catch (error) {
       console.error("Error updating expense: ", error);
     }
@@ -63,7 +60,7 @@ const Home = () => {
     if (groupToDelete._id) {
       try {
         await deleteGroupById(groupToDelete._id); // delete group from server
-        setGroupsData(await fetchAllGroups());
+        setGroups(await fetchAllGroups());
         setShowDeleteModal(false);
       } catch (error) {
         console.error("Error deleting group: ", error);
@@ -81,29 +78,9 @@ const Home = () => {
     setGroupToDelete(null);
   };
 
-  // fetch groupsData and use memberIds to fetch users
-  const fetchData = async () => {
-    try {
-      const groupsData = await fetchAllGroups();
-      setGroupsData(groupsData);
-
-      const users = await fetchAllUsers();
-      setUsers(users);
-    } catch (error) {
-      console.error('Error fetching groups data: ', error);
-      setError(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
   if (isLoading) return <div>Content is loading</div>;
   
-  if (error) return <div>Error loading content</div>;
+  if (isError) return <div>Error loading content</div>;
 
   return (
     <div className="home-container">
@@ -113,9 +90,9 @@ const Home = () => {
       />
 
       <div className="home-group-list-container">
-        {groupsData && groupsData.length !== 0 ?
+        {groups && groups.length !== 0 ?
           <GroupList
-            groups={groupsData}
+            groups={groups}
             onUpdateGroup={handleUpdateGroup}
             onDeleteGroup={openDeleteModal}
             users={users}

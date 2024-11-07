@@ -11,6 +11,8 @@ interface AppDataProviderProps {
 export const AppDataProvider: React.FC<AppDataProviderProps> = ({ children }) => {
   const [groups, setGroups] = useState<Group[] | null>(null);
   const [users, setUsers] = useState<User[] | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -22,6 +24,9 @@ export const AppDataProvider: React.FC<AppDataProviderProps> = ({ children }) =>
         setUsers(fetchedUsers);
       } catch (error) {
         console.error("Error fetching groups and users:", error);
+      } finally {
+        setIsLoading(false);
+        setIsError(false);
       }
     };
 
@@ -29,7 +34,14 @@ export const AppDataProvider: React.FC<AppDataProviderProps> = ({ children }) =>
   }, []);
 
   return (
-    <AppDataContext.Provider value={{ groups, users, setGroups, setUsers }}>
+    <AppDataContext.Provider value={{
+      groups,
+      users,
+      isLoading, 
+      isError, 
+      setGroups,
+      setUsers
+    }}>
       {children}
     </AppDataContext.Provider>
   );
