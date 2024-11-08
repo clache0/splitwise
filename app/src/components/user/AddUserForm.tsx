@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { User } from '../group/GroupComponent';
 import "../../styles/components/user/AddUserForm.css";
+import { User } from '../../types/types';
 
 interface AddUserFormProps {
   onAddUser: (user: User) => void;

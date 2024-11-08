@@ -1,7 +1,7 @@
 import React from 'react';
-import { User } from '../group/GroupComponent';
 import '../../styles/components/user/UserList.css';
 import Button from '../general/Button';
+import { User } from '../../types/types';
 
 interface UserListProps {
   users: User[];

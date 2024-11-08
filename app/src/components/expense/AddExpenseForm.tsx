@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Group, Expense, User } from '../group/GroupComponent';
 import { z } from 'zod';
 import "../../styles/components/expense/AddExpenseForm.css"
 import { getCurrentDate } from '../../utils/utils';
+import { Group, User, Expense } from '../../types/types';
 
 const expenseSchema = z.object({
   _id: z.string().optional(),

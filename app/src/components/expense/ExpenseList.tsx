@@ -1,7 +1,7 @@
 import ExpenseComponent from "./ExpenseComponent";
-import { Expense, Group, User } from "../group/GroupComponent";
 import "../../styles/components/expense/ExpenseList.css"
 import { useEffect, useState } from "react";
+import { Group, User, Expense } from "../../types/types";
 
 interface ExpenseListProps {
   group: Group | null;

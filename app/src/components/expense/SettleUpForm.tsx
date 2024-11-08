@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { User, Expense, Participant } from '../group/GroupComponent';
 import '../../styles/components/expense/SettleUpForm.css';
 import { getCurrentDate, getNameFromId } from '../../utils/utils';
+import { Expense, User, Participant } from '../../types/types';
 
 interface SettleUpFormProps {
   onSubmit: (expense: Expense) => void;

@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
-import { Group, User } from "./GroupComponent";
 import Button from "../general/Button";
 import "../../styles/components/group/GroupCard.css"
 import { useState } from "react";
 import AddGroupForm from "./AddGroupForm";
+import { Group, User } from "../../types/types";
 
 interface GroupCardProps {
   group: Group;

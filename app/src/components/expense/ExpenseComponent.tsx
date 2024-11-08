@@ -1,9 +1,9 @@
-import { Expense, Group, User } from "../group/GroupComponent";
 import "../../styles/components/expense/ExpenseComponent.css"
 import Button from "../general/Button";
 import { useState } from "react";
 import AddExpenseForm from "./AddExpenseForm";
 import { getNameFromId, formatDate } from "../../utils/utils";
+import { Group, User, Expense } from "../../types/types";
 
 interface ExpenseComponentProps {
   group: Group | null;

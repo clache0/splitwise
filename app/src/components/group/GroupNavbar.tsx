@@ -1,10 +1,10 @@
-import { Expense, Group, User } from './GroupComponent'
 import Button from '../general/Button'
 import "../../styles/components/group/GroupNavbar.css"
 import { useState } from 'react';
 import ExportModal from '../expense/ExportModal';
 import { getNameFromId } from '../../utils/utils';
 import { importExpensesFromExcel } from '../../utils/importExcel';
+import { Group, User, Expense } from '../../types/types';
 
 interface GroupNavbarProps {
   group: Group | null;

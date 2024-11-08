@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Group } from "./group/GroupComponent"
 import GroupList from "./group/GroupList";
 import { fetchAllGroups, postGroup, deleteGroupById, patchGroup } from "../api/apiGroup";
 import { fetchExpensesByGroupId } from "../api/apiExpense";
@@ -9,6 +8,7 @@ import Modal from "./general/Modal";
 import "../styles/components/Home.css"
 import { checkUnsettledExpenses } from "../utils/balanceUtils";
 import { useAppData } from "../context/AppDataContext";
+import { Group } from "../types/types";
 
 const Home = () => {
   const { groups, users, isLoading, isError, setGroups } = useAppData();

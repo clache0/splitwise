@@ -13,38 +13,7 @@ import SettleUpForm from "../expense/SettleUpForm";
 import * as XLSX from 'xlsx';
 import { getNameFromId } from "../../utils/utils";
 import { checkUnsettledExpenses } from "../../utils/balanceUtils";
-
-export interface User {
-  _id?: string;
-  firstName: string;
-  lastName: string;
-};
-
-export interface Member {
-  _id: string;
-};
-
-export interface Group {
-  _id?: string;
-  name: string;
-  members: Member[];
-};
-
-export interface Participant {
-  memberId: string;
-  share: number;
-}
-
-export interface Expense {
-  _id?: string;
-  groupId: string;
-  title: string;
-  amount: number;
-  date: string;
-  payerId: string;
-  participants: Participant[];
-  settled: boolean;
-}
+import { Group, User, Expense, Member } from "../../types/types";
 
 const GroupComponent = () => {
   const { groupId } = useParams() as { groupId: string};

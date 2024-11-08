@@ -1,5 +1,5 @@
-import { Group, User } from "./GroupComponent";
 import "../../styles/components/group/GroupList.css"
+import { Group, User } from "../../types/types";
 import GroupCard from "./GroupCard";
 
 interface GroupListProps {

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Group, User, Member } from './GroupComponent';
 import '../../styles/components/group/AddGroupForm.css'
+import { Group, User, Member } from '../../types/types';
 
 interface AddGroupFormProps {
   onSubmit: (group: Group) => void;

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Group, User } from '../group/GroupComponent';
 import UserList from './UserList';
 import '../../styles/components/user/UserComponent.css'
 import AddUserForm from './AddUserForm';
 import { deleteUserById, fetchAllUsers, postUser } from '../../api/apiUser';
 import { fetchUserGroups } from '../../api/apiGroup'
 import Modal from '../general/Modal';
+import { Group, User } from '../../types/types';
 
 interface UserComponentProps {
 }
