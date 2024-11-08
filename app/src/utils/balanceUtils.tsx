@@ -1,5 +1,5 @@
 import { Balance } from "../components/group/GroupBalances";
-import { Expense, Group, User } from "../components/group/GroupComponent";
+import { Group, User, Expense } from "../types/types";
 
 // input: Expense[], User[]
 // output: Balance {}

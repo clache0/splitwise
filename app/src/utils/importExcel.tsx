@@ -1,7 +1,7 @@
 import * as XLSX from 'xlsx';
 import { getIdFromName } from './utils';
-import { Expense, Group, Participant, User } from '../components/group/GroupComponent';
 import config from '../../config.json'
+import { Group, User, Expense, Participant } from '../types/types';
 
 export const importExpensesFromExcel = async (file: File, group: Group, users: User[]) => {
   const reader = new FileReader();

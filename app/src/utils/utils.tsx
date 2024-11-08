@@ -1,4 +1,4 @@
-import { User } from "../components/group/GroupComponent";
+import { User } from "../types/types";
 
 export const getNameFromId = (id: string, users: User[]) => {
   const user = users?.find(user => user._id === id);
