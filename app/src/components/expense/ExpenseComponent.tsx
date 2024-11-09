@@ -3,31 +3,29 @@ import Button from "../general/Button";
 import { useState } from "react";
 import AddExpenseForm from "./AddExpenseForm";
 import { getNameFromId, formatDate } from "../../utils/utils";
-import { Group, User, Expense } from "../../types/types";
+import { Expense } from "../../types/types";
+import { useGroupContext } from "../../context/GroupContext";
 
 interface ExpenseComponentProps {
-  group: Group | null;
   expense: Expense;
-  users: User[] | null;
   onUpdateExpense: (expense: Expense) => void;
   onDeleteExpense: (expense: Expense) => void;
 }
 
 const ExpenseComponent: React.FC<ExpenseComponentProps> = ({ 
-  group,
   expense,
-  users,
   onUpdateExpense,
   onDeleteExpense,
 }) => {
+  const { groupUsers } = useGroupContext();
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
   const participants = expense.participants;
   const participantNames = participants.map((participant, index) => {
-    return <p key={index} className="expense-participants" >{getNameFromId(participant.memberId, users!)}</p>;
+    return <p key={index} className="expense-participants" >{getNameFromId(participant.memberId, groupUsers!)}</p>;
   });
 
-  const payerName = getNameFromId(expense.payerId, users!);
+  const payerName = getNameFromId(expense.payerId, groupUsers!);
 
   return (
     <>
@@ -67,8 +65,6 @@ const ExpenseComponent: React.FC<ExpenseComponentProps> = ({
             setIsEditing(false);
           }}
           onShowForm={setIsEditing}
-          group={group}
-          users={users}
           expense={expense}
         />
       )}

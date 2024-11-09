@@ -1,15 +1,15 @@
+import { useAppData } from "../../context/AppDataContext";
 import "../../styles/components/group/GroupList.css"
-import { Group, User } from "../../types/types";
+import { Group } from "../../types/types";
 import GroupCard from "./GroupCard";
 
 interface GroupListProps {
-  groups: Group[] | null;
-  users: User[] | null;
   onUpdateGroup: (group: Group) => void;
   onDeleteGroup: (group: Group) => void;
 }
-const GroupList: React.FC<GroupListProps> = ({ groups, users, onUpdateGroup, onDeleteGroup }) => {
-  
+const GroupList: React.FC<GroupListProps> = ({ onUpdateGroup, onDeleteGroup }) => {
+  const { groups } = useAppData();
+
   if (!groups) {
     return <div>Loading Group List...</div>
   }
@@ -21,7 +21,6 @@ const GroupList: React.FC<GroupListProps> = ({ groups, users, onUpdateGroup, onD
     >
       <GroupCard
         group={group}
-        users={users}
         onUpdateGroup={onUpdateGroup}
         onDeleteGroup={onDeleteGroup}
       />
@@ -34,8 +33,6 @@ const GroupList: React.FC<GroupListProps> = ({ groups, users, onUpdateGroup, onD
       <ul className="group-list column-center">
         {groupList}
       </ul>
-
-
     </>
   );
 };

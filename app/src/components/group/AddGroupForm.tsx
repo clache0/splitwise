@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import '../../styles/components/group/AddGroupForm.css'
 import { Group, User, Member } from '../../types/types';
+import { useAppData } from '../../context/AppDataContext';
 
 interface AddGroupFormProps {
   onSubmit: (group: Group) => void;
   onShowForm: (showAddGroupForm: boolean) => void;
-  users: User[];
   group?: Group; // optional group for update
 }
 
-const AddGroupForm: React.FC<AddGroupFormProps> = ({ onSubmit, onShowForm, users, group }) => {
+const AddGroupForm: React.FC<AddGroupFormProps> = ({ onSubmit, onShowForm, group }) => {
   const [name, setName] = useState<string>(group?.name || '');
-  const [selectedUsers, setSelectedUsers] = useState<User[] | null>([]);
+  const [selectedUsers, setSelectedUsers] = useState<User[] | []>([]);
+  const { users } = useAppData();
 
   // update selectedUsers if group exist
   useEffect(() => {

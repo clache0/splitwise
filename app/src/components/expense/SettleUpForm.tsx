@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
 import '../../styles/components/expense/SettleUpForm.css';
 import { getCurrentDate, getNameFromId } from '../../utils/utils';
-import { Expense, User, Participant } from '../../types/types';
+import { Expense, Participant } from '../../types/types';
+import { useGroupContext } from '../../context/GroupContext';
 
 interface SettleUpFormProps {
   onSubmit: (expense: Expense) => void;
   onShowForm: (show: boolean) => void;
-  users: User[];
   groupId: string;
 }
 
-const SettleUpForm: React.FC<SettleUpFormProps> = ({ onSubmit, onShowForm, users, groupId }) => {
+const SettleUpForm: React.FC<SettleUpFormProps> = ({ onSubmit, onShowForm, groupId }) => {
+  const { groupUsers } = useGroupContext();
   const [payerId, setPayerId] = useState<string>('');
   const [payeeId, setPayeeId] = useState<string>('');
   const [amount, setAmount] = useState<number>(0);
@@ -31,7 +32,7 @@ const SettleUpForm: React.FC<SettleUpFormProps> = ({ onSubmit, onShowForm, users
 
     const newExpense: Expense = {
       groupId: groupId,
-      title: `${getNameFromId(payerId, users)} paid ${getNameFromId(payeeId, users)}`,
+      title: `${getNameFromId(payerId, groupUsers)} paid ${getNameFromId(payeeId, groupUsers)}`,
       amount: amount,
       date: date,
       payerId: payerId,
@@ -56,7 +57,7 @@ const SettleUpForm: React.FC<SettleUpFormProps> = ({ onSubmit, onShowForm, users
               onChange={(event) => setPayerId(event.target.value)}
             >
               <option value="">Select payer</option>
-              {users.map((user) => (
+              {groupUsers.map((user) => (
                 <option key={user._id} value={user._id}>
                   {user.firstName} {user.lastName}
                 </option>
@@ -71,7 +72,7 @@ const SettleUpForm: React.FC<SettleUpFormProps> = ({ onSubmit, onShowForm, users
               onChange={(event) => setPayeeId(event.target.value)}
             >
               <option value="">Select person who gets paid</option>
-              {users.map((user) => (
+              {groupUsers.map((user) => (
                 <option key={user._id} value={user._id}>
                   {user.firstName} {user.lastName}
                 </option>

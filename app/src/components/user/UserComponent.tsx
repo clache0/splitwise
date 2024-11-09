@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import UserList from './UserList';
 import '../../styles/components/user/UserComponent.css'
 import AddUserForm from './AddUserForm';
@@ -6,30 +6,17 @@ import { deleteUserById, fetchAllUsers, postUser } from '../../api/apiUser';
 import { fetchUserGroups } from '../../api/apiGroup'
 import Modal from '../general/Modal';
 import { Group, User } from '../../types/types';
+import { useAppData } from '../../context/AppDataContext';
 
 interface UserComponentProps {
 }
 
 const UserComponent: React.FC<UserComponentProps> = () => {
-  const [users, setUsers] = useState<User[]>([]);
+  const { users, setUsers } = useAppData();
   const [showAddUserForm, setShowAddUserForm] = useState<boolean>(false);
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const [deleteMessage, setDeleteMessage] = useState<string>("");
   const [userToDelete, setUserToDelete] = useState<User | null>(null);
-
-  // fetch users
-  const fetchData = async () => {
-    try {
-      const users = await fetchAllUsers();
-      setUsers(users);
-    } catch (error) {
-      console.error('Error fetching groups data: ', error);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
 
   const handleAddUser = async (user: User) => {
     try {

@@ -92,10 +92,8 @@ const Home = () => {
       <div className="home-group-list-container">
         {groups && groups.length !== 0 ?
           <GroupList
-            groups={groups}
             onUpdateGroup={handleUpdateGroup}
             onDeleteGroup={openDeleteModal}
-            users={users}
           /> : <p>Create a group!</p>
         }
       </div>

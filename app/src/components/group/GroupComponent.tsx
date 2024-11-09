@@ -20,7 +20,7 @@ const GroupComponent = () => {
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const [expenseToDelete, setExpenseToDelete] = useState<Expense | null>(null);
   const [defaultUserId, setDefaultUserId] = useState<string>("");
-  const { group, groupUsers, groupExpenses, isLoading, isError, setGroupExpenses } = useGroupContext();
+  const { group, groupUsers, groupExpenses, setGroupExpenses } = useGroupContext();
 
   // set defaultUserId
   // TODO: save defaultUserId in localStorage
@@ -135,16 +135,11 @@ const GroupComponent = () => {
   return (
     <div className="group-component">
       <GroupNavbar 
-        group={group}
-        users={groupUsers}
-        isLoading={isLoading} 
-        isError={isError} 
         setShowAddExpenseForm={setShowAddExpenseForm} 
         showAddExpenseForm={showAddExpenseForm} 
         setShowSettleUpForm={setShowSettleUpForm} 
         exportExpensesToExcel={exportExpensesToExcel}
         setDefaultUserId={setDefaultUserId}
-        setGroupExpenses={setGroupExpenses}
       />
 
       <div className="group-content">
@@ -156,11 +151,8 @@ const GroupComponent = () => {
         }
 
         <ExpenseList
-          group={group}
-          groupExpenses={groupExpenses}
           onUpdateExpense={handleUpdateExpense}
           onDeleteExpense={openDeleteModal}
-          users={groupUsers}
           onFilteredExpensesChange={handleFilteredExpensesChange}
         />
       </div>
@@ -169,8 +161,6 @@ const GroupComponent = () => {
         <AddExpenseForm 
           onSubmit={handleAddExpense} 
           onShowForm={setShowAddExpenseForm}
-          group={group} 
-          users={groupUsers}
           defaultUserId={defaultUserId}
         /> 
       }
@@ -179,7 +169,6 @@ const GroupComponent = () => {
         <SettleUpForm 
           onSubmit={handleSettleUp} 
           onShowForm={setShowSettleUpForm}
-          users={groupUsers!}
           groupId={group._id}
         /> 
       }

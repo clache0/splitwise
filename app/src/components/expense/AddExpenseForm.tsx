@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { z } from 'zod';
 import "../../styles/components/expense/AddExpenseForm.css"
 import { getCurrentDate } from '../../utils/utils';
-import { Group, User, Expense } from '../../types/types';
+import { User, Expense } from '../../types/types';
+import { useGroupContext } from '../../context/GroupContext';
 
 const expenseSchema = z.object({
   _id: z.string().optional(),
@@ -23,8 +24,6 @@ const expenseSchema = z.object({
 interface ExpenseFormProps {
   onSubmit: (expense: Expense) => void;
   onShowForm: (showAddExpenseForm: boolean) => void;
-  group: Group | null;
-  users: User[] | null;
   expense?: Expense; // optional expense for update
   defaultUserId?: string;
 };
@@ -32,11 +31,10 @@ interface ExpenseFormProps {
 const AddExpenseForm: React.FC<ExpenseFormProps> = ({ 
   onSubmit,
   onShowForm,
-  group,
-  users,
   expense,
   defaultUserId
 }) => {
+  const { group, groupUsers } = useGroupContext();
   const [groupId, setGroupId] = useState<string>(expense?.groupId || '');
   const [title, setTitle] = useState<string>(expense?.title || '');
   const [amount, setAmount] = useState<string>(expense?.amount.toFixed(2) || '');
@@ -44,7 +42,7 @@ const AddExpenseForm: React.FC<ExpenseFormProps> = ({
   const [payerId, setPayerId] = useState<string>(expense?.payerId || defaultUserId || '');
   const [participants, setParticipants] = useState<User[]>(
     expense?.participants.map(
-      p => users?.find(
+      p => groupUsers?.find(
         u => u._id === p.memberId // match ids to users
       )).filter(
         (u): u is User => !!u // filter out undefined users
@@ -61,10 +59,10 @@ const AddExpenseForm: React.FC<ExpenseFormProps> = ({
 
   // initialize participants with all group members
   useEffect(() => {
-    if (users) {
-      setParticipants(users);
+    if (groupUsers) {
+      setParticipants(groupUsers);
     }
-  }, [users]);
+  }, [groupUsers]);
 
   // calculate total share when participants change
   useEffect(() => {
@@ -161,8 +159,8 @@ const AddExpenseForm: React.FC<ExpenseFormProps> = ({
               onChange={(event) => setPayerId(event.target.value)}
             >
               <option value="">Select payer</option>
-              {users && 
-                users.map((user) => (
+              {groupUsers && 
+                groupUsers.map((user) => (
                   <option key={user._id} value={user._id}>{user.firstName} {user.lastName}</option>
                 ))
               }
@@ -171,8 +169,8 @@ const AddExpenseForm: React.FC<ExpenseFormProps> = ({
           <div>
             <label htmlFor="participant">Selected participants</label>
             <div className='participant-list'>
-              {users && 
-                users.map((user, index) => (
+              {groupUsers && 
+                groupUsers.map((user, index) => (
                   <div key={user._id || index} className='participant-item'>
                     <label htmlFor={user._id}>{user.firstName} {user.lastName}</label>
                     <input

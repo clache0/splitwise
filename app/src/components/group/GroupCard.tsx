@@ -3,15 +3,14 @@ import Button from "../general/Button";
 import "../../styles/components/group/GroupCard.css"
 import { useState } from "react";
 import AddGroupForm from "./AddGroupForm";
-import { Group, User } from "../../types/types";
+import { Group } from "../../types/types";
 
 interface GroupCardProps {
   group: Group;
-  users: User[] | null;
   onUpdateGroup: (group: Group) => void;
   onDeleteGroup: (group: Group) => void;
 }
-const GroupCard: React.FC<GroupCardProps> = ({ group, users, onUpdateGroup, onDeleteGroup }) => {
+const GroupCard: React.FC<GroupCardProps> = ({ group, onUpdateGroup, onDeleteGroup }) => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
   
   return (
@@ -38,7 +37,6 @@ const GroupCard: React.FC<GroupCardProps> = ({ group, users, onUpdateGroup, onDe
             setIsEditing(false);
           }}
           onShowForm={setIsEditing}
-          users={users || []}
           group={group}
         /> 
       )}

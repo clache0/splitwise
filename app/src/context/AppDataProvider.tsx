@@ -9,8 +9,8 @@ interface AppDataProviderProps {
 }
 
 export const AppDataProvider: React.FC<AppDataProviderProps> = ({ children }) => {
-  const [groups, setGroups] = useState<Group[] | null>(null);
-  const [users, setUsers] = useState<User[] | null>(null);
+  const [groups, setGroups] = useState<Group[] | []>([]);
+  const [users, setUsers] = useState<User[] | []>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(true);
 

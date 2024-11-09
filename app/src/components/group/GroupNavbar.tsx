@@ -4,33 +4,24 @@ import { useState } from 'react';
 import ExportModal from '../expense/ExportModal';
 import { getNameFromId } from '../../utils/utils';
 import { importExpensesFromExcel } from '../../utils/importExcel';
-import { Group, User, Expense } from '../../types/types';
+import { useGroupContext } from '../../context/GroupContext';
 
 interface GroupNavbarProps {
-  group: Group | null;
-  users: User[] | null;
-  isLoading: boolean;
-  isError: boolean;
   setShowAddExpenseForm: React.Dispatch<React.SetStateAction<boolean>>;
   showAddExpenseForm: boolean;
   setShowSettleUpForm: React.Dispatch<React.SetStateAction<boolean>>;
   exportExpensesToExcel: () => void;
   setDefaultUserId: React.Dispatch<React.SetStateAction<string>>;
-  setGroupExpenses: React.Dispatch<React.SetStateAction<Expense[] | []>>;
 }
 
 const GroupNavbar: React.FC<GroupNavbarProps> = ({
-  group,
-  users,
-  isLoading,
-  isError,
   setShowAddExpenseForm,
   showAddExpenseForm,
   setShowSettleUpForm,
   exportExpensesToExcel,
   setDefaultUserId,
-  setGroupExpenses,
 }) => {
+  const { group, groupUsers, isLoading, isError, setGroupExpenses } = useGroupContext();
   const [showExportModal, setShowExportModal] = useState<boolean>(false);
   const openExportModal = () => setShowExportModal(true);
   const closeExportModal = () => setShowExportModal(false);
@@ -47,9 +38,9 @@ const GroupNavbar: React.FC<GroupNavbarProps> = ({
   };
 
   const handleImportExpenses = async () => {
-    if (selectedFile && group && users) {
+    if (selectedFile && group && groupUsers) {
       try {
-        const importedExpenses = await importExpensesFromExcel(selectedFile, group, users);
+        const importedExpenses = await importExpensesFromExcel(selectedFile, group, groupUsers);
         if (importExpensesFromExcel.length > 0) {
           // update groupExpenses locally
           setGroupExpenses(prevExpenses => [...(prevExpenses || []), ...importedExpenses]);
@@ -89,8 +80,8 @@ const GroupNavbar: React.FC<GroupNavbarProps> = ({
           <h5 className='default-user-title'>Default User</h5>
           <select onChange={handleUserChange}>
             {group?.members.map((member) => {
-              if (users) {
-                const memberName = getNameFromId(member._id, users);
+              if (groupUsers) {
+                const memberName = getNameFromId(member._id, groupUsers);
                 return <option key={member._id} value={member._id}>{memberName}</option>;
               }
               return <option>Missing users</option>;

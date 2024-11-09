@@ -1,28 +1,24 @@
 import ExpenseComponent from "./ExpenseComponent";
 import "../../styles/components/expense/ExpenseList.css"
 import { useEffect, useState } from "react";
-import { Group, User, Expense } from "../../types/types";
+import { Expense } from "../../types/types";
+import { useGroupContext } from "../../context/GroupContext";
 
 interface ExpenseListProps {
-  group: Group | null;
-  groupExpenses: Expense[] | null;
   onUpdateExpense: (expense: Expense) => void;
   onDeleteExpense: (expense: Expense) => void;
-  users: User[] | null;
   onFilteredExpensesChange: (filteredExpenses: Expense[] | []) => void;
 }
 
 const ITEMS_PER_PAGE = 20;
 
 const ExpenseList: React.FC<ExpenseListProps> = ({
-  group,
-  groupExpenses,
   onUpdateExpense,
   onDeleteExpense,
-  users,
   onFilteredExpensesChange 
 }) => {
 
+  const { groupExpenses } = useGroupContext();
   const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
   const [selectedYear, setSelectedYear] = useState<string | null>(null);
   const [filteredExpenses, setFilteredExpenses] = useState<Expense[] | null>([]);
@@ -95,9 +91,7 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
       return (
         <li key={expense._id || index}>
           <ExpenseComponent 
-            group={group}
             expense={expense}
-            users={users}
             onUpdateExpense={onUpdateExpense}
             onDeleteExpense={onDeleteExpense}
           />
