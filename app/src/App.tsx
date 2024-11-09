@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Route, Routes, useParams } from 'react-router-dom'
 import './App.css'
 import Layout from './components/layout/Layout'
 import PageUnderConstruction from './components/general/PageUnderConstruction'
@@ -7,6 +7,7 @@ import GroupComponent from './components/group/GroupComponent'
 import UserComponent from './components/user/UserComponent'
 import { useEffect, useState } from 'react'
 import PasswordPrompt from './components/general/PasswordPrompt'
+import { GroupProvider } from './context/GroupProvider'
 
 const App = () => {
   if (!import.meta.env.VITE_PASSWORD) {
@@ -40,6 +41,12 @@ const App = () => {
     }
   }, []);
 
+  // helper component to access the groupId parameter and use GroupProvider
+  const RouteWrapper = ({ children }: { children: React.ReactNode }) => {
+    const { groupId } = useParams();
+    return groupId ? <GroupProvider groupId={groupId}>{children}</GroupProvider> : null;
+  };
+
   if (!isAuthenticated) {
     return <PasswordPrompt onAuthenticate={handleAuthenticate} />;
   }
@@ -49,7 +56,11 @@ const App = () => {
         <Routes>
             <Route path="/" element={<Layout/>}>
                 <Route path="/" element={<Home/>}/>
-                <Route path="/group/:groupId" element={<GroupComponent/>}/>
+                <Route path="/group/:groupId" element={
+                  <RouteWrapper>
+                    <GroupComponent/>
+                  </RouteWrapper>
+                } />
                 <Route path="/users" element={<UserComponent />}/>
                 <Route path="/under-construction" element={<PageUnderConstruction/>}/>
             </Route>

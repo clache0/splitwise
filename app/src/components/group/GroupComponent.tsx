@@ -2,10 +2,7 @@ import GroupNavbar from "./GroupNavbar"
 import { useEffect, useState } from 'react';
 import ExpenseList from "../expense/ExpenseList";
 import { fetchExpensesByGroupId, postExpense, deleteExpenseById, patchExpense } from "../../api/apiExpense";
-import { fetchUserById } from "../../api/apiUser";
-import { fetchGroupById } from "../../api/apiGroup";
 import AddExpenseForm from "../expense/AddExpenseForm";
-import { useParams } from "react-router-dom";
 import Modal from "../general/Modal";
 import GroupBalances from "./GroupBalances";
 import "../../styles/components/group/GroupComponent.css"
@@ -13,43 +10,17 @@ import SettleUpForm from "../expense/SettleUpForm";
 import * as XLSX from 'xlsx';
 import { getNameFromId } from "../../utils/utils";
 import { checkUnsettledExpenses } from "../../utils/balanceUtils";
-import { Group, User, Expense, Member } from "../../types/types";
+import { Expense } from "../../types/types";
+import { useGroupContext } from "../../context/GroupContext";
 
 const GroupComponent = () => {
-  const { groupId } = useParams() as { groupId: string};
-  const [group, setGroup] = useState<Group | null>(null);
-  const [groupExpenses, setGroupExpenses] = useState<Expense[] | null>([]);
-  const [filteredExpenses, setFilteredExpenses] = useState<Expense[] | null>([]);
-  const [users, setUsers] = useState<User[] | null>([]); // group members including first and last name
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<unknown | null>(null);
+  const [filteredExpenses, setFilteredExpenses] = useState<Expense[] | []>([]);
   const [showAddExpenseForm, setShowAddExpenseForm] = useState<boolean>(false);
   const [showSettleUpForm, setShowSettleUpForm] = useState<boolean>(false);
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const [expenseToDelete, setExpenseToDelete] = useState<Expense | null>(null);
   const [defaultUserId, setDefaultUserId] = useState<string>("");
-
-  // fetch group, groupExpenses, users
-  const fetchData = async () => {
-    try {
-      const groupData = await fetchGroupById(groupId);
-      const users = await Promise.all(groupData.members.map((member: Member) => fetchUserById(member._id)));
-      const groupExpensesData = await fetchExpensesByGroupId(groupId);
-      setGroup(groupData);
-      setGroupExpenses(groupExpensesData);
-      setUsers(users);
-    } catch (error) {
-      console.error('Error fetching group data: ', error);
-      setError(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // re-fetch group, groupExpenses, users when groupId changes
-  useEffect(() => {
-    fetchData();
-  }, [groupId]);
+  const { group, groupUsers, groupExpenses, isLoading, isError, setGroupExpenses } = useGroupContext();
 
   // set defaultUserId
   // TODO: save defaultUserId in localStorage
@@ -86,7 +57,7 @@ const GroupComponent = () => {
       try {
         await deleteExpenseById(expenseToDelete._id);
         setGroupExpenses((prevGroupExpenses) => {
-          if(!prevGroupExpenses) return null;
+          if(!prevGroupExpenses) return [];
           return prevGroupExpenses?.filter((prevExpense) => expenseToDelete._id !== prevExpense._id);
         });
         setShowDeleteModal(false);
@@ -115,7 +86,7 @@ const GroupComponent = () => {
   }, [groupExpenses]);
 
   const settleExpenses = async (groupExpenses: Expense[]) => {
-    if (!checkUnsettledExpenses(group!, users!, groupExpenses)) {
+    if (!checkUnsettledExpenses(group!, groupUsers!, groupExpenses)) {
       return;
     }
 
@@ -127,7 +98,7 @@ const GroupComponent = () => {
     }
   }
 
-  const handleFilteredExpensesChange = (newData: Expense[] | null) => {
+  const handleFilteredExpensesChange = (newData: Expense[] | []) => {
     setFilteredExpenses(newData);
   }
 
@@ -142,14 +113,16 @@ const GroupComponent = () => {
   };
 
   const exportExpensesToExcel = () => {
-    if (!filteredExpenses || !users) return;
+    if (!filteredExpenses || !groupUsers) return;
 
     const processedExpenses = filteredExpenses.map((expense) => {
       const { _id, groupId, payerId, participants, ...rest } = expense;
       return {
         ...rest,
-        payerName: getNameFromId(payerId, users),
-        participants: participants.map((participant) => getNameFromId(participant.memberId, users)).join(", "),
+        payerName: getNameFromId(payerId, groupUsers),
+        participants: participants.map(
+          (participant) => getNameFromId(participant.memberId, groupUsers))
+          .join(", "),
       };
     });
 
@@ -163,9 +136,9 @@ const GroupComponent = () => {
     <div className="group-component">
       <GroupNavbar 
         group={group}
-        users={users}
+        users={groupUsers}
         isLoading={isLoading} 
-        error={error} 
+        isError={isError} 
         setShowAddExpenseForm={setShowAddExpenseForm} 
         showAddExpenseForm={showAddExpenseForm} 
         setShowSettleUpForm={setShowSettleUpForm} 
@@ -175,10 +148,10 @@ const GroupComponent = () => {
       />
 
       <div className="group-content">
-        {groupExpenses && users &&
+        {groupExpenses && groupUsers &&
           <GroupBalances
             groupExpenses={groupExpenses}
-            users={users}
+            users={groupUsers}
           />
         }
 
@@ -187,7 +160,7 @@ const GroupComponent = () => {
           groupExpenses={groupExpenses}
           onUpdateExpense={handleUpdateExpense}
           onDeleteExpense={openDeleteModal}
-          users={users}
+          users={groupUsers}
           onFilteredExpensesChange={handleFilteredExpensesChange}
         />
       </div>
@@ -197,17 +170,17 @@ const GroupComponent = () => {
           onSubmit={handleAddExpense} 
           onShowForm={setShowAddExpenseForm}
           group={group} 
-          users={users}
+          users={groupUsers}
           defaultUserId={defaultUserId}
         /> 
       }
 
-      { showSettleUpForm && 
+      { showSettleUpForm && group?._id &&
         <SettleUpForm 
           onSubmit={handleSettleUp} 
           onShowForm={setShowSettleUpForm}
-          users={users!}
-          groupId={groupId} 
+          users={groupUsers!}
+          groupId={group._id}
         /> 
       }
 

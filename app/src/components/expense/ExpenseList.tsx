@@ -9,7 +9,7 @@ interface ExpenseListProps {
   onUpdateExpense: (expense: Expense) => void;
   onDeleteExpense: (expense: Expense) => void;
   users: User[] | null;
-  onFilteredExpensesChange: (filteredExpenses: Expense[] | null) => void;
+  onFilteredExpensesChange: (filteredExpenses: Expense[] | []) => void;
 }
 
 const ITEMS_PER_PAGE = 20;

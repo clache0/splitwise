@@ -10,20 +10,20 @@ interface GroupNavbarProps {
   group: Group | null;
   users: User[] | null;
   isLoading: boolean;
-  error: unknown | null;
+  isError: boolean;
   setShowAddExpenseForm: React.Dispatch<React.SetStateAction<boolean>>;
   showAddExpenseForm: boolean;
   setShowSettleUpForm: React.Dispatch<React.SetStateAction<boolean>>;
   exportExpensesToExcel: () => void;
   setDefaultUserId: React.Dispatch<React.SetStateAction<string>>;
-  setGroupExpenses: React.Dispatch<React.SetStateAction<Expense[] | null>>;
+  setGroupExpenses: React.Dispatch<React.SetStateAction<Expense[] | []>>;
 }
 
 const GroupNavbar: React.FC<GroupNavbarProps> = ({
   group,
   users,
   isLoading,
-  error,
+  isError,
   setShowAddExpenseForm,
   showAddExpenseForm,
   setShowSettleUpForm,
@@ -80,7 +80,7 @@ const GroupNavbar: React.FC<GroupNavbarProps> = ({
   }
 
   if (isLoading) return <p>Loading...</p>;
-  if (error) return <p>Error: {(error as Error).message}</p>;
+  if (isError) return <p>Error getting data</p>;
 
   return (
     <nav className='group-navbar'>

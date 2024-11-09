@@ -14,22 +14,22 @@ export const AppDataProvider: React.FC<AppDataProviderProps> = ({ children }) =>
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(true);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Fetch groups and users from your API
-        const fetchedGroups = await fetchAllGroups();
-        const fetchedUsers = await fetchAllUsers();
-        setGroups(fetchedGroups);
-        setUsers(fetchedUsers);
-      } catch (error) {
-        console.error("Error fetching groups and users:", error);
-      } finally {
-        setIsLoading(false);
-        setIsError(false);
-      }
-    };
+  const fetchData = async () => {
+    try {
+      // Fetch groups and users from your API
+      const fetchedGroups = await fetchAllGroups();
+      const fetchedUsers = await fetchAllUsers();
+      setGroups(fetchedGroups);
+      setUsers(fetchedUsers);
+    } catch (error) {
+      console.error("Error fetching groups and users:", error);
+    } finally {
+      setIsLoading(false);
+      setIsError(false);
+    }
+  };
 
+  useEffect(() => {
     fetchData();
   }, []);
 
