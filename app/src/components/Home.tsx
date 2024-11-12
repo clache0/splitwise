@@ -18,14 +18,16 @@ const Home = () => {
 
   const handleAddGroup = async (group: Group) => {
     try {
-      await postGroup(group); // post group to server
-      setGroups(await fetchAllGroups());
+      const groupId = await postGroup(group); // post group to server
+      const newGroup = { ...group, _id: groupId }
+      setGroups((prevGroups) => [...prevGroups, newGroup]); // update local groups
     } catch (error) {
       console.error("Error posting group: ", error);
     }
   };
 
   const handleUpdateGroup = async (updatedGroup: Group) => {
+    // TODO: can check unsettled expenses locally?
     const groupExpenses = await fetchExpensesByGroupId(updatedGroup._id!);
     const check = checkUnsettledExpenses(updatedGroup, users!, groupExpenses);
 
@@ -36,6 +38,7 @@ const Home = () => {
 
     try {
       await patchGroup(updatedGroup); // post group to server
+      // TODO: update groups locally
       setGroups(await fetchAllGroups());
     } catch (error) {
       console.error("Error updating expense: ", error);
@@ -48,6 +51,7 @@ const Home = () => {
       return;
     }
 
+    // TODO: check unsettled expenses locally
     const groupExpenses = await fetchExpensesByGroupId(groupToDelete._id!);
     const check = checkUnsettledExpenses(groupToDelete, users!, groupExpenses);
 
@@ -102,7 +106,6 @@ const Home = () => {
         <AddGroupForm  
           onSubmit={handleAddGroup}
           onShowForm={setShowAddGroupForm}
-          users={users || []}
         /> 
       }
 

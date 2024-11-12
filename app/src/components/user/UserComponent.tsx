@@ -20,8 +20,9 @@ const UserComponent: React.FC<UserComponentProps> = () => {
 
   const handleAddUser = async (user: User) => {
     try {
-      await postUser(user); // post user to server
-      setUsers(await fetchAllUsers());
+      const userId = await postUser(user); // post user to server
+      const newUser = { ...user, _id: userId}
+      setUsers((prevUsers) => [...prevUsers, newUser]); // update local users with new user
     } catch (error) {
       console.error("Error posting user: ", error);
     }
@@ -30,6 +31,7 @@ const UserComponent: React.FC<UserComponentProps> = () => {
   const handleDeleteUser = async () => {
     if (userToDelete) {
       try {
+        // TODO: can get user groups locally?
         const groups = await fetchUserGroups(userToDelete._id!);
         if (groups.length > 0) {
           setDeleteMessage(`User is in group(s) ${groups.map((group: Group) => group.name).join(", ")}, cannot delete`);

@@ -32,8 +32,9 @@ const GroupComponent = () => {
 
   const handleAddExpense = async (expense: Expense) => {
     try {
-      await postExpense(expense); // post expense to server
-      setGroupExpenses(await fetchExpensesByGroupId(expense.groupId));
+      const expenseId = await postExpense(expense); // post expense to server
+      const newExpense = { ...expense, _id: expenseId };
+      setGroupExpenses((prevExpenses) => [...prevExpenses, newExpense]);
     } catch (error) {
       console.error("Error posting expense: ", error);
     }
@@ -71,6 +72,7 @@ const GroupComponent = () => {
   const handleSettleUp = async(expense: Expense) => {
     try {
       await postExpense(expense); // post settle up expense to server
+      // TODO: local update
       const updatedExpenses = await fetchExpensesByGroupId(expense.groupId);
       await setGroupExpenses(updatedExpenses); // update group expenses locally
     } catch (error) {

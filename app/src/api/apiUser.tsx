@@ -1,5 +1,5 @@
 import config from '../../config.json'
-import { User } from '../components/group/GroupComponent';
+import { User } from '../types/types';
 
 export const fetchAllUsers = async () => {
   const url = config.serverUrl + '/users/';
@@ -43,6 +43,7 @@ export const fetchUserById = async (userId: string) => {
   };
 };
 
+// return insertedId if successfuly post
 export const postUser = async (user: User) => {
   const url = config.serverUrl + '/users/';
   
@@ -60,7 +61,7 @@ export const postUser = async (user: User) => {
     }
 
     const data = await response.json();
-    return data._id;
+    return data.insertedId;
   } catch (error) {
     console.error('Error posting user:', error);
     throw error;

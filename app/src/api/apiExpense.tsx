@@ -1,5 +1,5 @@
 import config from '../../config.json'
-import { Expense } from '../components/group/GroupComponent';
+import { Expense } from '../types/types';
 
 export const fetchExpensesByGroupId = async (groupId: string) => {
   const url = config.serverUrl + `/expenses/group/${groupId}`;
@@ -22,6 +22,7 @@ export const fetchExpensesByGroupId = async (groupId: string) => {
   };
 };
 
+// return insertedId if successful post
 export const postExpense = async (expense: Expense) => {
   const url = config.serverUrl + '/expenses/';
   
@@ -36,7 +37,10 @@ export const postExpense = async (expense: Expense) => {
 
     if (!response.ok) {
       throw new Error('Failed to post expense');
-    } 
+    }
+
+    const data = await response.json();
+    return data.insertedId;
   } catch (error) {
     console.error('Error posting expense:', error);
     throw error;

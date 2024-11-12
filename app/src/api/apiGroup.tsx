@@ -1,5 +1,5 @@
 import config from '../../config.json'
-import { Group } from '../components/group/GroupComponent';
+import { Group } from '../types/types';
 
 export const fetchGroupById = async (groupId: string) => {
   const url = config.serverUrl + `/groups/${groupId}`;
@@ -43,6 +43,7 @@ export const fetchAllGroups = async () => {
   };
 }
 
+// return inserted group id if successfuly
 export const postGroup = async (group: Group) => {
   const url = config.serverUrl + '/groups/';
   
@@ -57,7 +58,10 @@ export const postGroup = async (group: Group) => {
 
     if (!response.ok) {
       throw new Error('Failed to post group');
-    } 
+    }
+
+    const data = await response.json();
+    return data.insertedId;
   } catch (error) {
     console.error('Error posting group:', error);
     throw error;
