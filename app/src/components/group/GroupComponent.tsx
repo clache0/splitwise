@@ -1,7 +1,7 @@
 import GroupNavbar from "./GroupNavbar"
 import { useEffect, useState } from 'react';
 import ExpenseList from "../expense/ExpenseList";
-import { fetchExpensesByGroupId, postExpense, deleteExpenseById, patchExpense } from "../../api/apiExpense";
+import { postExpense, deleteExpenseById, patchExpense } from "../../api/apiExpense";
 import AddExpenseForm from "../expense/AddExpenseForm";
 import Modal from "../general/Modal";
 import GroupBalances from "./GroupBalances";
@@ -14,13 +14,14 @@ import { Expense } from "../../types/types";
 import { useGroupContext } from "../../context/GroupContext";
 
 const GroupComponent = () => {
+  const { group, groupUsers, groupExpenses, setGroupExpenses } = useGroupContext();
   const [filteredExpenses, setFilteredExpenses] = useState<Expense[] | []>([]);
   const [showAddExpenseForm, setShowAddExpenseForm] = useState<boolean>(false);
   const [showSettleUpForm, setShowSettleUpForm] = useState<boolean>(false);
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const [expenseToDelete, setExpenseToDelete] = useState<Expense | null>(null);
   const [defaultUserId, setDefaultUserId] = useState<string>("");
-  const { group, groupUsers, groupExpenses, setGroupExpenses } = useGroupContext();
+  const [isCheckSettleUp, setIsCheckSettleUp] = useState<boolean>(false);
 
   // set defaultUserId
   // TODO: save defaultUserId in localStorage
@@ -54,27 +55,34 @@ const GroupComponent = () => {
   };
 
   const handleDeleteExpense = async () => {
-    if (expenseToDelete && expenseToDelete._id) {
-      try {
-        await deleteExpenseById(expenseToDelete._id);
-        setGroupExpenses((prevGroupExpenses) => {
-          if(!prevGroupExpenses) return [];
-          return prevGroupExpenses?.filter((prevExpense) => expenseToDelete._id !== prevExpense._id);
-        });
-        setShowDeleteModal(false);
-      } catch (error) {
-        console.error("Error deleting expense: ", error);
-      }
+    if (!expenseToDelete) {
+      alert("No group to delete");
+      return;
+    }
+
+    if (!expenseToDelete._id) {
+      alert("Expense ID does not exist");
+      return;
+    }
+
+    try {
+      await deleteExpenseById(expenseToDelete._id);
+      setGroupExpenses((prevGroupExpenses) =>
+        prevGroupExpenses?.filter((prevExpense) => expenseToDelete._id !== prevExpense._id)
+      );
+      setShowDeleteModal(false);
+    } catch (error) {
+      console.error("Error deleting expense: ", error);
     }
   };
 
   // post settleUp expense and update groupExpenses
   const handleSettleUp = async(expense: Expense) => {
     try {
-      await postExpense(expense); // post settle up expense to server
-      // TODO: local update
-      const updatedExpenses = await fetchExpensesByGroupId(expense.groupId);
-      await setGroupExpenses(updatedExpenses); // update group expenses locally
+      const expenseId = await postExpense(expense); // post settle up expense to server
+      const newExpense = { ...expense, _id: expenseId };
+      await setGroupExpenses((prevExpenses) => [...prevExpenses, newExpense]); // update group expenses locally
+      setIsCheckSettleUp(!isCheckSettleUp); // trigger flag to check settle up flag in expenses
     } catch (error) {
       console.error("Error settling up expense: ", error);
     }
@@ -83,21 +91,24 @@ const GroupComponent = () => {
   // handleSettleUp updates groupExpenses asynchronously
   useEffect(() => {
     if (groupExpenses && groupExpenses.length > 0) {
-      settleExpenses(groupExpenses); // check to mark expenses as settled locally and on server
+      settleExpenses(groupExpenses);
     }
-  }, [groupExpenses]);
+  }, [isCheckSettleUp]);
 
+  // check to mark expenses as settled locally and on server
   const settleExpenses = async (groupExpenses: Expense[]) => {
     if (!checkUnsettledExpenses(group!, groupUsers!, groupExpenses)) {
       return;
     }
 
-    for (const expense of groupExpenses) {
+    const updatedExpenses = [...groupExpenses];
+    for (const expense of updatedExpenses) {
       if (!expense.settled) {
         expense.settled = true; // update local expense
-        await patchExpense(expense);
+        await patchExpense(expense); // update server expense
       }
     }
+    setGroupExpenses(updatedExpenses);
   }
 
   const handleFilteredExpensesChange = (newData: Expense[] | []) => {

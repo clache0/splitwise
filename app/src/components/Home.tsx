@@ -1,6 +1,6 @@
 import { useState } from "react";
 import GroupList from "./group/GroupList";
-import { fetchAllGroups, postGroup, deleteGroupById, patchGroup } from "../api/apiGroup";
+import { postGroup, deleteGroupById, patchGroup } from "../api/apiGroup";
 import { fetchExpensesByGroupId } from "../api/apiExpense";
 import Button from "./general/Button";
 import AddGroupForm from "./group/AddGroupForm";
@@ -38,8 +38,11 @@ const Home = () => {
 
     try {
       await patchGroup(updatedGroup); // post group to server
-      // TODO: update groups locally
-      setGroups(await fetchAllGroups());
+      setGroups((prevGroups) => 
+        prevGroups.map((group) =>
+          group._id === updatedGroup._id ? updatedGroup : group
+        )
+      );
     } catch (error) {
       console.error("Error updating expense: ", error);
     }
@@ -48,6 +51,11 @@ const Home = () => {
   const handleDeleteGroup = async () => {
     if (!groupToDelete) {
       alert("No group to delete");
+      return;
+    }
+
+    if (!groupToDelete._id) {
+      alert("Group ID does not exist");
       return;
     }
 
@@ -61,14 +69,14 @@ const Home = () => {
       return;
     }
 
-    if (groupToDelete._id) {
-      try {
-        await deleteGroupById(groupToDelete._id); // delete group from server
-        setGroups(await fetchAllGroups());
-        setShowDeleteModal(false);
-      } catch (error) {
-        console.error("Error deleting group: ", error);
-      }
+    try {
+      await deleteGroupById(groupToDelete._id); // delete group from database
+      setGroups((prevGroups) => 
+        prevGroups.filter((group) => group._id !== groupToDelete._id)
+      );
+      setShowDeleteModal(false);
+    } catch (error) {
+      console.error("Error deleting group: ", error);
     }
   };
 
