@@ -17,9 +17,7 @@ export const calculateBalances = (groupExpenses: Expense[], users: User[]): Bala
 
   // iterate group expenses
   groupExpenses.forEach(expense => {
-    if (expense.settled) {
-      return; // expense is already settled, no calculation needed
-    }
+    if (expense.settled) return; // expense is already settled, no calculation needed
     
     const totalAmount = expense.amount;
     const payerId = expense.payerId;
@@ -36,55 +34,59 @@ export const calculateBalances = (groupExpenses: Expense[], users: User[]): Bala
         balances[payerId].isOwed[payeeId] = (balances[payerId].isOwed[payeeId] || 0) + payeeShare;
         balances[payeeId].owes[payerId] = (balances[payeeId].owes[payerId] || 0) + payeeShare;
         balances[payerId].netBalance += payeeShare;
-        balances[payerId].netBalance = parseFloat(balances[payerId].netBalance.toFixed(2)); // round netBalance 2 decimals
         balances[payeeId].netBalance -= payeeShare;
-        balances[payeeId].netBalance = parseFloat(balances[payeeId].netBalance.toFixed(2)); // round netBalance 2 decimals
         return;
       }
     }
 
     // normal expense calculations
-    expense.participants.forEach(participant => {
-      const participantId = participant.memberId;
-      const participantShare = (participant.share / 100) * totalAmount; // calc percentage of total
+    expense.participants.forEach(({ memberId, share }) => {
+      if (memberId === payerId) return;
+      const participantShare = (share / 100) * totalAmount; // calc percentage of total
 
-      if (payerId !== participantId) {
-        balances[payerId].isOwed[participantId] = (balances[payerId].isOwed[participantId] || 0) + participantShare;
-        balances[participantId].owes[payerId] = (balances[participantId].owes[payerId] || 0) + participantShare;
-        balances[payerId].netBalance += participantShare;
-        balances[payerId].netBalance = parseFloat(balances[payerId].netBalance.toFixed(2)); // round netBalance 2 decimals
-        balances[participantId].netBalance -= participantShare;
-        balances[participantId].netBalance = parseFloat(balances[participantId].netBalance.toFixed(2)); // round netBalance 2 decimals
-      }
+      balances[payerId].isOwed[memberId] = (balances[payerId].isOwed[memberId] || 0) + participantShare;
+      balances[memberId].owes[payerId] = (balances[memberId].owes[payerId] || 0) + participantShare;
+
+      balances[payerId].netBalance += participantShare;
+      balances[memberId].netBalance -= participantShare;
     });
   });
 
   // net balances between pairs of participants
-  users.forEach(user => {
-    Object.keys(balances[user._id!].owes).forEach(owedTo => {
-      const owesAmount = balances[user._id!].owes[owedTo] || 0;
-      const isOwedAmount = balances[user._id!].isOwed[owedTo] || 0;
+  netPairwiseBalances(balances);
 
-      // check not balanced between pairs
-      if (isOwedAmount > 0) {
-        const netAmount = owesAmount - isOwedAmount; // net owes vs isOwed
-        const roundedNetAmount = parseFloat(netAmount.toFixed(2)); // round to 2 decimals
-
-        if (roundedNetAmount > 0) {
-          balances[user._id!].owes[owedTo] = roundedNetAmount;
-          delete balances[user._id!].isOwed[owedTo];
-        } else if (roundedNetAmount < 0) {
-          balances[user._id!].isOwed[owedTo] = -roundedNetAmount;
-          delete balances[user._id!].owes[owedTo];
-        } else {
-          delete balances[user._id!].owes[owedTo];
-          delete balances[user._id!].isOwed[owedTo];
-        }
-      }
-    });
+  // round netBalance
+  Object.keys(balances).forEach(userId => {
+    balances[userId].netBalance = parseFloat(balances[userId].netBalance.toFixed(2));
   });
 
   return balances;
+};
+
+// helper function to net balance between pairs
+const netPairwiseBalances = (balances: Balance) => {
+  Object.keys(balances).forEach((userId) => {
+    const userBalance = balances[userId];
+    Object.keys(userBalance.owes).forEach((owedTo) => {
+      const owesAmount = userBalance.owes[owedTo] || 0;
+      const isOwedAmount = userBalance.isOwed[owedTo] || 0;
+      const netAmount = owesAmount - isOwedAmount;
+
+      if (netAmount > 0) {
+        // user still owes money to owedTo
+        userBalance.owes[owedTo] = parseFloat(netAmount.toFixed(2));
+        delete userBalance.isOwed[owedTo];
+      } else if (netAmount < 0) {
+        // user still owed money by owedTo
+        userBalance.isOwed[owedTo] = parseFloat((-netAmount).toFixed(2));
+        delete userBalance.owes[owedTo];
+      } else {
+        // net zero balance
+        delete userBalance.owes[owedTo];
+        delete userBalance.isOwed[owedTo];
+      }
+    });
+  });
 };
 
 export const checkUnsettledExpenses = (group: Group, users: User[], groupExpenses: Expense[]): boolean => {
