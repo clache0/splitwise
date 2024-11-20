@@ -71,6 +71,7 @@ export const processImportedExpenses = async (jsonData: any[], group: Group, use
         share: 100 / participantsCount,
       })),
       settled: item.settled,
+      type: item.type,
     };
   });
 

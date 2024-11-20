@@ -1,25 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { z } from 'zod';
 import "../../styles/components/expense/AddExpenseForm.css"
 import { getCurrentDate } from '../../utils/utils';
-import { User, Expense } from '../../types/types';
+import { User, Expense, expenseSchema } from '../../types/types';
 import { useGroupContext } from '../../context/GroupContext';
-
-const expenseSchema = z.object({
-  _id: z.string().optional(),
-  groupId: z.string(),
-  title: z.string(),
-  amount: z.number(),
-  date: z.string(),
-  payerId: z.string(),
-  participants: z.array(
-    z.object({
-      memberId: z.string(),
-      share: z.number(),
-    })
-  ),
-  settled: z.boolean(),
-});
 
 interface ExpenseFormProps {
   onSubmit: (expense: Expense) => void;
@@ -88,6 +71,7 @@ const AddExpenseForm: React.FC<ExpenseFormProps> = ({
           }
         )) : [],
         settled: false,
+        type: 'normal',
       });
       
       // check groupId exist before adding expense

@@ -38,6 +38,7 @@ const SettleUpForm: React.FC<SettleUpFormProps> = ({ onSubmit, onShowForm, group
       payerId: payerId,
       participants: participants,
       settled: false,
+      type: 'settle-up',
     };
 
     onSubmit(newExpense);
