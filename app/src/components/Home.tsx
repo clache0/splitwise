@@ -11,7 +11,7 @@ import { useAppData } from "../context/AppDataContext";
 import { Group } from "../types/types";
 
 const Home = () => {
-  const { groups, users, isLoading, isError, setGroups } = useAppData();
+  const { groups, isLoading, isError, setGroups } = useAppData();
   const [showAddGroupForm, setShowAddGroupForm] = useState<boolean>(false);
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const [groupToDelete, setGroupToDelete] = useState<Group | null>(null);
@@ -29,7 +29,7 @@ const Home = () => {
   const handleUpdateGroup = async (updatedGroup: Group) => {
     // TODO: can check unsettled expenses locally?
     const groupExpenses = await fetchExpensesByGroupId(updatedGroup._id!);
-    const check = checkUnsettledExpenses(updatedGroup, users!, groupExpenses);
+    const check = checkUnsettledExpenses(groupExpenses);
 
     if (!updatedGroup || !check) {
       alert("Cannot update group. Some members have unsettled expenses or remaining balance.");
@@ -59,9 +59,8 @@ const Home = () => {
       return;
     }
 
-    // TODO: check unsettled expenses locally
     const groupExpenses = await fetchExpensesByGroupId(groupToDelete._id!);
-    const check = checkUnsettledExpenses(groupToDelete, users!, groupExpenses);
+    const check = checkUnsettledExpenses(groupExpenses);
 
     if (!check) {
       alert("Cannot delete group. Some members have unsettled expenses or remaining balance.");

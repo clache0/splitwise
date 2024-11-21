@@ -1,5 +1,5 @@
 import { Balance } from "../components/group/GroupBalances";
-import { Group, User, Expense } from "../types/types";
+import { User, Expense } from "../types/types";
 
 // input: Expense[], User[]
 // output: Balance {}
@@ -23,20 +23,16 @@ export const calculateBalances = (groupExpenses: Expense[], users: User[]): Bala
     const payerId = expense.payerId;
 
     // special expense: settle up
-    if (expense.participants.length === 2) {
-      const participant1 = expense.participants[0];
-      const participant2 = expense.participants[1];
-      
-      if ((participant1.share === 100 && participant2.share === 0)) {
-        const payeeId = participant2.memberId;
-        const payeeShare = totalAmount;
+    if (expense.type === 'settle-up') {
+      const payerId = expense.payerId;
+      const payeeId = expense.participants.find(participant => participant.share === 0)!.memberId;
+      const payeeShare = expense.amount;
 
-        balances[payerId].isOwed[payeeId] = (balances[payerId].isOwed[payeeId] || 0) + payeeShare;
-        balances[payeeId].owes[payerId] = (balances[payeeId].owes[payerId] || 0) + payeeShare;
-        balances[payerId].netBalance += payeeShare;
-        balances[payeeId].netBalance -= payeeShare;
-        return;
-      }
+      balances[payerId].isOwed[payeeId] = (balances[payerId].isOwed[payeeId] || 0) + payeeShare;
+      balances[payeeId].owes[payerId] = (balances[payeeId].owes[payerId] || 0) + payeeShare;
+      balances[payerId].netBalance += payeeShare;
+      balances[payeeId].netBalance -= payeeShare;
+      return;
     }
 
     // normal expense calculations
@@ -89,20 +85,8 @@ const netPairwiseBalances = (balances: Balance) => {
   });
 };
 
-export const checkUnsettledExpenses = (group: Group, users: User[], groupExpenses: Expense[]): boolean => {
-  const balances = calculateBalances(groupExpenses, users);
-
-  for (const member of group.members) {
-    const userId = member._id;
-    const userBalance = balances[userId];
-
-    // check unsettled balance owes, isOwed, netBalance is != 0
-    if (userBalance.netBalance != 0 ||
-      Object.keys(userBalance.owes).length > 0 ||
-      Object.keys(userBalance.isOwed).length > 0
-    ) {
-      return false;
-    }
-  }
-  return true;
-}
+// return true if all expenses are settled
+// return false if any expense is not settled
+export const checkUnsettledExpenses = (groupExpenses: Expense[]): boolean => {
+  return groupExpenses.every(expense => expense.settled);
+};

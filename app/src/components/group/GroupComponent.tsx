@@ -97,8 +97,8 @@ const GroupComponent = () => {
 
   // check to mark expenses as settled locally and on server
   const settleExpenses = async (groupExpenses: Expense[]) => {
-    if (!checkUnsettledExpenses(group!, groupUsers!, groupExpenses)) {
-      return;
+    if (checkUnsettledExpenses(groupExpenses)) {
+      return; // all expenses already settled
     }
 
     const updatedExpenses = [...groupExpenses];
