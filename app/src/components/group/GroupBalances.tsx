@@ -46,24 +46,37 @@ const GroupBalances: React.FC<GroupBalancesProps> = ({ groupExpenses, users }) =
         return (
           <div className='balance-item' key={user._id}>
             <h3>{user.firstName} {user.lastName}</h3>
-            <p>Net Balance: {userBalance.netBalance.toFixed(2)}</p>
+            <p
+              className={`net-balance ${userBalance.netBalance >= 0 ? 'positive' : 'negative'}`}
+            >
+              Net Balance: {userBalance.netBalance.toFixed(2)}
+            </p>
+
             { userBalance.owes && Object.keys(userBalance.owes).length > 0 && (
               <div>
                   <ul>
                     {Object.entries(userBalance.owes).map(([owedTo, amount]) => (
                       <li key={owedTo}>
-                        <p>Owes {users.find(u => u._id === owedTo)?.firstName} {users.find(u => u._id === owedTo)?.lastName} ${amount.toFixed(2)}</p>
+                        <p>
+                          Owes {users.find(u => u._id === owedTo)?.firstName} {users.find(u => u._id === owedTo)?.lastName} 
+                          <span className='amount'> ${amount.toFixed(2)}</span>
+                        </p>
                       </li>
                     ))}
                   </ul>
               </div>
             )}
+
             {userBalance.isOwed && Object.keys(userBalance.isOwed).length > 0 && (
               <div>
                 <ul>
                   {Object.entries(userBalance.isOwed).map(([owedBy, amount]) => (
                     <li key={owedBy}>
-                      <p>Is owed ${amount.toFixed(2)} by</p>
+                      <p>
+                        Is owed 
+                        <span className='amount'> ${amount.toFixed(2)} </span>
+                        by
+                        </p>
                       <p>{users.find(u => u._id === owedBy)?.firstName} {users.find(u => u._id === owedBy)?.lastName}</p>
                     </li>
                   ))}

@@ -51,7 +51,22 @@
 }
 
 .balance-item p {
-  font-weight: bold;
+  font-weight: normal;
   color: #666;
   font-size: 0.8rem;
+}
+
+/* net balance colors */
+.net-balance.positive {
+  font-weight: bold;
+  color: green;
+}
+.net-balance.negative {
+  font-weight: bold;
+  color: red;
+}
+
+/* amount bold */
+.amount {
+  font-weight: bold;
 }
