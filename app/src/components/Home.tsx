@@ -27,7 +27,6 @@ const Home = () => {
   };
 
   const handleUpdateGroup = async (updatedGroup: Group) => {
-    // TODO: can check unsettled expenses locally?
     const groupExpenses = await fetchExpensesByGroupId(updatedGroup._id!);
     const check = checkUnsettledExpenses(groupExpenses);
 

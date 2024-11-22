@@ -11,6 +11,7 @@ interface GroupNavbarProps {
   showAddExpenseForm: boolean;
   setShowSettleUpForm: React.Dispatch<React.SetStateAction<boolean>>;
   exportExpensesToExcel: () => void;
+  defaultUserId: string;
   setDefaultUserId: React.Dispatch<React.SetStateAction<string>>;
 }
 
@@ -19,6 +20,7 @@ const GroupNavbar: React.FC<GroupNavbarProps> = ({
   showAddExpenseForm,
   setShowSettleUpForm,
   exportExpensesToExcel,
+  defaultUserId,
   setDefaultUserId,
 }) => {
   const { group, groupUsers, isLoading, isError, setGroupExpenses } = useGroupContext();
@@ -78,7 +80,7 @@ const GroupNavbar: React.FC<GroupNavbarProps> = ({
 
       <div className='default-user-container'>
           <h5 className='default-user-title'>Default User</h5>
-          <select onChange={handleUserChange}>
+          <select value={defaultUserId} onChange={handleUserChange}>
             {group?.members.map((member) => {
               if (groupUsers) {
                 const memberName = getNameFromId(member._id, groupUsers);

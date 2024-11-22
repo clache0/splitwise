@@ -23,13 +23,27 @@ const GroupComponent = () => {
   const [defaultUserId, setDefaultUserId] = useState<string>("");
   const [isCheckSettleUp, setIsCheckSettleUp] = useState<boolean>(false);
 
-  // set defaultUserId
-  // TODO: save defaultUserId in localStorage
+  // set defaultUserId from localStorage or take first user in group
   useEffect(() => {
     if (group && group.members) {
-      setDefaultUserId(group?.members[0]._id);
+      const storedDefaultUserId = localStorage.getItem("defaultUserId");
+      if (storedDefaultUserId && group.members.some(member => member._id === storedDefaultUserId)) {
+        setDefaultUserId(storedDefaultUserId);
+      }
+      else {
+        const firstUserId = group.members[0]._id;
+        setDefaultUserId(firstUserId);
+        localStorage.setItem("defaultUserId", firstUserId);
+      }
     }
   }, [group]);
+
+  // update localStorage when defaultUserId changes
+  useEffect(() => {
+    if (defaultUserId) {
+      localStorage.setItem("defaultUserId", defaultUserId);
+    }
+  }, [defaultUserId]);
 
   const handleAddExpense = async (expense: Expense) => {
     try {
@@ -152,6 +166,7 @@ const GroupComponent = () => {
         showAddExpenseForm={showAddExpenseForm} 
         setShowSettleUpForm={setShowSettleUpForm} 
         exportExpensesToExcel={exportExpensesToExcel}
+        defaultUserId={defaultUserId}
         setDefaultUserId={setDefaultUserId}
       />
 
