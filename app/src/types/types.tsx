@@ -40,19 +40,6 @@ export const expenseSchema = z.object({
 
 export type Expense = z.infer<typeof expenseSchema>;
 
-// type ExpenseType = 'normal' | 'settle-up';
-// export interface Expense {
-//   _id?: string;
-//   groupId: string;
-//   title: string;
-//   amount: number;
-//   date: string;
-//   payerId: string;
-//   participants: Participant[];
-//   settled: boolean;
-//   type: ExpenseType;
-// }
-
 export interface Balance {
   [memberId: string]: {
     owes: { [owedTo: string]: number };
