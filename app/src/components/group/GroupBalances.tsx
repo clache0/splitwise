@@ -17,6 +17,7 @@ export interface Balance {
 }
 
 const GroupBalances: React.FC<GroupBalancesProps> = ({ groupExpenses, users }) => {
+  // initialize Balances with empty Balance objects
   const initialBalances: Balance = {};
   users.forEach(user => {
     initialBalances[user._id!] = {
@@ -26,17 +27,46 @@ const GroupBalances: React.FC<GroupBalancesProps> = ({ groupExpenses, users }) =
     };
   });
 
+  // calculate balances
   const [balances, setBalances] = useState<Balance>(initialBalances);
-
   useEffect(() => {
     const newBalances = calculateBalances(groupExpenses, users);
     setBalances(newBalances);
   }, [groupExpenses, users]);
 
+  // generate payment summary
+  const paymentSummary: string[] = [];
+  Object.entries(balances).forEach(([userId, balance]) => {
+    Object.entries(balance.owes).forEach(([owedToId, amount]) => {
+      const payer = users.find(user => user._id === userId);
+      const owedTo = users.find(user => user._id === owedToId);
+      if (payer && owedTo) {
+        paymentSummary.push(`${payer.firstName} ${payer.lastName} owes ${owedTo.firstName} ${owedTo.lastName} $${amount}`);
+      }
+    })
+  });
+
   return (
     <div className='group-balances-container'>
       <h2>Group Balances</h2>
 
+      {/* Payment Summary */}
+      {paymentSummary.length > 0 && (
+        <div className='payment-summary-container'>
+          <h4>Payment Summary</h4>
+          <ul className='payment-summary-item'>
+            {paymentSummary.map((summary, index) => (
+              <li key={index}>
+                <p className='summary-item'>
+                  {summary}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {/* Inidividual Balances */}
+      <h4>Individual Balances</h4>
       {users.map(user => {
         const userBalance = balances[user._id!];
         if (!userBalance) {
