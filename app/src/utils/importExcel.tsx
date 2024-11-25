@@ -16,7 +16,21 @@ export const importExpensesFromExcel = async (file: File, group: Group, users: U
 
       try {
         const importedExpenses = await processImportedExpenses(jsonData, group, users);
-        resolve(importedExpenses);
+
+        // send `importedExpenses` to your backend or update your state
+        const response = await saveImportedExpenses(importedExpenses);
+
+        if (response.insertedCount > 0) {
+          const expensesWithIds = importedExpenses.map((expense, index) => ({
+            ...expense,
+            _id: response.insertedIds[index.toString()],
+          }));
+          resolve(expensesWithIds);
+        }
+        else {
+          console.error("saveImportedExpenses failed, no inserted expenses to database");
+          resolve([]);
+        }
       } catch (error) {
         console.error("Error processing imported expenses: ", error);
         alert("Error processing expenses: " + error);
@@ -135,16 +149,11 @@ export const processImportedExpenses = async (jsonData: any[], group: Group, use
     };
   });
 
-  // send `importedExpenses` to your backend or update your state
-  const isSaved = await saveImportedExpenses(importedExpenses);
-  if (isSaved) {
-    return importedExpenses;
-  }
-  return [];
+  return importedExpenses;
 };
 
 // post Expense[] data to backend or update state
-// return true if successful
+// return data if successful
 export const saveImportedExpenses = async (importedExpenses: Expense[]) => {
   const url = config.serverUrl + '/expenses/import';
 
@@ -157,12 +166,12 @@ export const saveImportedExpenses = async (importedExpenses: Expense[]) => {
       body: JSON.stringify(importedExpenses),
     });
 
-    if (response.ok) {
-      return true;
-    } else {
+    if (!response.ok) {
       console.error("Failed to import expenses");
-      return false;
     }
+
+    const data = await response.json();
+    return data;
   } catch (error) {
     console.error("Error importing expenses:", error);
   }
