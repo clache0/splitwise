@@ -1,18 +1,18 @@
 import { User } from "../types/types";
 
-export const getNameFromId = (id: string, users: User[]) => {
+export const getNameFromId = (id: string, users: User[]): string => {
   const user = users?.find(user => user._id === id);
   return user ? `${user.firstName} ${user.lastName}` : 'Unknown'
 };
 
-export const getIdFromName = (name: string, users: User[]) => {
+export const getIdFromName = (name: string, users: User[]): string => {
   const [firstName, lastName] = name.split(" ");
 
   const user = users?.find(user => 
     user.firstName === firstName && user.lastName === lastName
   );
   
-  return user ? user._id : 'Unknown';
+  return user && user._id ? user._id : 'Unknown';
 }
 
 export const formatDate = (date: Date) => {
