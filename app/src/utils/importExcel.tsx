@@ -47,8 +47,16 @@ export const processImportedExpenses = async (jsonData: any[], group: Group, use
   const currentDate = new Date();
   let timeIncrement = 0;
 
+  // filter out invalid items with undefined title or amount
+  const validData = jsonData.filter((item) => {
+    if (item.title === undefined || item.title === undefined) {
+      return false;
+    }
+    return true;
+  })
+
   // convert importedExpenses to Expense[] type and send expenses to backend
-  const importedExpenses: Expense[] = jsonData.map((item) => {
+  const importedExpenses: Expense[] = validData.map((item) => {
     const settled = item.settled !== undefined ? item.settled : false; // default settled to false
     const type = item.type !== undefined ? item.type : 'normal'; // default type to normal
 
