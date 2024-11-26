@@ -27,6 +27,17 @@
   margin: 0;
 }
 
+.expense-settled {
+  display: flex;
+  align-items: center;
+  padding: 0px 6px;
+}
+
+.settled-icon {
+  color: var(--secondary-color);
+  font-size: 1.2rem;
+}
+
 .expense-date {
   font-size: 1em;
   color: #888;

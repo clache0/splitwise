@@ -5,6 +5,7 @@ import AddExpenseForm from "./AddExpenseForm";
 import { getNameFromId, formatDate } from "../../utils/utils";
 import { Expense } from "../../types/types";
 import { useGroupContext } from "../../context/GroupContext";
+import { FaCheck } from "react-icons/fa";
 
 interface ExpenseComponentProps {
   expense: Expense;
@@ -34,7 +35,11 @@ const ExpenseComponent: React.FC<ExpenseComponentProps> = ({
           <div className="expense-left">
             <div className="expense-1">
               <h3 className="expense-title">{expense.title}</h3>
-              {expense.settled && <span>, settled</span>}
+              {expense.settled && (
+                <span className="expense-settled">
+                  <FaCheck className="settled-icon"/>
+                </span>
+              )}
             </div>
             <p className="expense-date">{formatDate(new Date(expense.date))}</p>
           </div>
