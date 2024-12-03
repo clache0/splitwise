@@ -1,43 +1,45 @@
 import React from 'react';
 import '../../styles/components/user/UserList.css';
-import Button from '../general/Button';
 import { User } from '../../types/types';
+import { useAppData } from '../../context/AppDataContext';
+import UserCard from './UserCard';
 
 interface UserListProps {
-  users: User[];
+  onUpdateUser: (user: User) => void;
   onDeleteUser: (user: User) => void;
 }
 
-const UserList: React.FC<UserListProps> = ({ users, onDeleteUser }) => {
+const UserList: React.FC<UserListProps> = ({ onUpdateUser, onDeleteUser }) => {
+  const { users } = useAppData();
+
+  if (!users) {
+    return <div>Loading User List...</div>
+  }
+
+  const userList = users ? users.map((user, index) => (
+    <li 
+      key={user._id || index}
+      className='user-container'
+    >
+      <UserCard
+        user={user}
+        onUpdateUser={onUpdateUser}
+        onDeleteUser={onDeleteUser}
+      />
+    </li>
+  )) : null;
+
   return (
     <div className="user-list">
       <h2>User List</h2>
       {users.length > 0 ? (
-          <ul>
-            {users.map((user, index) => (
-              <div key={user._id || index} className='user-container'>
-                <li >
-                  {user.firstName} {user.lastName}
-                </li>
-
-                <div className="user-actions">
-                  <Button
-                    label='Edit'
-                    onClick={() => console.log("clicked edit user")}
-                    backgroundColor='var(--primary-color)'
-                  />
-                  <Button
-                    label='Delete'
-                    onClick={() => onDeleteUser(user)}
-                    backgroundColor='var(--red)'
-                  />
-                </div>
-              </div>
-            ))}
-          </ul>
+        <ul>
+          {userList}
+        </ul>
       ) : (
         <p>No users available</p>
       )}
+
     </div>
   );
 };

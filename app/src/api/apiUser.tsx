@@ -68,6 +68,27 @@ export const postUser = async (user: User) => {
   }
 };
 
+export const patchUser = async (user: User) => {
+  const url = config.serverUrl + `/users/${user._id}`;
+  
+  try {
+    const response = await fetch(url, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(user),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to patch user');
+    }
+  } catch (error) {
+    console.error('Error patching group:', error);
+    throw error;
+  }
+};
+
 export const deleteUserById = async (userId: string) => {
   const url = config.serverUrl + `/users/${userId}`;
 

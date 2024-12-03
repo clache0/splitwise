@@ -3,26 +3,30 @@ import "../../styles/components/user/AddUserForm.css";
 import { User } from '../../types/types';
 
 interface AddUserFormProps {
-  onAddUser: (user: User) => void;
+  onSubmit: (user: User) => void;
   onShowForm: (showAddUserForm: boolean) => void;
+  user?: User; // optional user for update
 }
 
-const AddUserForm: React.FC<AddUserFormProps> = ({ onAddUser, onShowForm }) => {
-  const [firstName, setFirstName] = useState<string>('');
-  const [lastName, setLastName] = useState<string>('');
+const AddUserForm: React.FC<AddUserFormProps> = ({ onSubmit, onShowForm, user }) => {
+  const [firstName, setFirstName] = useState<string>( user?.firstName || '' );
+  const [lastName, setLastName] = useState<string>( user?.lastName || '' );
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     const newUser: User = {
+      _id: user?._id, // include id if update
       firstName,
       lastName,
     };
-    onAddUser(newUser);
+    onSubmit(newUser);
     onShowForm(false); // close form
 
-    // Clear form inputs
-    setFirstName('');
-    setLastName('');
+    if (!user) {
+      // Clear form inputs
+      setFirstName('');
+      setLastName('');
+    }
   };
 
   return (
@@ -48,7 +52,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onAddUser, onShowForm }) => {
               onChange={(event) => setLastName(event.target.value)}
             />
           </div>
-          <button type="submit">Add User</button>
+          <button type="submit">{user ? 'Update User' : 'Add User'}</button>
           <button type="button" onClick={() => onShowForm(false)}>Cancel</button>
         </form>
       </div>

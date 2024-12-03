@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import UserList from './UserList';
 import '../../styles/components/user/UserComponent.css'
 import AddUserForm from './AddUserForm';
-import { deleteUserById, postUser } from '../../api/apiUser';
+import { deleteUserById, patchUser, postUser } from '../../api/apiUser';
 import Modal from '../general/Modal';
 import { Group, Member, User } from '../../types/types';
 import { useAppData } from '../../context/AppDataContext';
@@ -11,7 +11,7 @@ interface UserComponentProps {
 }
 
 const UserComponent: React.FC<UserComponentProps> = () => {
-  const { groups, users, setUsers } = useAppData();
+  const { groups, setUsers } = useAppData();
   const [showAddUserForm, setShowAddUserForm] = useState<boolean>(false);
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const [deleteMessage, setDeleteMessage] = useState<string>("");
@@ -42,6 +42,19 @@ const UserComponent: React.FC<UserComponentProps> = () => {
       console.error("Error posting user: ", error);
     }
   };
+
+  const handleUpdateUser = async (updatedUser: User) => {
+    try {
+      await patchUser(updatedUser);
+      setUsers((prevUsers) => 
+        prevUsers.map((user) =>
+          user._id === updatedUser._id ? updatedUser : user
+        )
+      );
+    } catch (error) {
+      console.error("Error updating user: ", error);
+    }
+  }
 
   const handleDeleteUser = async () => {
     if (!userToDelete) {
@@ -77,14 +90,17 @@ const UserComponent: React.FC<UserComponentProps> = () => {
         Add User
       </button>
 
-      <UserList users={users} onDeleteUser={(user: User) => {
-        setUserToDelete(user);
-        setDeleteMessage("Are you sure you want to delete this user?");
-        setShowDeleteModal(true);
-      }}/>
+      <UserList 
+        onUpdateUser={handleUpdateUser}
+        onDeleteUser={(user: User) => {
+          setUserToDelete(user);
+          setDeleteMessage("Are you sure you want to delete this user?");
+          setShowDeleteModal(true);
+        }
+      }/>
 
       {showAddUserForm && (
-        <AddUserForm onAddUser={handleAddUser} onShowForm={setShowAddUserForm} />
+        <AddUserForm onSubmit={handleAddUser} onShowForm={setShowAddUserForm} />
       )}
 
       <Modal
