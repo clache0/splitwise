@@ -93,8 +93,7 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
     setCurrentPage(page);
   };
 
-  const expenseComponents = paginatedExpenses?.length !== 0 ?
-  paginatedExpenses?.map((expense, index) => {
+  const expenseComponents = paginatedExpenses?.map((expense, index) => {
       return (
         <li key={expense._id || index}>
           <ExpenseComponent 
@@ -104,7 +103,7 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
           />
         </li>
       );
-    }) : <p>No expenses in list</p>;
+    });
 
   const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   
@@ -113,60 +112,81 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
 
       <h2>Expense List</h2>
 
+      {/* Filters */}
       <div className="filter-container">
         <select value={selectedMonth || ""} onChange={handleMonthChange}>
           <option value="">All Months</option>
           {monthNames.map((month, index) => (
-            <option key={index} value={index+1}>{month}</option>
+            <option key={index} value={index + 1}>
+              {month}
+            </option>
           ))}
         </select>
 
         <select value={selectedYear || ""} onChange={handleYearChange}>
           <option value="">All Years</option>
-          {Array.from(new Set(groupExpenses.map(expense => new Date(expense.date).getFullYear()))).map(year => (
-            <option key={year} value={year}>{year}</option>
+          {Array.from(
+            new Set(
+              groupExpenses.map((expense) => new Date(expense.date).getFullYear())
+            )
+          ).map((year) => (
+            <option key={year} value={year}>
+              {year}
+            </option>
           ))}
         </select>
 
-        <button className="clear-filter-button" onClick={handleClearFilters}>Clear Filters</button>
-      </div>
-
-      <ul className='expense-list'>
-        {expenseComponents}
-      </ul>
-
-      <div className="settled-container">
-        <p>All expenses before this date have been settled</p>
-        <button
-          onClick={handleShowSettledClick}
-          className="toggle-settled-button"
-        >
-          {showSettled ? "Hide Settled Expenses" : "Show Settled Expenses"}
+        <button className="clear-filter-button" onClick={handleClearFilters}>
+          Clear Filters
         </button>
       </div>
+  
+      {groupExpenses.length === 0 ? (
+        <p>No expenses in list</p> // Show if no groupExpenses
+      ) : (
+        <>
+          {/* Expense Components */}
+          <ul className='expense-list'>
+            {expenseComponents}
+          </ul>
 
-      <div className="pagination-controls">
-        <button onClick={handlePrevPage} disabled={currentPage === 1}>
-          Previous
-        </button>
-
-        {[...Array(totalPages)].map((_, index) => (
-          <button
-            key={index + 1}
-            onClick={() => handlePageChange(index + 1)}
-            className={currentPage === index + 1 ? 'active' : ''}
-          >
-            {index + 1}
-          </button>
-        ))}
-
-        <button onClick={handleNextPage} disabled={currentPage === totalPages}>
-          Next
-        </button>
-      </div>
-
+          {/* Settled message */}
+          <div className="settled-container">
+            <p>All expenses before this date have been settled</p>
+            <button
+              onClick={handleShowSettledClick}
+              className="toggle-settled-button"
+            >
+              {showSettled ? "Hide Settled Expenses" : "Show Settled Expenses"}
+            </button>
+          </div>
+  
+          {/* Pagination */}
+          {filteredExpenses && filteredExpenses.length > 0 && (
+            <div className="pagination-controls">
+              <button onClick={handlePrevPage} disabled={currentPage === 1}>
+                Previous
+              </button>
+  
+              {[...Array(totalPages)].map((_, index) => (
+                <button
+                  key={index + 1}
+                  onClick={() => handlePageChange(index + 1)}
+                  className={currentPage === index + 1 ? "active" : ""}
+                >
+                  {index + 1}
+                </button>
+              ))}
+  
+              <button onClick={handleNextPage} disabled={currentPage === totalPages}>
+                Next
+              </button>
+            </div>
+          )}
+        </>
+      )}
     </div>
-  );
+  );  
 };
 
 export default ExpenseList;
