@@ -75,7 +75,6 @@
   font-size: 0.8rem;
 }
 
-/* net balance colors */
 .net-balance.positive {
   font-weight: bold;
   color: green;
@@ -85,7 +84,8 @@
   color: red;
 }
 
-/* amount bold */
 .amount {
   font-weight: bold;
 }
+
+/* .details-container {} */

@@ -150,12 +150,12 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
             {expenseComponents}
           </ul>
 
-          {/* Settled message */}
+          {/* Show Settled */}
           <div className="settled-container">
             <p>All expenses before this date have been settled</p>
             <button
               onClick={handleShowSettledClick}
-              className="toggle-settled-button"
+              className="toggle-link-button"
             >
               {showSettled ? "Hide Settled Expenses" : "Show Settled Expenses"}
             </button>
