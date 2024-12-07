@@ -23,6 +23,7 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
   const [selectedYear, setSelectedYear] = useState<string | null>(null);
   const [filteredExpenses, setFilteredExpenses] = useState<Expense[] | null>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [showSettled, setShowSettled] = useState(false);
 
   // check if no groupExpenses
   if (!groupExpenses) return <p>Group expenses null</p>;
@@ -40,7 +41,11 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
     setSelectedYear(null);
   }
 
-  // function: filter expenses by month, year
+  const handleShowSettledClick = () => {
+    setShowSettled((prev) => !prev);
+  }
+
+  // function: filter expenses by month, year, settled
   const filterExpenses = (expenses: Expense[]) => {
     return expenses.filter((expense) => {
       const expenseDate = new Date(expense.date);
@@ -49,8 +54,9 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
 
       const monthMatches = selectedMonth ? parseInt(selectedMonth) === expenseMonth : true;
       const yearMatches = selectedYear ? parseInt(selectedYear) === expenseYear : true;
+      const settledMatches = showSettled || !expense.settled;
 
-      return monthMatches && yearMatches;
+      return monthMatches && yearMatches && settledMatches;
     })
   };
 
@@ -60,7 +66,7 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
     setFilteredExpenses(filtered);
     onFilteredExpensesChange(filtered); // pass filtered expenses to parent component
     setCurrentPage(1); // reset to page 1
-  }, [selectedMonth, selectedYear, groupExpenses]);
+  }, [selectedMonth, selectedYear, showSettled, groupExpenses]);
 
   // sort expenses from most recent to oldest
   const sortedExpenses = filteredExpenses?.sort((a, b) => (
@@ -69,6 +75,7 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
 
   const totalPages = Math.ceil((sortedExpenses?.length || 0) / ITEMS_PER_PAGE);
 
+  // paginate expenses up to ITEMS_PER_PAGE
   const paginatedExpenses = sortedExpenses?.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE
@@ -127,6 +134,16 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
       <ul className='expense-list'>
         {expenseComponents}
       </ul>
+
+      <div className="settled-container">
+        <p>All expenses before this date have been settled</p>
+        <button
+          onClick={handleShowSettledClick}
+          className="toggle-settled-button"
+        >
+          {showSettled ? "Hide Settled Expenses" : "Show Settled Expenses"}
+        </button>
+      </div>
 
       <div className="pagination-controls">
         <button onClick={handlePrevPage} disabled={currentPage === 1}>
