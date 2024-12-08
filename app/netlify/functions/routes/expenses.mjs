@@ -86,6 +86,26 @@ expenseRouter.get("/group/:id", async (req, res, next) => {
   }
 });
 
+// GET settled expenses by group id
+expenseRouter.get("/group/:id/settled", async (req, res, next) => {
+  try {
+    const db = await connectToDatabase();
+    const collection = await db.collection("expenses");
+    const query = { groupId: req.params.id, settled: true };
+    const result = await collection.find(query).toArray();
+  
+    if (result.length === 0) {
+      res.status(204).send();
+    }
+    else {
+      res.status(200).send(result);
+    }
+  } catch (error) {
+    console.error("Error getting expense: ", error);
+    next(error);
+  }
+});
+
 // GET unsettled expenses by group id
 expenseRouter.get("/group/:id/unsettled", async (req, res, next) => {
   try {
