@@ -32,6 +32,8 @@ const AddExpenseForm: React.FC<ExpenseFormProps> = ({
       ) || []
   );
   const [share, setShare] = useState<number>(0);
+  const settled = expense?.settled || false;
+  const type = expense?.type || 'normal';
 
   // initialize groupId with group._id
   useEffect(() => {
@@ -70,8 +72,8 @@ const AddExpenseForm: React.FC<ExpenseFormProps> = ({
             share: share,
           }
         )) : [],
-        settled: false,
-        type: 'normal',
+        settled: settled,
+        type: type,
       });
       
       // check groupId exist before adding expense

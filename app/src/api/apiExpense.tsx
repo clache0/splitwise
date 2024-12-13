@@ -1,6 +1,7 @@
 import config from '../../config.json'
 import { Expense } from '../types/types';
 
+// return Expense[] as json
 export const fetchExpensesByGroupId = async (groupId: string) => {
   const url = config.serverUrl + `/expenses/group/${groupId}`;
   
@@ -18,6 +19,50 @@ export const fetchExpensesByGroupId = async (groupId: string) => {
     return data;
   } catch (error) {
     console.error("Error fetching expenses: ", error);
+    throw error;
+  };
+};
+
+// return Expense[] as json, settledExpenses
+export const fetchSettledExpensesByGroupId = async (groupId: string) => {
+  const url = config.serverUrl + `/expenses/group/${groupId}/settled`;
+  
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error('Failed to fetch group data');
+    }
+
+    if (response.status === 204) {
+      return [];
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching settled expenses: ", error);
+    throw error;
+  };
+};
+
+// return Expense[] as json, unsettledExpenses
+export const fetchUnsettledExpensesByGroupId = async (groupId: string) => {
+  const url = config.serverUrl + `/expenses/group/${groupId}/unsettled`;
+  
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error('Failed to fetch group data');
+    }
+
+    if (response.status === 204) {
+      return [];
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching unsettled expenses: ", error);
     throw error;
   };
 };

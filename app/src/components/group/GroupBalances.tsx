@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import "../../styles/components/group/GroupBalances.css"
 import { calculateBalances } from '../../utils/balanceUtils';
-import { Expense, User } from '../../types/types';
+import { useGroupContext } from '../../context/GroupContext';
 
 interface GroupBalancesProps {
-  groupExpenses: Expense[];
-  users: User[];
 }
 
 export interface Balance {
@@ -16,10 +14,12 @@ export interface Balance {
   };
 }
 
-const GroupBalances: React.FC<GroupBalancesProps> = ({ groupExpenses, users }) => {
+const GroupBalances: React.FC<GroupBalancesProps> = () => {
+  const { unsettledExpenses, groupUsers } = useGroupContext();
+
   // initialize Balances with empty Balance objects
   const initialBalances: Balance = {};
-  users.forEach(user => {
+  groupUsers.forEach(user => {
     initialBalances[user._id!] = {
       owes: {},
       isOwed: {},
@@ -36,16 +36,16 @@ const GroupBalances: React.FC<GroupBalancesProps> = ({ groupExpenses, users }) =
 
   // calculate balances
   useEffect(() => {
-    const newBalances = calculateBalances(groupExpenses, users);
+    const newBalances = calculateBalances(unsettledExpenses, groupUsers);
     setBalances(newBalances);
-  }, [groupExpenses, users]);
+  }, [unsettledExpenses, groupUsers]);
 
   // generate payment summary
   const paymentSummary: string[] = [];
   Object.entries(balances).forEach(([userId, balance]) => {
     Object.entries(balance.owes).forEach(([owedToId, amount]) => {
-      const payer = users.find(user => user._id === userId);
-      const owedTo = users.find(user => user._id === owedToId);
+      const payer = groupUsers.find(user => user._id === userId);
+      const owedTo = groupUsers.find(user => user._id === owedToId);
       if (payer && owedTo) {
         paymentSummary.push(`${payer.firstName} ${payer.lastName} owes ${owedTo.firstName} ${owedTo.lastName} $${amount}`);
       }
@@ -88,7 +88,7 @@ const GroupBalances: React.FC<GroupBalancesProps> = ({ groupExpenses, users }) =
       { showDetails &&
         <>
           <h4>Individual Balances</h4>
-          {users.map(user => {
+          {groupUsers.map(user => {
             const userBalance = balances[user._id!];
             if (!userBalance) {
               return null;
@@ -109,7 +109,7 @@ const GroupBalances: React.FC<GroupBalancesProps> = ({ groupExpenses, users }) =
                         {Object.entries(userBalance.owes).map(([owedTo, amount]) => (
                           <li key={owedTo}>
                             <p>
-                              Owes {users.find(u => u._id === owedTo)?.firstName} {users.find(u => u._id === owedTo)?.lastName} 
+                              Owes {groupUsers.find(user => user._id === owedTo)?.firstName} {groupUsers.find(user => user._id === owedTo)?.lastName} 
                               <span className='amount'> ${amount.toFixed(2)}</span>
                             </p>
                           </li>
@@ -128,7 +128,7 @@ const GroupBalances: React.FC<GroupBalancesProps> = ({ groupExpenses, users }) =
                             <span className='amount'> ${amount.toFixed(2)} </span>
                             by
                             </p>
-                          <p>{users.find(u => u._id === owedBy)?.firstName} {users.find(u => u._id === owedBy)?.lastName}</p>
+                          <p>{groupUsers.find(user => user._id === owedBy)?.firstName} {groupUsers.find(user => user._id === owedBy)?.lastName}</p>
                         </li>
                       ))}
                     </ul>

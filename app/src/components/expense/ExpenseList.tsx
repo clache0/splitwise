@@ -18,15 +18,15 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
   onFilteredExpensesChange 
 }) => {
 
-  const { groupExpenses } = useGroupContext();
+  const { settledExpenses, unsettledExpenses } = useGroupContext();
   const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
   const [selectedYear, setSelectedYear] = useState<string | null>(null);
   const [filteredExpenses, setFilteredExpenses] = useState<Expense[] | null>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [showSettled, setShowSettled] = useState(false);
 
-  // check if no groupExpenses
-  if (!groupExpenses) return <p>Group expenses null</p>;
+  // check if no settledExpenses
+  if (!settledExpenses) return <p>No unsettled expenses</p>;
 
   const handleMonthChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedMonth(event.target.value);
@@ -45,6 +45,8 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
     setShowSettled((prev) => !prev);
   }
 
+  const sourceExpenses = showSettled ? [...settledExpenses, ...unsettledExpenses] : unsettledExpenses;
+
   // function: filter expenses by month, year, settled
   const filterExpenses = (expenses: Expense[]) => {
     return expenses.filter((expense) => {
@@ -62,11 +64,11 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
 
   // filter expenses when month, year, or expenses changes
   useEffect(() => {
-    const filtered = filterExpenses(groupExpenses);
+    const filtered = filterExpenses(sourceExpenses);
     setFilteredExpenses(filtered);
     onFilteredExpensesChange(filtered); // pass filtered expenses to parent component
     setCurrentPage(1); // reset to page 1
-  }, [selectedMonth, selectedYear, showSettled, groupExpenses]);
+  }, [selectedMonth, selectedYear, showSettled, settledExpenses, unsettledExpenses]);
 
   // sort expenses from most recent to oldest
   const sortedExpenses = filteredExpenses?.sort((a, b) => (
@@ -127,7 +129,7 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
           <option value="">All Years</option>
           {Array.from(
             new Set(
-              groupExpenses.map((expense) => new Date(expense.date).getFullYear())
+              sourceExpenses.map((expense) => new Date(expense.date).getFullYear())
             )
           ).map((year) => (
             <option key={year} value={year}>
@@ -141,49 +143,50 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
         </button>
       </div>
   
-      {groupExpenses.length === 0 ? (
-        <p>No expenses in list</p> // Show if no groupExpenses
+      {/* Group Expenses */}
+      {sourceExpenses.length === 0 ? (
+        <p>No expenses in list</p>
       ) : (
         <>
           {/* Expense Components */}
           <ul className='expense-list'>
             {expenseComponents}
           </ul>
-
-          {/* Show Settled */}
-          <div className="settled-container">
-            <p>All expenses before this date have been settled</p>
-            <button
-              onClick={handleShowSettledClick}
-              className="toggle-link-button"
-            >
-              {showSettled ? "Hide Settled Expenses" : "Show Settled Expenses"}
-            </button>
-          </div>
-  
-          {/* Pagination */}
-          {filteredExpenses && filteredExpenses.length > 0 && (
-            <div className="pagination-controls">
-              <button onClick={handlePrevPage} disabled={currentPage === 1}>
-                Previous
-              </button>
-  
-              {[...Array(totalPages)].map((_, index) => (
-                <button
-                  key={index + 1}
-                  onClick={() => handlePageChange(index + 1)}
-                  className={currentPage === index + 1 ? "active" : ""}
-                >
-                  {index + 1}
-                </button>
-              ))}
-  
-              <button onClick={handleNextPage} disabled={currentPage === totalPages}>
-                Next
-              </button>
-            </div>
-          )}
         </>
+      )}
+
+      {/* Show Settled */}
+      <div className="settled-container">
+        <p>All expenses before this date have been settled</p>
+        <button
+          onClick={handleShowSettledClick}
+          className="toggle-link-button"
+        >
+          {showSettled ? "Hide Settled Expenses" : "Show Settled Expenses"}
+        </button>
+      </div>
+
+      {/* Pagination */}
+      {filteredExpenses && filteredExpenses.length > 0 && (
+        <div className="pagination-controls">
+          <button onClick={handlePrevPage} disabled={currentPage === 1}>
+            Previous
+          </button>
+
+          {[...Array(totalPages)].map((_, index) => (
+            <button
+              key={index + 1}
+              onClick={() => handlePageChange(index + 1)}
+              className={currentPage === index + 1 ? "active" : ""}
+            >
+              {index + 1}
+            </button>
+          ))}
+
+          <button onClick={handleNextPage} disabled={currentPage === totalPages}>
+            Next
+          </button>
+        </div>
       )}
     </div>
   );  

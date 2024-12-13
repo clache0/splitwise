@@ -9,12 +9,11 @@ import "../../styles/components/group/GroupComponent.css"
 import SettleUpForm from "../expense/SettleUpForm";
 import * as XLSX from 'xlsx';
 import { getNameFromId } from "../../utils/utils";
-import { checkUnsettledExpenses } from "../../utils/balanceUtils";
 import { Expense } from "../../types/types";
 import { useGroupContext } from "../../context/GroupContext";
 
 const GroupComponent = () => {
-  const { group, groupUsers, groupExpenses, setGroupExpenses } = useGroupContext();
+  const { group, groupUsers, groupExpenses, unsettledExpenses, setSettledExpenses, setUnsettledExpenses } = useGroupContext();
   const [filteredExpenses, setFilteredExpenses] = useState<Expense[] | []>([]);
   const [showAddExpenseForm, setShowAddExpenseForm] = useState<boolean>(false);
   const [showSettleUpForm, setShowSettleUpForm] = useState<boolean>(false);
@@ -49,7 +48,7 @@ const GroupComponent = () => {
     try {
       const expenseId = await postExpense(expense); // post expense to server
       const newExpense = { ...expense, _id: expenseId };
-      setGroupExpenses((prevExpenses) => [...prevExpenses, newExpense]);
+      setUnsettledExpenses((prevExpenses) => [...prevExpenses, newExpense]);
     } catch (error) {
       console.error("Error posting expense: ", error);
     }
@@ -58,11 +57,21 @@ const GroupComponent = () => {
   const handleUpdateExpense = async (updatedExpense: Expense) => {
     try {
       await patchExpense(updatedExpense); // post expense to server
-      setGroupExpenses((prevExpenses) => 
-        prevExpenses!.map((expense) =>
-          expense._id === updatedExpense._id ? updatedExpense : expense
-        )
-      );
+      if (updatedExpense.settled) {
+        setSettledExpenses((prevExpenses) => 
+          prevExpenses.map((expense) =>
+            expense._id === updatedExpense._id ? updatedExpense : expense
+          )
+        );
+      }
+      else {
+        console.log("expense is unsettled");
+        setUnsettledExpenses((prevExpenses) => 
+          prevExpenses.map((expense) =>
+            expense._id === updatedExpense._id ? updatedExpense : expense
+          )
+        );
+      }
     } catch (error) {
       console.error("Error updating expense: ", error);
     }
@@ -81,9 +90,16 @@ const GroupComponent = () => {
 
     try {
       await deleteExpenseById(expenseToDelete._id);
-      setGroupExpenses((prevGroupExpenses) =>
-        prevGroupExpenses?.filter((prevExpense) => expenseToDelete._id !== prevExpense._id)
-      );
+      if (expenseToDelete.settled) {
+        setSettledExpenses((prevGroupExpenses) =>
+          prevGroupExpenses.filter((prevExpense) => expenseToDelete._id !== prevExpense._id)
+        );
+      }
+      else {
+        setUnsettledExpenses((prevGroupExpenses) =>
+          prevGroupExpenses.filter((prevExpense) => expenseToDelete._id !== prevExpense._id)
+        );
+      }
       setShowDeleteModal(false);
     } catch (error) {
       console.error("Error deleting expense: ", error);
@@ -95,34 +111,43 @@ const GroupComponent = () => {
     try {
       const expenseId = await postExpense(expense); // post settle up expense to server
       const newExpense = { ...expense, _id: expenseId };
-      await setGroupExpenses((prevExpenses) => [...prevExpenses, newExpense]); // update group expenses locally
-      setIsCheckSettleUp(!isCheckSettleUp); // trigger flag to check settle up flag in expenses
+      await setUnsettledExpenses((prevExpenses) => [...prevExpenses, newExpense]); // update unsettled expenses locally
+      setIsCheckSettleUp(true); // trigger flag to check settled flag in expenses
     } catch (error) {
       console.error("Error settling up expense: ", error);
     }
   };
 
-  // handleSettleUp updates groupExpenses asynchronously
+  // handleSettleUp updates unsettledExpenses asynchronously
   useEffect(() => {
-    if (groupExpenses && groupExpenses.length > 0) {
-      settleExpenses(groupExpenses);
+    if (isCheckSettleUp && unsettledExpenses.length > 0) {
+      settleExpenses(unsettledExpenses);
+      setIsCheckSettleUp(false); // reset flag
     }
   }, [isCheckSettleUp]);
 
   // check to mark expenses as settled locally and on server
-  const settleExpenses = async (groupExpenses: Expense[]) => {
-    if (checkUnsettledExpenses(groupExpenses)) {
-      return; // all expenses already settled
-    }
+  const settleExpenses = async (unsettledExpenses: Expense[]) => {
+    const newSettledExpenses: Expense[] = [];
+    const updatedUnsettledExpenses: Expense[] = [];
 
-    const updatedExpenses = [...groupExpenses];
-    for (const expense of updatedExpenses) {
+    for (const expense of unsettledExpenses) {
       if (!expense.settled) {
-        expense.settled = true; // update local expense
-        await patchExpense(expense); // update server expense
+        try {
+          const updatedExpense = { ...expense, settled: true};
+          await patchExpense(updatedExpense); // update server expense
+          newSettledExpenses.push(updatedExpense); // update local expense
+        } catch (error) {
+          console.error(`Error marking expense ${expense._id} as settled:`, error);
+          updatedUnsettledExpenses.push(expense); // Keep it in unsettled if the server call fails
+        }
+      }
+      else {
+        updatedUnsettledExpenses.push(expense); // keep unsettled expenses
       }
     }
-    setGroupExpenses(updatedExpenses);
+    setSettledExpenses((prev) => [...prev, ...newSettledExpenses]);
+    setUnsettledExpenses(updatedUnsettledExpenses);
   }
 
   const handleFilteredExpensesChange = (newData: Expense[] | []) => {
@@ -139,6 +164,7 @@ const GroupComponent = () => {
     setExpenseToDelete(null);
   };
 
+  // export excel
   const exportExpensesToExcel = () => {
     if (!filteredExpenses || !groupUsers) return;
 
@@ -172,10 +198,7 @@ const GroupComponent = () => {
 
       <div className="group-content">
         {groupExpenses && groupUsers &&
-          <GroupBalances
-            groupExpenses={groupExpenses}
-            users={groupUsers}
-          />
+          <GroupBalances/>
         }
 
         <ExpenseList

@@ -3,7 +3,7 @@ import { User, Expense } from "../types/types";
 
 // input: Expense[], User[]
 // output: Balance {}
-export const calculateBalances = (groupExpenses: Expense[], users: User[]): Balance => {
+export const calculateBalances = (unsettledExpenses: Expense[], users: User[]): Balance => {
   const balances: Balance = {};
 
   // initialize Balance object for each user
@@ -16,7 +16,7 @@ export const calculateBalances = (groupExpenses: Expense[], users: User[]): Bala
   });
 
   // iterate group expenses
-  groupExpenses.forEach(expense => {
+  unsettledExpenses.forEach(expense => {
     if (expense.settled) return; // expense is already settled, no calculation needed
     
     const totalAmount = expense.amount;
@@ -87,6 +87,6 @@ const netPairwiseBalances = (balances: Balance) => {
 
 // return true if all expenses are settled
 // return false if any expense is not settled
-export const checkUnsettledExpenses = (groupExpenses: Expense[]): boolean => {
-  return groupExpenses.every(expense => expense.settled);
+export const checkUnsettledExpenses = (unsettledExpenses: Expense[]): boolean => {
+  return unsettledExpenses.every(expense => expense.settled);
 };
