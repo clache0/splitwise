@@ -13,7 +13,7 @@ import { Expense } from "../../types/types";
 import { useGroupContext } from "../../context/GroupContext";
 
 const GroupComponent = () => {
-  const { group, groupUsers, groupExpenses, unsettledExpenses, setSettledExpenses, setUnsettledExpenses } = useGroupContext();
+  const { group, groupUsers, unsettledExpenses, setSettledExpenses, setUnsettledExpenses } = useGroupContext();
   const [filteredExpenses, setFilteredExpenses] = useState<Expense[] | []>([]);
   const [showAddExpenseForm, setShowAddExpenseForm] = useState<boolean>(false);
   const [showSettleUpForm, setShowSettleUpForm] = useState<boolean>(false);
@@ -106,7 +106,7 @@ const GroupComponent = () => {
     }
   };
 
-  // post settleUp expense and update groupExpenses
+  // post settleUp expense and update unsettledExpenses
   const handleSettleUp = async(expense: Expense) => {
     try {
       const expenseId = await postExpense(expense); // post settle up expense to server
@@ -197,7 +197,7 @@ const GroupComponent = () => {
       />
 
       <div className="group-content">
-        {groupExpenses && groupUsers &&
+        {unsettledExpenses && groupUsers &&
           <GroupBalances/>
         }
 

@@ -2,13 +2,12 @@ import { useEffect, useState } from 'react';
 import { Group, User, Expense, Member } from '../types/types';
 import { fetchGroupById } from '../api/apiGroup';
 import { fetchUserById } from '../api/apiUser';
-import { fetchExpensesByGroupId, fetchSettledExpensesByGroupId, fetchUnsettledExpensesByGroupId } from '../api/apiExpense';
+import { fetchSettledExpensesByGroupId, fetchUnsettledExpensesByGroupId } from '../api/apiExpense';
 import { GroupContext } from './GroupContext';
 
 export const GroupProvider: React.FC<{ groupId: string, children: React.ReactNode }> = ({ groupId, children }) => {
   const [group, setGroup] = useState<Group | null>(null);
   const [groupUsers, setGroupUsers] = useState<User[]>([]);
-  const [groupExpenses, setGroupExpenses] = useState<Expense[]>([]);
   const [settledExpenses, setSettledExpenses] = useState<Expense[]>([]);
   const [unsettledExpenses, setUnsettledExpenses] = useState<Expense[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -20,12 +19,10 @@ export const GroupProvider: React.FC<{ groupId: string, children: React.ReactNod
       const groupUsersData = await Promise.all(
         groupData.members.map((member: Member) => fetchUserById(member._id))
       );
-      const groupExpensesData = await fetchExpensesByGroupId(groupId);
       const settledExpensesData = await fetchSettledExpensesByGroupId(groupId);
       const unsettledExpensesData = await fetchUnsettledExpensesByGroupId(groupId);
       setGroup(groupData);
       setGroupUsers(groupUsersData);
-      setGroupExpenses(groupExpensesData);
       setSettledExpenses(settledExpensesData);
       setUnsettledExpenses(unsettledExpensesData);
     } catch (error) {
@@ -44,14 +41,12 @@ export const GroupProvider: React.FC<{ groupId: string, children: React.ReactNod
     <GroupContext.Provider value={{
       group,
       groupUsers,
-      groupExpenses,
       settledExpenses,
       unsettledExpenses,
       isLoading,
       isError,
       setGroup,
       setGroupUsers,
-      setGroupExpenses,
       setSettledExpenses,
       setUnsettledExpenses,
     }}>

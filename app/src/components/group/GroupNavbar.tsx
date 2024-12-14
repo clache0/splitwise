@@ -23,7 +23,7 @@ const GroupNavbar: React.FC<GroupNavbarProps> = ({
   defaultUserId,
   setDefaultUserId,
 }) => {
-  const { group, groupUsers, isLoading, isError, setGroupExpenses } = useGroupContext();
+  const { group, groupUsers, isLoading, isError, setUnsettledExpenses } = useGroupContext();
   const [showExportModal, setShowExportModal] = useState<boolean>(false);
   const openExportModal = () => setShowExportModal(true);
   const closeExportModal = () => setShowExportModal(false);
@@ -44,8 +44,8 @@ const GroupNavbar: React.FC<GroupNavbarProps> = ({
       try {
         const importedExpenses = await importExpensesFromExcel(selectedFile, group, groupUsers);
         if (importExpensesFromExcel.length > 0) {
-          // update groupExpenses locally
-          setGroupExpenses(prevExpenses => [...(prevExpenses || []), ...importedExpenses]);
+          // update unsettledExpenses locally
+          setUnsettledExpenses(prevExpenses => [...(prevExpenses || []), ...importedExpenses]);
         }
         else {
           console.log("No expenses were imported.");

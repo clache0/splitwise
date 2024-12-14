@@ -4,14 +4,12 @@ import { Group, User, Expense } from "../types/types";
 interface GroupContextProps {
   group: Group | null;
   groupUsers: User[];
-  groupExpenses: Expense[];
   settledExpenses: Expense[];
   unsettledExpenses: Expense[];
   isLoading: boolean;
   isError: boolean;
   setGroup: React.Dispatch<React.SetStateAction<Group | null>>;
   setGroupUsers: React.Dispatch<React.SetStateAction<User[] | []>>;
-  setGroupExpenses: React.Dispatch<React.SetStateAction<Expense[] | []>>;
   setSettledExpenses: React.Dispatch<React.SetStateAction<Expense[] | []>>;
   setUnsettledExpenses: React.Dispatch<React.SetStateAction<Expense[] | []>>;
 }

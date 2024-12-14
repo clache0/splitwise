@@ -1,7 +1,7 @@
 import { useState } from "react";
 import GroupList from "./group/GroupList";
 import { postGroup, deleteGroupById, patchGroup } from "../api/apiGroup";
-import { fetchExpensesByGroupId } from "../api/apiExpense";
+import { fetchUnsettledExpensesByGroupId } from "../api/apiExpense";
 import Button from "./general/Button";
 import AddGroupForm from "./group/AddGroupForm";
 import Modal from "./general/Modal";
@@ -27,8 +27,8 @@ const Home = () => {
   };
 
   const handleUpdateGroup = async (updatedGroup: Group) => {
-    const groupExpenses = await fetchExpensesByGroupId(updatedGroup._id!);
-    const check = checkUnsettledExpenses(groupExpenses);
+    const unsettledExpenses = await fetchUnsettledExpensesByGroupId(updatedGroup._id!);
+    const check = checkUnsettledExpenses(unsettledExpenses);
 
     if (!updatedGroup || !check) {
       alert("Cannot update group. Some members have unsettled expenses or remaining balance.");
@@ -58,8 +58,8 @@ const Home = () => {
       return;
     }
 
-    const groupExpenses = await fetchExpensesByGroupId(groupToDelete._id!);
-    const check = checkUnsettledExpenses(groupExpenses);
+    const unsettledExpenses = await fetchUnsettledExpensesByGroupId(groupToDelete._id!);
+    const check = checkUnsettledExpenses(unsettledExpenses);
 
     if (!check) {
       alert("Cannot delete group. Some members have unsettled expenses or remaining balance.");
