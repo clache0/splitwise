@@ -21,6 +21,8 @@ const GroupComponent = () => {
   const [expenseToDelete, setExpenseToDelete] = useState<Expense | null>(null);
   const [defaultUserId, setDefaultUserId] = useState<string>("");
   const [isCheckSettleUp, setIsCheckSettleUp] = useState<boolean>(false);
+  const [progress, setProgress] = useState<number>(0);
+  const [isSettling, setIsSettling] = useState<boolean>(false);
 
   // set defaultUserId from localStorage or take first user in group
   useEffect(() => {
@@ -126,29 +128,55 @@ const GroupComponent = () => {
     }
   }, [isCheckSettleUp]);
 
-  // check to mark expenses as settled locally and on server
+  // settle expenses and patch to server concurrently
   const settleExpenses = async (unsettledExpenses: Expense[]) => {
-    const newSettledExpenses: Expense[] = [];
-    const updatedUnsettledExpenses: Expense[] = [];
+    setIsSettling(true);
+    setProgress(0);
 
-    for (const expense of unsettledExpenses) {
+    // concurrently patch unsettled expenses
+    const settledPromises = unsettledExpenses.map(async (expense) => {
       if (!expense.settled) {
         try {
-          const updatedExpense = { ...expense, settled: true};
-          await patchExpense(updatedExpense); // update server expense
-          newSettledExpenses.push(updatedExpense); // update local expense
+          const updatedExpense = { ...expense, settled: true };
+          await patchExpense(updatedExpense); // update server
+          return updatedExpense; // return updated expense if successful
         } catch (error) {
           console.error(`Error marking expense ${expense._id} as settled:`, error);
-          updatedUnsettledExpenses.push(expense); // Keep it in unsettled if the server call fails
+          return expense; // return original expense if the server call fails
+        } finally {
+          setProgress((prev) => prev + 1);
         }
       }
-      else {
-        updatedUnsettledExpenses.push(expense); // keep unsettled expenses
-      }
+      setProgress((prev) => prev + 1);
+      return expense; // return original if already settled
+    });
+  
+    try {
+      const results = await Promise.all(settledPromises);
+  
+      // separate settled and unsettled expenses
+      const newSettledExpenses: Expense[] = [];
+      const updatedUnsettledExpenses: Expense[] = [];
+  
+      results.forEach((expense) => {
+        if (expense.settled) {
+          newSettledExpenses.push(expense);
+        } else {
+          updatedUnsettledExpenses.push(expense);
+        }
+      });
+  
+      // update state
+      setSettledExpenses((prev) => [...prev, ...newSettledExpenses]);
+      setUnsettledExpenses(updatedUnsettledExpenses);
+  
+    } catch (error) {
+      console.error("Error during batch processing of unsettled expenses:", error);
+    } finally {
+      setIsSettling(false);
     }
-    setSettledExpenses((prev) => [...prev, ...newSettledExpenses]);
-    setUnsettledExpenses(updatedUnsettledExpenses);
-  }
+  };
+  
 
   const handleFilteredExpensesChange = (newData: Expense[] | []) => {
     setFilteredExpenses(newData);
@@ -195,6 +223,18 @@ const GroupComponent = () => {
         defaultUserId={defaultUserId}
         setDefaultUserId={setDefaultUserId}
       />
+
+      {isSettling && (
+        <div className="progress-container">
+          <p>Settling Expenses... ({progress}/{unsettledExpenses.length})</p>
+          <div className="progress-bar">
+            <div
+              className="progress-bar-fill"
+              style={{ width: `${(progress / unsettledExpenses.length) * 100}%` }}
+            ></div>
+          </div>
+        </div>
+      )}
 
       <div className="group-content">
         {unsettledExpenses && groupUsers &&

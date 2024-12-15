@@ -1,6 +1,35 @@
-
 .group-content {
   display: flex;
   justify-content: center;
   align-items: flex-start;
+}
+
+.progress-container {
+  width: 100%;
+  background-color: var(--background-color);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  font-size: 1rem;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.progress-bar {
+  width: 60%;
+  height: 10px;
+  background-color: #e0e0e0;
+  border-radius: 5px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background-color: #4caf50;
+  transition: width 0.3s ease;
+  border-radius: 5px;
 }
