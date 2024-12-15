@@ -12,6 +12,7 @@ interface GroupContextProps {
   setGroupUsers: React.Dispatch<React.SetStateAction<User[] | []>>;
   setSettledExpenses: React.Dispatch<React.SetStateAction<Expense[] | []>>;
   setUnsettledExpenses: React.Dispatch<React.SetStateAction<Expense[] | []>>;
+  setFetchedSettledExpenses: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const GroupContext = createContext<GroupContextProps | undefined>(undefined);

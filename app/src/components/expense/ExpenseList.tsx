@@ -10,19 +10,16 @@ interface ExpenseListProps {
   onFilteredExpensesChange: (filteredExpenses: Expense[] | []) => void;
 }
 
-const ITEMS_PER_PAGE = 20;
-
 const ExpenseList: React.FC<ExpenseListProps> = ({
   onUpdateExpense,
   onDeleteExpense,
   onFilteredExpensesChange 
 }) => {
 
-  const { settledExpenses, unsettledExpenses } = useGroupContext();
+  const { settledExpenses, unsettledExpenses, setFetchedSettledExpenses } = useGroupContext();
   const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
   const [selectedYear, setSelectedYear] = useState<string | null>(null);
   const [filteredExpenses, setFilteredExpenses] = useState<Expense[] | null>([]);
-  const [currentPage, setCurrentPage] = useState(1);
   const [showSettled, setShowSettled] = useState(false);
 
   // check if no settledExpenses
@@ -42,6 +39,7 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
   }
 
   const handleShowSettledClick = () => {
+    setFetchedSettledExpenses(true);
     setShowSettled((prev) => !prev);
   }
 
@@ -67,7 +65,6 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
     const filtered = filterExpenses(sourceExpenses);
     setFilteredExpenses(filtered);
     onFilteredExpensesChange(filtered); // pass filtered expenses to parent component
-    setCurrentPage(1); // reset to page 1
   }, [selectedMonth, selectedYear, showSettled, settledExpenses, unsettledExpenses]);
 
   // sort expenses from most recent to oldest
@@ -75,27 +72,7 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
     new Date(b.date).getTime() - new Date(a.date).getTime()
   ));
 
-  const totalPages = Math.ceil((sortedExpenses?.length || 0) / ITEMS_PER_PAGE);
-
-  // paginate expenses up to ITEMS_PER_PAGE
-  const paginatedExpenses = sortedExpenses?.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
-  );
-
-  const handleNextPage = () => {
-    setCurrentPage((prevPage) => Math.min(prevPage+1, totalPages)); // handle max pages
-  };
-
-  const handlePrevPage = () => {
-    setCurrentPage((prevPage) => Math.max(prevPage-1, 1)); // handle min pages
-  };
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
-
-  const expenseComponents = paginatedExpenses?.map((expense, index) => {
+  const expenseComponents = sortedExpenses?.map((expense, index) => {
       return (
         <li key={expense._id || index}>
           <ExpenseComponent 
@@ -165,29 +142,6 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
           {showSettled ? "Hide Settled Expenses" : "Show Settled Expenses"}
         </button>
       </div>
-
-      {/* Pagination */}
-      {filteredExpenses && filteredExpenses.length > 0 && (
-        <div className="pagination-controls">
-          <button onClick={handlePrevPage} disabled={currentPage === 1}>
-            Previous
-          </button>
-
-          {[...Array(totalPages)].map((_, index) => (
-            <button
-              key={index + 1}
-              onClick={() => handlePageChange(index + 1)}
-              className={currentPage === index + 1 ? "active" : ""}
-            >
-              {index + 1}
-            </button>
-          ))}
-
-          <button onClick={handleNextPage} disabled={currentPage === totalPages}>
-            Next
-          </button>
-        </div>
-      )}
     </div>
   );  
 };

@@ -12,6 +12,7 @@ export const GroupProvider: React.FC<{ groupId: string, children: React.ReactNod
   const [unsettledExpenses, setUnsettledExpenses] = useState<Expense[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState<boolean>(true);
+  const [fetchedSettledExpenses, setFetchedSettledExpenses] = useState<boolean>(false);
 
   const fetchData = async () => {
     try {
@@ -19,11 +20,9 @@ export const GroupProvider: React.FC<{ groupId: string, children: React.ReactNod
       const groupUsersData = await Promise.all(
         groupData.members.map((member: Member) => fetchUserById(member._id))
       );
-      const settledExpensesData = await fetchSettledExpensesByGroupId(groupId);
       const unsettledExpensesData = await fetchUnsettledExpensesByGroupId(groupId);
       setGroup(groupData);
       setGroupUsers(groupUsersData);
-      setSettledExpenses(settledExpensesData);
       setUnsettledExpenses(unsettledExpensesData);
     } catch (error) {
       console.error('Error fetching group data:', error);
@@ -33,6 +32,23 @@ export const GroupProvider: React.FC<{ groupId: string, children: React.ReactNod
     }
   };
 
+  const fetchSettledExpenses = async () => {
+    try {
+      const settledExpensesData = await fetchSettledExpensesByGroupId(groupId);
+      setSettledExpenses(settledExpensesData);
+    } catch (error) {
+      console.error('Error fetching settled expense data:', error);
+    }
+  }
+
+  // fetch settled expenses when flag set true from ExpenseList showSettled
+  useEffect(() => {
+    if (fetchedSettledExpenses) {
+      fetchSettledExpenses();
+    }
+  }, [fetchedSettledExpenses]);
+
+  // fetch group data upon group loading
   useEffect(() => {
     fetchData();
   }, [groupId]);
@@ -49,6 +65,7 @@ export const GroupProvider: React.FC<{ groupId: string, children: React.ReactNod
       setGroupUsers,
       setSettledExpenses,
       setUnsettledExpenses,
+      setFetchedSettledExpenses,
     }}>
       {children}
     </GroupContext.Provider>
