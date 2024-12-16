@@ -20,7 +20,9 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
   const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
   const [selectedYear, setSelectedYear] = useState<string | null>(null);
   const [filteredExpenses, setFilteredExpenses] = useState<Expense[] | null>([]);
-  const [showSettled, setShowSettled] = useState(false);
+  const [showSettled, setShowSettled] = useState<boolean>(false);
+  const [settledPage, setSettledPage]= useState<number>(1);
+  const SETTLED_PAGE_SIZE = 20;
 
   // check if no settledExpenses
   if (!settledExpenses) return <p>No unsettled expenses</p>;
@@ -41,9 +43,21 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
   const handleShowSettledClick = () => {
     setFetchedSettledExpenses(true);
     setShowSettled((prev) => !prev);
+    setSettledPage(1);
   }
 
-  const sourceExpenses = showSettled ? [...settledExpenses, ...unsettledExpenses] : unsettledExpenses;
+  const handleShowMoreSettled = () => {
+    console.log("show more settled clicked");
+    setSettledPage((prevPage) => prevPage + 1);
+  }
+
+  // boolean: more settled expenses not displayed
+  const hasMoreSettledExpenses = settledPage * SETTLED_PAGE_SIZE < settledExpenses.length;
+  
+  // source expenses to be filtered
+  const sourceExpenses = showSettled
+    ? [...settledExpenses.slice(0, settledPage * SETTLED_PAGE_SIZE), ...unsettledExpenses]
+    : unsettledExpenses;
 
   // function: filter expenses by month, year, settled
   const filterExpenses = (expenses: Expense[]) => {
@@ -65,13 +79,14 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
     const filtered = filterExpenses(sourceExpenses);
     setFilteredExpenses(filtered);
     onFilteredExpensesChange(filtered); // pass filtered expenses to parent component
-  }, [selectedMonth, selectedYear, showSettled, settledExpenses, unsettledExpenses]);
+  }, [selectedMonth, selectedYear, showSettled, settledPage, settledExpenses, unsettledExpenses]);
 
   // sort expenses from most recent to oldest
   const sortedExpenses = filteredExpenses?.sort((a, b) => (
     new Date(b.date).getTime() - new Date(a.date).getTime()
   ));
 
+  // ExpenseComponents to be rendered
   const expenseComponents = sortedExpenses?.map((expense, index) => {
       return (
         <li key={expense._id || index}>
@@ -135,6 +150,14 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
       {/* Show Settled */}
       <div className="settled-container">
         <p>All expenses before this date have been settled</p>
+        {showSettled && hasMoreSettledExpenses && (
+          <button
+            onClick={handleShowMoreSettled}
+            className="toggle-link-button"
+          >
+            Show More Settled Expenses
+          </button>
+        )}
         <button
           onClick={handleShowSettledClick}
           className="toggle-link-button"
