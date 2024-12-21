@@ -20,7 +20,7 @@ expenseRouter.get("/", async (req, res) => {
         res.status(200).send(results);
       }
     } catch (error) {
-    console.error("Error getting expenses: ", error);
+    console.error("Error getting expenses from get / ", error);
     next(error);     
   }
 });
@@ -41,7 +41,7 @@ expenseRouter.get("/unsettled", async (req, res) => {
         res.status(200).send(results);
       }
     } catch (error) {
-    console.error("Error getting unsettled expenses: ", error);
+    console.error("Error getting unsettled expenses from get /unsettled ", error);
     next(error);     
   }
 });
@@ -61,7 +61,7 @@ expenseRouter.get("/:id", async (req, res, next) => {
       res.status(200).send(result);
     }
   } catch (error) {
-    console.error("Error getting expense: ", error);
+    console.error("Error getting expense from get /:id ", error);
     next(error);
   }
 });
@@ -81,7 +81,7 @@ expenseRouter.get("/group/:id", async (req, res, next) => {
       res.status(200).send(result);
     }
   } catch (error) {
-    console.error("Error getting expense: ", error);
+    console.error("Error getting expense from get /group/:id ", error);
     next(error);
   }
 });
@@ -101,7 +101,7 @@ expenseRouter.get("/group/:id/settled", async (req, res, next) => {
       res.status(200).send(result);
     }
   } catch (error) {
-    console.error("Error getting expense: ", error);
+    console.error("Error getting settled group expenses from get /group/:id/settled ", error);
     next(error);
   }
 });
@@ -121,7 +121,7 @@ expenseRouter.get("/group/:id/unsettled", async (req, res, next) => {
       res.status(200).send(result);
     }
   } catch (error) {
-    console.error("Error getting expense: ", error);
+    console.error("Error getting unsettled group expense from get /group/:id/unsettled ", error);
     next(error);
   }
 });
@@ -135,7 +135,7 @@ expenseRouter.post("/", async (req, res) => {
     const result = await collection.insertOne(newDocument);
     res.status(200).send(result);
   } catch (error) {
-    console.error("Error adding expense: ", error);
+    console.error("Error adding expense from post / ", error);
     next(error);
   }
 });
@@ -155,7 +155,7 @@ expenseRouter.post("/import", async (req, res) => {
     const result = await collection.insertMany(expenses);
     res.status(200).send(result);
   } catch (error) {
-    console.error("Error adding expenses: ", error);
+    console.error("Error adding expenses from post /import ", error);
     next(error);
   }
 });
@@ -204,8 +204,51 @@ expenseRouter.patch("/:id", async (req, res) => {
     }
     res.status(200).send(result);
   } catch (error) {
-    console.error("Error updating expense: ", error);
+    console.error("Error updating expense from patch /:id ", error);
     next(error);
+  }
+});
+
+// PATCH update multiple expenses at once
+expenseRouter.patch("/batch/update", async (req, res) => {
+
+  try {
+    const expenses = req.body; // Expense[] to update
+    console.log("Received expenses: ", expenses);
+
+    if (!expenses || !Array.isArray(expenses) || expenses.length === 0) {
+      return res.status(404).json({
+        error: "Invalid request",
+        message: "The request body must be a non-empty array of expenses.",
+      });
+    }
+
+    const db = await connectToDatabase();
+    const collection = await db.collection("expenses");
+
+    // Prepare the bulk operations for updating the expenses
+    const bulkOperations = expenses.map((expense) => ({
+      updateOne: {
+        filter: { _id: new ObjectId(expense._id) }, // Match by _id
+        update: { $set: { settled: expense.settled } }, // Set new settled status
+      },
+    }));
+
+    // Execute the bulk operation
+    const result = await collection.bulkWrite(bulkOperations);
+
+    res.status(200).json({
+      message: "Batch update successful",
+      matchedCount: result.matchedCount,
+      modifiedCount: result.modifiedCount,
+      operations: expenses,
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({
+      error: "Internal Server Error catch block",
+      message: error.message,
+    });
   }
 });
 
