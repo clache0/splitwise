@@ -1,7 +1,7 @@
 import GroupNavbar from "./GroupNavbar"
 import { useEffect, useState } from 'react';
 import ExpenseList from "../expense/ExpenseList";
-import { postExpense, deleteExpenseById, patchExpense } from "../../api/apiExpense";
+import { postExpense, deleteExpenseById, patchExpense, patchExpensesBatch } from "../../api/apiExpense";
 import AddExpenseForm from "../expense/AddExpenseForm";
 import Modal from "../general/Modal";
 import GroupBalances from "./GroupBalances";
@@ -133,32 +133,19 @@ const GroupComponent = () => {
     setIsSettling(true);
     setProgress(0);
 
-    // concurrently patch unsettled expenses
-    const settledPromises = unsettledExpenses.map(async (expense) => {
-      if (!expense.settled) {
-        try {
-          const updatedExpense = { ...expense, settled: true };
-          await patchExpense(updatedExpense); // update server
-          return updatedExpense; // return updated expense if successful
-        } catch (error) {
-          console.error(`Error marking expense ${expense._id} as settled:`, error);
-          return expense; // return original expense if the server call fails
-        } finally {
-          setProgress((prev) => prev + 1);
-        }
-      }
-      setProgress((prev) => prev + 1);
-      return expense; // return original if already settled
-    });
-  
+    const updatedExpenses = unsettledExpenses.map((expense) => ({
+      ...expense,
+      settled: true,
+    }));
+
     try {
-      const results = await Promise.all(settledPromises);
-  
+      const { operations } = await patchExpensesBatch(updatedExpenses);
+
       // separate settled and unsettled expenses
       const newSettledExpenses: Expense[] = [];
       const updatedUnsettledExpenses: Expense[] = [];
   
-      results.forEach((expense) => {
+      operations.forEach((expense: Expense) => {
         if (expense.settled) {
           newSettledExpenses.push(expense);
         } else {
@@ -176,7 +163,6 @@ const GroupComponent = () => {
       setIsSettling(false);
     }
   };
-  
 
   const handleFilteredExpensesChange = (newData: Expense[] | []) => {
     setFilteredExpenses(newData);

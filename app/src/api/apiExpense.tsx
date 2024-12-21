@@ -117,6 +117,33 @@ export const patchExpense = async (expense: Expense) => {
   }
 };
 
+export const patchExpensesBatch = async (expenses: Expense[]) => {
+  const url = config.serverUrl + `/expenses/batch/update`;
+  try {
+    const response = await fetch(url, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(expenses),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to patch expenses in batch');
+    }
+
+    if (response.status === 404) {
+      console.error("patchExpensesBatch: client no expenses provided");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error patching expenses in batch: ', error);
+    throw error;
+  }
+};
+
 export const deleteExpenseById = async (expenseId: string) => {
   const url = config.serverUrl + `/expenses/${expenseId}`;
 
